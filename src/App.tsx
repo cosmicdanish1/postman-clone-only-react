@@ -13,21 +13,23 @@ import GenerateCode from './pages/GenerateCode';
 
 function App() {
   return (
-    <Router>
-      <NavBar />
-      <Layout>
-        <Routes>
-          <Route path="/" element={<HoppscotchClone />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/collections" element={<Collections />} />
-          <Route path="/history" element={<History />} />
-          <Route path="/share" element={<Share />} />
-          <Route path="/environments" element={<Environments />} />
-          <Route path="/request" element={<Request />} />
-          <Route path="/generate-code" element={<GenerateCode />} />
-        </Routes>
-      </Layout>
-    </Router>
+    <div className="scrollbar-hide">
+      <Router>
+        <NavBar />
+        <Layout>
+          <Routes>
+            <Route path="/" element={<HoppscotchClone />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/collections" element={<Collections />} />
+            <Route path="/history" element={<History />} />
+            <Route path="/share" element={<Share />} />
+            <Route path="/environments" element={<Environments />} />
+            <Route path="/request" element={<Request />} />
+            <Route path="/generate-code" element={<GenerateCode />} />
+          </Routes>
+        </Layout>
+      </Router>
+    </div>
   );
 }
 

@@ -32,7 +32,7 @@ const sections = [
 ];
 
 const SettingsPanel: React.FC = () => (
-  <div className="flex-1 overflow-y-auto p-1 bg-zinc-900 no-scrollbar">
+  <div className="flex-1 overflow-y-auto p-1 bg-zinc-900 scrollbar-hide">
     {/* General Card */} 
     <div className="flex flex-row bg-neutral-900 shadow-md">
       <div className="pl-0 pr-8 py-8 flex flex-col items-start justify-start min-w-[220px] max-w-xs">

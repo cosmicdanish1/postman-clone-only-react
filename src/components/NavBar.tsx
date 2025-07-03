@@ -11,7 +11,7 @@ const NavBar: React.FC = () => {
     <div className="col-span-2 flex items-center justify-between space-x-2">
       <div className="flex">
         <a href="/" className="inline-flex items-center justify-center font-bold uppercase tracking-wide px-4 py-2 text-white hover:bg-[#262626]">
-          <span className="truncate max-w-[16rem] text-xs">Hoppscotch</span>
+          <span className="truncate max-w-[16rem] text-xs ml-3">Hoppscotch</span>
         </a>
       </div>
     </div>
@@ -19,12 +19,12 @@ const NavBar: React.FC = () => {
     {/* <!-- Search Bar --> */}
     <div className="col-span-1 flex items-center justify-between space-x-2 ">
       <button className="flex flex-1 items-center justify-between  rounded-md bg-neutral-800 px-2 py-1 hover:bg-neutral-900  w-full">
-        <span className="flex items-center text-gray-400 text-xs hover:text-gray-100">
+        <span className="flex items-center font-semibold text-gray-400 text-xs hover:text-gray-100">
           <svg viewBox="0 0 24 24" width="20" height="20" className="mr-2 text-gray-500 text-sm hover:text-gray-100 "><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><path d="m21 21l-4.3-4.3"></path></g></svg>
           Search and commands
         </span>
         <span className="flex space-x-1">
-          <kbd className="bg-neutral-900 px-1 rounded text-gray-400 text-sm ">Ctrl</kbd><kbd className="bg-neutral-900 px-1 rounded text-sm text-gray-400">K</kbd>
+          <kbd className="bg-[#1f1f1f] px-1 rounded text-gray-400 text-sm border border-white/10">Ctrl</kbd><kbd className="bg-[#1f1f1f] px-1 rounded text-gray-400 text-sm border border-white/10">K</kbd>
         </span>
       </button>
     </div>
