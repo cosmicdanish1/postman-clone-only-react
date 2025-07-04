@@ -25,23 +25,6 @@ const defaultTabData = () => ({
 // Simple unique ID generator for tabs
 const uuidv4 = () => '_' + Math.random().toString(36).substr(2, 9);
 
-// SortableTab component for drag-and-drop
-type SortableTabProps = { id: string; children: (listeners: any) => React.ReactNode };
-function SortableTab({ id, children }: SortableTabProps) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-    zIndex: isDragging ? 50 : undefined,
-  };
-  return (
-    <div ref={setNodeRef} style={style} {...attributes} className="inline-block align-top m-0 p-0">
-      {children(listeners)}
-    </div>
-  );
-}
-
 const HoppscotchClone: React.FC = () => {
   const [tabs, setTabs] = useState([defaultTabData()]);
   const [activeTabId, setActiveTabId] = useState(tabs[0].id);
@@ -99,134 +82,115 @@ const HoppscotchClone: React.FC = () => {
     <div className="flex flex-col h-full w-full bg-neutral-900 text-white">
       {/* Top full-width bar */}
       <div className="w-full bg-[#1C1C1E] border-b h-10 border-zinc-800 relative">
-        <DndContext
-          collisionDetection={closestCenter}
-          onDragEnd={({ active, over }) => {
-            if (over && active.id !== over.id) {
-              setTabs((tabs) => {
-                const oldIndex = tabs.findIndex(t => t.id === active.id);
-                const newIndex = tabs.findIndex(t => t.id === over.id);
-                return arrayMove(tabs, oldIndex, newIndex);
-              });
-            }
-          }}
-        >
-          <SortableContext items={tabs.map(tab => tab.id)} strategy={verticalListSortingStrategy}>
-            <div className="flex items-center py-2">
-              {/* Tab bar */}
-              {tabs.map((tab) => (
-                <SortableTab key={tab.id} id={tab.id}>
-                  {(dragListeners) => (
-                    <TabContent
-                      tab={tab}
-                      isActive={tab.id === activeTabId}
-                      onSwitchTab={() => switchTab(tab.id)}
-                      onCloseTab={e => {
-                        e.stopPropagation();
-                        setTabs(tabs => {
-                          const idx = tabs.findIndex(t => t.id === tab.id);
-                          const newTabs = tabs.filter(t => t.id !== tab.id);
-                          if (tab.id === activeTabId && newTabs.length > 0) {
-                            setActiveTabId(newTabs[Math.max(0, idx - 1)].id);
-                          }
-                          return newTabs;
-                        });
-                      }}
-                      canClose={tabs.length > 1}
-                      methodColors={methodColors}
-                      dragListeners={dragListeners}
-                    />
-                  )}
-                </SortableTab>
-              ))}
-              <span
-                className="flex items-center justify-center h-12 w-10 ml-0 rounded-t-md text-blue-500 text-2xl cursor-pointer hover:bg-[#232326] transition"
-                style={{ marginLeft: 0 }}
-                onClick={addTab}
-              >
-                +
-              </span>
-              {/* Right-aligned environment selector bar */}
-              <div className="relative flex items-center px-4 py-2 rounded gap-2 ml-auto min-w-[220px]">
-                {/* Layers icon */}
-                <button
-                  className="flex items-center opacity-50 hover:opacity-100"
-                  onClick={() => setEnvDropdownOpen((v) => !v)}
-                  tabIndex={0}
-                >
-                  {/* Group icon and text */}
-                  <div className="flex items-center gap-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 -2 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
-                      <path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z" />
-                      <path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12" />
-                      <path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17" />
-                    </svg>
-                    <span className="text-white text-sm font-medium">Select environment</span>
-                  </div>
-
-                  {/* Chevron with left margin */}
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="text-white ml-2"
-                  >
-                    <path d="m6 9 6 6 6-6" />
-                  </svg>
-                </button>
-
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-eye-icon lucide-eye opacity-50 ml-4 hover:opacity-100"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>
-                {/* Dropdown card */}
-                {envDropdownOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    transition={{ type: 'spring', stiffness: 300, damping: 22 }}
-                    className="absolute right-0 top-full mt-2 w-96 bg-[#18181A] rounded-xl shadow-2xl border border-zinc-800 z-50 p-4"
-                  >
-                    {/* Search */}
-                    <input
-                      className="w-full bg-[#232326] border-none rounded px-3 py-2 text-white text-sm mb-4 placeholder-zinc-400 focus:outline-none"
-                      placeholder="Search"
-                    />
-                    {/* No environment */}
-                    <div className="flex items-center justify-between mb-4">
-                      <span className="text-zinc-200 text-sm font-medium">No environment</span>
-                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M16 6L8.75 13.25L5 9.5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                    </div>
-                    {/* Tabs */}
-                    <div className="flex border-b border-zinc-700 mb-6">
-                      <button
-                        className={`flex-1 py-2 text-sm font-semibold ${envTab === 'personal' ? 'text-white border-b-2 border-blue-500' : 'text-zinc-400'}`}
-                        onClick={() => setEnvTab('personal')}
-                      >
-                        Personal Environments
-                      </button>
-                      <button
-                        className={`flex-1 py-2 text-sm font-semibold ${envTab === 'workspace' ? 'text-white border-b-2 border-blue-500' : 'text-zinc-400'}`}
-                        onClick={() => setEnvTab('workspace')}
-                      >
-                        Workspace Environments
-                      </button>
-                    </div>
-                    {/* Empty state */}
-                    <div className="flex flex-col items-center justify-center py-8">
-                      <svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg" className="mb-4 opacity-40"><rect x="8" y="8" width="40" height="40" rx="8" fill="#232326"/><path d="M28 20V36" stroke="#fff" strokeWidth="2" strokeLinecap="round"/><path d="M20 28H36" stroke="#fff" strokeWidth="2" strokeLinecap="round"/></svg>
-                      <span className="text-zinc-400 text-sm mt-2">Environments are empty</span>
-                    </div>
-                  </motion.div>
-                )}
+        <div className="flex items-center py-2">
+          {/* Tab bar */}
+          {tabs.map((tab) => (
+            <TabContent
+              key={tab.id}
+              tab={tab}
+              isActive={tab.id === activeTabId}
+              onSwitchTab={() => switchTab(tab.id)}
+              onCloseTab={e => {
+                e.stopPropagation();
+                setTabs(tabs => {
+                  const idx = tabs.findIndex(t => t.id === tab.id);
+                  const newTabs = tabs.filter(t => t.id !== tab.id);
+                  if (tab.id === activeTabId && newTabs.length > 0) {
+                    setActiveTabId(newTabs[Math.max(0, idx - 1)].id);
+                  }
+                  return newTabs;
+                });
+              }}
+              canClose={tabs.length > 1}
+              methodColors={methodColors}
+            />
+          ))}
+          <span
+            className="flex items-center justify-center h-12 w-10 ml-0 rounded-t-md text-blue-500 text-2xl cursor-pointer hover:bg-[#232326] transition"
+            style={{ marginLeft: 0 }}
+            onClick={addTab}
+          >
+            +
+          </span>
+          {/* Right-aligned environment selector bar */}
+          <div className="relative flex items-center px-4 py-2 rounded gap-2 ml-auto min-w-[220px]">
+            {/* Layers icon */}
+            <button
+              className="flex items-center opacity-50 hover:opacity-100"
+              onClick={() => setEnvDropdownOpen((v) => !v)}
+              tabIndex={0}
+            >
+              {/* Group icon and text */}
+              <div className="flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 -2 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
+                  <path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z" />
+                  <path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12" />
+                  <path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17" />
+                </svg>
+                <span className="text-white text-sm font-medium">Select environment</span>
               </div>
-            </div>
-          </SortableContext>
-        </DndContext>
+
+              {/* Chevron with left margin */}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="text-white ml-2"
+              >
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </button>
+
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-eye-icon lucide-eye opacity-50 ml-4 hover:opacity-100"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>
+            {/* Dropdown card */}
+            {envDropdownOpen && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 22 }}
+                className="absolute right-0 top-full mt-2 w-96 bg-[#18181A] rounded-xl shadow-2xl border border-zinc-800 z-50 p-4"
+              >
+                {/* Search */}
+                <input
+                  className="w-full bg-[#232326] border-none rounded px-3 py-2 text-white text-sm mb-4 placeholder-zinc-400 focus:outline-none"
+                  placeholder="Search"
+                />
+                {/* No environment */}
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-zinc-200 text-sm font-medium">No environment</span>
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M16 6L8.75 13.25L5 9.5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                </div>
+                {/* Tabs */}
+                <div className="flex border-b border-zinc-700 mb-6">
+                  <button
+                    className={`flex-1 py-2 text-sm font-semibold ${envTab === 'personal' ? 'text-white border-b-2 border-blue-500' : 'text-zinc-400'}`}
+                    onClick={() => setEnvTab('personal')}
+                  >
+                    Personal Environments
+                  </button>
+                  <button
+                    className={`flex-1 py-2 text-sm font-semibold ${envTab === 'workspace' ? 'text-white border-b-2 border-blue-500' : 'text-zinc-400'}`}
+                    onClick={() => setEnvTab('workspace')}
+                  >
+                    Workspace Environments
+                  </button>
+                </div>
+                {/* Empty state */}
+                <div className="flex flex-col items-center justify-center py-8">
+                  <svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg" className="mb-4 opacity-40"><rect x="8" y="8" width="40" height="40" rx="8" fill="#232326"/><path d="M28 20V36" stroke="#fff" strokeWidth="2" strokeLinecap="round"/><path d="M20 28H36" stroke="#fff" strokeWidth="2" strokeLinecap="round"/></svg>
+                  <span className="text-zinc-400 text-sm mt-2">Environments are empty</span>
+                </div>
+              </motion.div>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Modal */}
@@ -387,13 +351,11 @@ type TabContentProps = {
   onCloseTab: (e: React.MouseEvent) => void;
   canClose: boolean;
   methodColors: Record<string, string>;
-  dragListeners: any;
 };
-const TabContent: React.FC<TabContentProps> = ({ tab, isActive, onSwitchTab, onCloseTab, canClose, methodColors, dragListeners }) => (
+const TabContent: React.FC<TabContentProps> = ({ tab, isActive, onSwitchTab, onCloseTab, canClose, methodColors }) => (
   <div
-    className={`group relative flex items-center h-12 px-0 cursor-pointer select-none font-bold bg-[#18181A] rounded-t-md -mt-2.5 shadow z-10 transition-all duration-200 ${isActive ? '' : 'opacity-60'}`}
+    className={`group relative flex items-center h-12 px-0 cursor-pointer select-none font-bold bg-[#18181A] rounded-t-md -mt-6 shadow z-10 transition-all duration-200 ${isActive ? '' : 'opacity-60'}`}
     onClick={onSwitchTab}
-    {...dragListeners}
   >
     {/* Blue bar at top for active tab */}
     {isActive && (
