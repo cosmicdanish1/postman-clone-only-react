@@ -7,6 +7,7 @@ import Collections from './pages/Collections';
 import History from './pages/History';
 import Share from './pages/Share';
 import NavBar from './components/NavBar';
+import BottomBar from './components/BottomBar';
 import Environments from './pages/Environments';
 import Request from './pages/Request';
 import GenerateCode from './pages/GenerateCode';
@@ -28,6 +29,7 @@ function App() {
             <Route path="/generate-code" element={<GenerateCode />} />
           </Routes>
         </Layout>
+        <BottomBar />
       </Router>
     </div>
   );
