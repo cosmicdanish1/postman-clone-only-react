@@ -82,37 +82,38 @@ const HoppscotchClone: React.FC = () => {
     <div className="flex flex-col h-full w-full bg-neutral-900 text-white">
       {/* Top full-width bar */}
       <div className="w-full bg-[#1C1C1E] border-b h-10 border-zinc-800 relative">
-        <div className="flex items-center py-2">
-          {/* Tab bar */}
-          {tabs.map((tab) => (
-            <TabContent
-              key={tab.id}
-              tab={tab}
-              isActive={tab.id === activeTabId}
-              onSwitchTab={() => switchTab(tab.id)}
-              onCloseTab={e => {
-                e.stopPropagation();
-                setTabs(tabs => {
-                  const idx = tabs.findIndex(t => t.id === tab.id);
-                  const newTabs = tabs.filter(t => t.id !== tab.id);
-                  if (tab.id === activeTabId && newTabs.length > 0) {
-                    setActiveTabId(newTabs[Math.max(0, idx - 1)].id);
-                  }
-                  return newTabs;
-                });
-              }}
-              canClose={tabs.length > 1}
-              methodColors={methodColors}
-            />
-          ))}
-          <span
-            className="flex items-center justify-center h-12 w-10 -mt-6 rounded-t-md text-blue-500 text-2xl cursor-pointer hover:bg-[#232326] transition"
-            onClick={addTab}
-          >
-            +
-          </span>
-          {/* Right-aligned environment selector bar */}
-          <div className="flex items-center h-full px-4 rounded gap-2 ml-auto min-w-[220px]">
+        <div className="flex items-center h-full w-full">
+          <div className="flex items-center flex-1 min-w-0">
+            {/* Tab bar */}
+            {tabs.map((tab) => (
+              <TabContent
+                key={tab.id}
+                tab={tab}
+                isActive={tab.id === activeTabId}
+                onSwitchTab={() => switchTab(tab.id)}
+                onCloseTab={e => {
+                  e.stopPropagation();
+                  setTabs(tabs => {
+                    const idx = tabs.findIndex(t => t.id === tab.id);
+                    const newTabs = tabs.filter(t => t.id !== tab.id);
+                    if (tab.id === activeTabId && newTabs.length > 0) {
+                      setActiveTabId(newTabs[Math.max(0, idx - 1)].id);
+                    }
+                    return newTabs;
+                  });
+                }}
+                canClose={tabs.length > 1}
+                methodColors={methodColors}
+              />
+            ))}
+            <span
+              className="flex items-center justify-center h-12 w-10 -mt-1 rounded-t-md text-blue-500 text-2xl cursor-pointer hover:bg-[#232326] transition"
+              onClick={addTab}
+            >
+              +
+            </span>
+          </div>
+          <div className="flex items-center h-full px-4 rounded gap-2 min-w-[220px]">
             {/* Layers icon */}
             <button
               className="flex items-center h-full opacity-50 hover:opacity-100"
@@ -353,7 +354,7 @@ type TabContentProps = {
 };
 const TabContent: React.FC<TabContentProps> = ({ tab, isActive, onSwitchTab, onCloseTab, canClose, methodColors }) => (
   <div
-    className={`group relative flex items-center h-12 px-0 cursor-pointer select-none font-bold bg-[#18181A] rounded-t-md -mt-5 shadow z-10 transition-all duration-200 ${isActive ? '' : 'opacity-60'}`}
+    className={`group relative flex items-center h-12 px-0 cursor-pointer select-none font-bold bg-[#18181A] rounded-t-md -mt-1 shadow z-10 transition-all duration-200 ${isActive ? '' : 'opacity-60'}`}
     onClick={onSwitchTab}
   >
     {/* Blue bar at top for active tab */}
