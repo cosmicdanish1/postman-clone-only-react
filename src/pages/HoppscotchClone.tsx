@@ -106,22 +106,21 @@ const HoppscotchClone: React.FC = () => {
             />
           ))}
           <span
-            className="flex items-center justify-center h-12 w-10 ml-0 rounded-t-md text-blue-500 text-2xl cursor-pointer hover:bg-[#232326] transition"
-            style={{ marginLeft: 0 }}
+            className="flex items-center justify-center h-12 w-10 -mt-6 rounded-t-md text-blue-500 text-2xl cursor-pointer hover:bg-[#232326] transition"
             onClick={addTab}
           >
             +
           </span>
           {/* Right-aligned environment selector bar */}
-          <div className="relative flex items-center px-4 py-2 rounded gap-2 ml-auto min-w-[220px]">
+          <div className="flex items-center h-full px-4 rounded gap-2 ml-auto min-w-[220px]">
             {/* Layers icon */}
             <button
-              className="flex items-center opacity-50 hover:opacity-100"
+              className="flex items-center h-full opacity-50 hover:opacity-100"
               onClick={() => setEnvDropdownOpen((v) => !v)}
               tabIndex={0}
             >
               {/* Group icon and text */}
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1 ">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 -2 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
                   <path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z" />
                   <path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12" />
@@ -354,7 +353,7 @@ type TabContentProps = {
 };
 const TabContent: React.FC<TabContentProps> = ({ tab, isActive, onSwitchTab, onCloseTab, canClose, methodColors }) => (
   <div
-    className={`group relative flex items-center h-12 px-0 cursor-pointer select-none font-bold bg-[#18181A] rounded-t-md -mt-6 shadow z-10 transition-all duration-200 ${isActive ? '' : 'opacity-60'}`}
+    className={`group relative flex items-center h-12 px-0 cursor-pointer select-none font-bold bg-[#18181A] rounded-t-md -mt-5 shadow z-10 transition-all duration-200 ${isActive ? '' : 'opacity-60'}`}
     onClick={onSwitchTab}
   >
     {/* Blue bar at top for active tab */}
