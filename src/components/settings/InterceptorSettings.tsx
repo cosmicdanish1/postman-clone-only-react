@@ -187,7 +187,7 @@ const InterceptorSettings: React.FC = () => {
               <FaSync className="w-4 h-4" />
             </button>
           </div>
-        </div>
+      </div>
     </div>
     {/* Agent */}
     <div>
@@ -587,7 +587,7 @@ const InterceptorSettings: React.FC = () => {
               </div>
               <div className="bg-zinc-800 rounded p-4 text-zinc-500 text-base opacity-60 select-none cursor-not-allowed">Global Defaults</div>
             </motion.div>
-          </div>
+    </div>
         </AnimatePresence>
       )}
   </div>

@@ -917,6 +917,72 @@ const HoppscotchClone: React.FC = () => {
     });
   }
 
+  const [postRequestScript, setPostRequestScript] = useState('');
+  const postRequestDivRef = useRef<HTMLDivElement>(null);
+
+  function insertPostRequestSnippet(snippet: string) {
+    if (!postRequestDivRef.current) {
+      setPostRequestScript(prev => prev ? prev + '\n\n' + snippet : snippet);
+      return;
+    }
+    const div = postRequestDivRef.current;
+    let sel = window.getSelection();
+    let range = sel && sel.rangeCount > 0 ? sel.getRangeAt(0) : null;
+    let text = postRequestScript;
+    let insertAt = text.length;
+    if (range && div.contains(range.startContainer)) {
+      const preCaretRange = range.cloneRange();
+      preCaretRange.selectNodeContents(div);
+      preCaretRange.setEnd(range.endContainer, range.endOffset);
+      insertAt = preCaretRange.toString().length;
+    }
+    let before = text.slice(0, insertAt);
+    let after = text.slice(insertAt);
+    if (before && !before.endsWith('\n\n')) before += '\n\n';
+    const newValue = before + snippet + after;
+    setPostRequestScript(newValue);
+    setTimeout(() => {
+      div.focus();
+      const sel = window.getSelection();
+      if (sel && div.childNodes.length > 0) {
+        sel.collapse(div.childNodes[div.childNodes.length - 1], 1);
+      }
+    }, 0);
+  }
+
+  function highlightPostRequestScript(script: string) {
+    // Comments: gray, pw.env.set: blue, strings: magenta
+    return script.split('\n').map((line, idx) => {
+      if (line.trim().startsWith('//')) {
+        return <div key={idx}><span style={{color:'#a3a3a3'}}>{line}</span></div>;
+      }
+      // Highlight pw.env.set in blue, strings in magenta
+      // Regex: pw.env.set("variable", "value");
+      const regex = /(pw\.env\.set)(\(([^)]*)\);?)/;
+      const match = line.match(regex);
+      if (match) {
+        // Extract arguments inside parentheses
+        const args = match[2].replace(/[()]/g, '');
+        // Split by comma, keep quotes
+        const argParts = args.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/).map(s => s.trim());
+        return (
+          <div key={idx}>
+            <span style={{color:'#3b82f6'}}>{match[1]}</span>
+            <span style={{color:'#e5e7eb'}}>(</span>
+            {argParts.map((arg, i) => (
+              <span key={i} style={{color:arg.startsWith('"') ? '#d946ef' : '#e5e7eb'}}>
+                {arg}{i < argParts.length-1 ? ', ' : ''}
+              </span>
+            ))}
+            <span style={{color:'#e5e7eb'}}>)</span>
+            <span style={{color:'#e5e7eb'}}>{line.endsWith(';') ? ';' : ''}</span>
+          </div>
+        );
+      }
+      return <div key={idx} style={{color:'#e5e7eb'}}>{line || '\u00A0'}</div>;
+    });
+  }
+
   return (
     <div className="flex flex-col h-full w-full bg-neutral-900 text-white">
       {/* Edit Environment Modal */}
@@ -2776,61 +2842,83 @@ Prepend # to any row you want to add but keep disabled
                   <div className="font-bold text-zinc-300 mb-2">Snippets</div>
                   <a href="#" className="text-blue-500 hover:underline mb-1" onClick={e => { e.preventDefault(); insertPreRequestSnippet('// Set an environment variable\n' + 'pw.env.set("variable", "value");\n'); }}>Environment: Set an environment variable</a>
                   <a href="#" className="text-blue-500 hover:underline mb-1" onClick={e => { e.preventDefault(); insertPreRequestSnippet('// Set timestamp variable\nconst currentTime = Date.now();\npw.env.set("timestamp", currentTime.toString());\n'); }}>Environment: Set timestamp variable</a>
-                  <a href="#" className="text-blue-500 hover:underline" onClick={e => { e.preventDefault(); insertPreRequestSnippet('const min = 1\nconst max = 1000\nconst randomArbitrary = Math.random() * (max - min) + min\npw.env.set("randomNumber", randomArbitrary.toString());\n'); }}>Environment: Set random number variable</a>
+                  <a href="#" className="text-blue-500 hover:underline">Environment: Set random number variable</a>
                 </div>
               </div>
             </div>
           )}
           {activeTabObj.activeTab === 'post-request' && (
-            <div className="flex-1 flex flex-col bg-neutral-900 rounded p-0 mt-2">
+            <div className="flex flex-col flex-1 bg-[#18181A] rounded p-0 mt-2">
               {/* Post-request Script Bar */}
-              <div className="flex items-center gap-3 px-4 h-10 border-b border-neutral-800 relative">
-                <span className="text-gray-400 text-sm">Post-request Script</span>
-                <div className="relative">
-                  <button
-                    className="flex items-center gap-1 bg-zinc-800 text-gray-200 text-sm px-3 py-1 rounded border border-zinc-700 focus:outline-none min-w-[90px]"
-                    onClick={() => setDropdownOpen(v => !v)}
-                  >
-                    {contentTypeOptions.find(opt => opt.value === contentType)?.label || 'None'}
-                    <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+              <div className="flex items-center justify-between px-4 h-10 bg-[#18181A] w-full">
+                <span className="text-gray-400 text-base">Post-request Script</span>
+                <div className="flex items-center gap-3">
+                  {/* Help icon */}
+                  <button className="text-gray-400 hover:text-white" title="Help">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
                   </button>
-                  {dropdownOpen && (
-                    <div
-                      className="absolute left-0 mt-1 w-56 bg-zinc-900 border border-zinc-800 rounded shadow-lg z-50 py-2 max-h-72 overflow-y-auto"
-                      style={{ ...hideScrollbarStyle }}
-                    >
-                      {contentTypeOptions.map((opt, idx) => (
-                        opt.isSection ? (
-                          <div key={opt.label} className="px-4 py-1 text-xs text-zinc-500 uppercase tracking-wider select-none">
-                            {opt.label}
-                          </div>
-                        ) : (
-                          <button
-                            key={opt.value}
-                            className={`flex items-center w-full px-4 py-2 text-left text-sm hover:bg-zinc-800 ${contentType === opt.value ? 'text-violet-400' : 'text-gray-200'}`}
-                            onClick={() => { setContentType(opt.value); setDropdownOpen(false); }}
-                          >
-                            <span className="flex-1">{opt.label}</span>
-                            {contentType === opt.value && (
-                              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
-                            )}
-                          </button>
-                        )
-                      ))}
-                    </div>
-                  )}
+                  {/* Delete icon */}
+                  <button className="text-gray-400 hover:text-white" title="Delete">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6v14a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M5 6V4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2"/></svg>
+                  </button>
+                  {/* Format icon */}
+                  <button className="text-gray-400 hover:text-white" title="Format">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+                  </button>
+                  {/* Magic wand icon */}
+                  <button className="text-gray-400 hover:text-white" title="Magic">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M15 4V2m0 20v-2m7-7h-2M4 15H2m2.93-7.07l-1.42-1.42m16.97 16.97l-1.42-1.42m16.97-16.97l-1.42 1.42"/><path d="M8 12l4 4 6-6"/></svg>
+                  </button>
                 </div>
-                <button
-                  className="bg-zinc-800 border border-zinc-700 text-gray-200 text-sm px-3 py-1 rounded ml-2 flex items-center gap-1 focus:outline-none"
-                  onClick={() => setActiveTab('headers')}
-                >
-                  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M2 12h20"/><path d="M12 2v20"/></svg>
-                  Override
-                </button>
               </div>
-              {/* Post-request Script Content */}
-              <div className="px-4 py-6">
-                {/* Add your post-request script content here */}
+              {/* Two-column layout below bar */}
+              <div className="flex flex-1 min-h-0">
+                {/* Left: code editor */}
+                <div className="flex-1 flex bg-[#18181A] min-h-0 border-r border-neutral-900" style={{ fontFamily: 'monospace' }}>
+                  {/* Line numbers */}
+                  <div className="flex flex-col items-end py-3 px-2 select-none text-zinc-700 text-sm border-r border-neutral-800 min-h-0" style={{ minWidth: 32 }}>
+                    {Array.from({ length: (postRequestScript.match(/\n/g)?.length ?? 0) + 1 || 1 }, (_, i) => (
+                      <span key={i}>{i + 1}</span>
+                    ))}
+                  </div>
+                  {/* Contenteditable code editor with syntax highlighting */}
+                  <div
+                    ref={postRequestDivRef}
+                    contentEditable
+                    suppressContentEditableWarning
+                    spellCheck={false}
+                    className="flex-1 bg-transparent text-zinc-200 px-3 py-3 text-sm outline-none resize-none h-full min-h-0 font-mono"
+                    style={{ fontFamily: 'monospace', border: 'none', whiteSpace: 'pre', overflow: 'auto' }}
+                    onInput={e => setPostRequestScript((e.target as HTMLDivElement).innerText)}
+                    onPaste={e => {
+                      e.preventDefault();
+                      const text = e.clipboardData.getData('text/plain');
+                      document.execCommand('insertText', false, text);
+                    }}
+                  >
+                    {highlightPostRequestScript(postRequestScript)}
+                  </div>
+                </div>
+                {/* Right: info panel */}
+                <div className="w-[32%] min-w-[300px] flex flex-col items-start p-6 bg-[#18181A]">
+                  <span className="text-zinc-400 text-base mb-2">Post-request scripts are written in JavaScript, and are run after the response is received.</span>
+                  <a
+                    href="https://learning.postman.com/docs/writing-scripts/test-scripts/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-bold text-zinc-200 hover:underline mb-6"
+                  >
+                    Read documentation
+                  </a>
+                  <div className="font-bold text-zinc-300 mb-2">Snippets</div>
+                  <a href="#" className="text-blue-500 hover:underline mb-1" onClick={e => { e.preventDefault(); insertPostRequestSnippet('// Set an environment variable\n' + 'pw.env.set("variable", "value");\n'); }}>Environment: Set an environment variable</a>
+                  <a href="#" className="text-blue-500 hover:underline mb-1" onClick={e => { e.preventDefault(); insertPostRequestSnippet('// Check status code is 200\npw.test("Status code is 200", ()=> {\n    pw.expect(pw.response.status).toBe(200);\n});\n'); }}>Response: Status code is 200</a>
+                  <a href="#" className="text-blue-500 hover:underline mb-1" onClick={e => { e.preventDefault(); insertPostRequestSnippet('// Check JSON response property\npw.test("Check JSON response property", ()=> {\n    pw.expect(pw.response.body.method).toBe("GET");\n});\n'); }}>Response: Assert property from body</a>
+                  <a href="#" className="text-blue-500 hover:underline mb-1" onClick={e => { e.preventDefault(); insertPostRequestSnippet('// Check status code is 2xx\npw.test("Status code is 2xx", ()=> {\n    pw.expect(pw.response.status).toBeLevel2xx();\n});\n'); }}>Status code: Status code is 2xx</a>
+                  <a href="#" className="text-blue-500 hover:underline mb-1" onClick={e => { e.preventDefault(); insertPostRequestSnippet('// Check status code is 3xx\npw.test("Status code is 3xx", ()=> {\n    pw.expect(pw.response.status).toBeLevel3xx();\n});\n'); }}>Status code: Status code is 3xx</a>
+                  <a href="#" className="text-blue-500 hover:underline mb-1" onClick={e => { e.preventDefault(); insertPostRequestSnippet('// Check status code is 4xx\npw.test("Status code is 4xx", ()=> {\n    pw.expect(pw.response.status).toBeLevel4xx();\n});\n'); }}>Status code: Status code is 4xx</a>
+                  <a href="#" className="text-blue-500 hover:underline" onClick={e => { e.preventDefault(); insertPostRequestSnippet('// Check status code is 5xx\npw.test("Status code is 5xx", ()=> {\n    pw.expect(pw.response.status).toBeLevel5xx();\n});\n'); }}>Status code: Status code is 5xx</a>
+                </div>
               </div>
             </div>
           )}
