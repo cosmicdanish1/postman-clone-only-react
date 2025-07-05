@@ -32,13 +32,20 @@ const HoppscotchClone: React.FC = () => {
   const [envDropdownOpen, setEnvDropdownOpen] = useState(false);
   const [envTab, setEnvTab] = useState<'personal' | 'workspace'>('personal');
   const [showVarsPopover, setShowVarsPopover] = useState(false);
-  const [editModal, setEditModal] = useState<null | 'global' | 'environment'>(null);
+  const [editModal, setEditModal] = useState<null | 'global' | 'environment'>('global');
   const eyeRef = React.useRef<HTMLSpanElement | null>(null);
   const [methodDropdownOpen, setMethodDropdownOpen] = useState(false);
   const methodDropdownRef = React.useRef<HTMLDivElement>(null);
   const [showInterceptorInPanel, setShowInterceptorInPanel] = useState(false);
   const [sendMenuOpen, setSendMenuOpen] = useState(false);
   const sendMenuRef = React.useRef<HTMLDivElement>(null);
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const [saveRequestName, setSaveRequestName] = useState('Untitled');
+  const [showImportCurlModal, setShowImportCurlModal] = useState(false);
+  const [curlInput, setCurlInput] = useState("");
+  const [showGenerateCodeModal, setShowGenerateCodeModal] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState('Shell - cURL');
+  const generatedCode = `curl --request GET \\n  --url https://echo.hoppscotch.io/`;
 
   // Helper to get the active tab object
   const activeTabObj = tabs.find(tab => tab.id === activeTabId) || tabs[0];
@@ -402,6 +409,136 @@ const HoppscotchClone: React.FC = () => {
         )}
       </AnimatePresence>
 
+      {/* Save as Modal */}
+      {showSaveModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
+          <div className="bg-[#18181A] rounded-2xl shadow-2xl border border-zinc-800 w-[600px] max-w-full p-0 relative">
+            <div className="flex items-center justify-between px-8 pt-8 pb-4">
+              <div className="text-2xl font-bold text-center w-full">Save as</div>
+              <button className="absolute right-8 top-8 text-gray-400 hover:text-white text-2xl" onClick={() => setShowSaveModal(false)}>&times;</button>
+            </div>
+            <div className="px-8 pb-4">
+              <label className="block text-xs text-gray-400 mb-1">Request name</label>
+              <input
+                className="w-full bg-zinc-900 border border-zinc-800 rounded px-3 py-2 text-white text-base mb-4"
+                value={saveRequestName}
+                onChange={e => setSaveRequestName(e.target.value)}
+              />
+              <label className="block text-xs text-gray-400 mb-1">Select location</label>
+              <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4 mb-2">
+                <div className="text-xs text-zinc-400 mb-2">Personal Workspace &gt; Collections</div>
+                <input
+                  className="w-full bg-zinc-800 border border-zinc-700 rounded px-3 py-2 text-white text-sm mb-2"
+                  placeholder="Search"
+                />
+                <div className="flex items-center gap-2 mb-2">
+                  <button className="flex items-center gap-1 text-blue-400 hover:text-blue-500 text-sm font-semibold">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14m7-7H5"/></svg>
+                    New
+                  </button>
+                  <button className="ml-auto text-zinc-400 hover:text-white" title="Help"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></button>
+                </div>
+                <div className="flex flex-col items-center justify-center py-8">
+                  <svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg" className="mb-4 opacity-40"><rect x="8" y="8" width="40" height="40" rx="8" fill="#232326"/><path d="M28 20V36" stroke="#fff" strokeWidth="2" strokeLinecap="round"/><path d="M20 28H36" stroke="#fff" strokeWidth="2" strokeLinecap="round"/></svg>
+                  <span className="text-zinc-400 text-sm mt-2">Collections are empty</span>
+                  <span className="text-zinc-500 text-xs mb-4">Import or create a collection</span>
+                  <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded font-semibold flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+                    Import
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center justify-between px-8 pb-8 pt-4">
+              <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded font-semibold">Save</button>
+              <button className="bg-zinc-800 hover:bg-zinc-700 text-white px-6 py-2 rounded font-semibold" onClick={() => setShowSaveModal(false)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Import cURL Modal */}
+      {showImportCurlModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
+          <div className="bg-[#18181A] rounded-2xl shadow-2xl border border-zinc-800 w-[600px] max-w-full p-0 relative">
+            <div className="flex items-center justify-between px-8 pt-8 pb-4">
+              <div className="text-2xl font-bold text-center w-full">Import cURL</div>
+              <button className="absolute right-8 top-8 text-gray-400 hover:text-white text-2xl" onClick={() => setShowImportCurlModal(false)}>&times;</button>
+            </div>
+            <div className="px-8 pb-4">
+              <label className="block text-xs text-gray-400 mb-1">cURL</label>
+              <div className="relative bg-zinc-900 rounded-lg border border-zinc-800">
+                {/* Toolbar icons */}
+                <div className="absolute right-2 top-2 flex gap-2 z-10">
+                  <button className="text-zinc-400 hover:text-white"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6v6H9z"/></svg></button>
+                  <button className="text-zinc-400 hover:text-white"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/><polyline points="7 9 12 4 17 9"/><line x1="12" x2="12" y1="4" y2="16"/></svg></button>
+                  <button className="text-zinc-400 hover:text-white"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/></svg></button>
+                </div>
+                <textarea
+                  className="w-full h-32 bg-transparent text-white p-4 rounded-lg focus:outline-none resize-none placeholder-zinc-500 mt-6"
+                  placeholder="Enter cURL command"
+                  value={curlInput}
+                  onChange={e => setCurlInput(e.target.value)}
+                  style={{ fontFamily: 'monospace', fontSize: 15 }}
+                />
+              </div>
+            </div>
+            <div className="flex items-center justify-between px-8 pb-8 pt-4">
+              <div className="flex gap-4">
+                <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded font-semibold" onClick={() => setShowImportCurlModal(false)}>Import</button>
+                <button className="bg-zinc-800 hover:bg-zinc-700 text-white px-6 py-2 rounded font-semibold" onClick={() => setShowImportCurlModal(false)}>Cancel</button>
+              </div>
+              <button className="bg-zinc-800 hover:bg-zinc-700 text-white px-6 py-2 rounded font-semibold flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+                Paste
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Generate code Modal */}
+      {showGenerateCodeModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
+          <div className="bg-[#18181A] rounded-2xl shadow-2xl border border-zinc-800 w-[600px] max-w-full p-0 relative">
+            <div className="flex items-center justify-between px-8 pt-8 pb-4">
+              <div className="text-2xl font-bold text-center w-full">Generate code</div>
+              <button className="absolute right-8 top-8 text-gray-400 hover:text-white text-2xl" onClick={() => setShowGenerateCodeModal(false)}>&times;</button>
+            </div>
+            <div className="px-8 pb-4">
+              <label className="block text-xs text-gray-400 mb-1">Choose language</label>
+              <select
+                className="w-full bg-zinc-900 border border-zinc-800 rounded px-3 py-2 text-white text-base mb-4"
+                value={selectedLanguage}
+                onChange={e => setSelectedLanguage(e.target.value)}
+              >
+                <option>Shell - cURL</option>
+                <option>Node.js - fetch</option>
+                <option>Python - requests</option>
+                <option>Go - http</option>
+                <option>JavaScript - XMLHttpRequest</option>
+              </select>
+              <label className="block text-xs text-gray-400 mb-1">Generated code</label>
+              <div className="relative bg-zinc-900 rounded-lg border border-zinc-800 p-4">
+                {/* Toolbar icons */}
+                <div className="absolute right-2 top-2 flex gap-2 z-10">
+                  <button className="text-zinc-400 hover:text-white"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/></svg></button>
+                  <button className="text-zinc-400 hover:text-white"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/><polyline points="7 9 12 4 17 9"/><line x1="12" x2="12" y1="4" y2="16"/></svg></button>
+                  <button className="text-zinc-400 hover:text-white"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/></svg></button>
+                </div>
+                <pre className="text-white text-sm font-mono whitespace-pre mt-6">
+{generatedCode}
+                </pre>
+              </div>
+            </div>
+            <div className="flex items-center justify-between px-8 pb-8 pt-4">
+              <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded font-semibold">Copy</button>
+              <button className="bg-zinc-800 hover:bg-zinc-700 text-white px-6 py-2 rounded font-semibold" onClick={() => setShowGenerateCodeModal(false)}>Dismiss</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Main layout below top bar */}
       <div className="flex flex-1">
         {/* Left Content */}
@@ -471,12 +608,24 @@ const HoppscotchClone: React.FC = () => {
                   className="absolute left-0 mt-2 w-56 bg-[#18181A] rounded-xl shadow-2xl border border-zinc-800 z-50 p-2"
                   style={{ top: '100%' }}
                 >
-                  <button className="flex items-center w-full px-3 py-2 rounded hover:bg-zinc-800 text-zinc-200 gap-3">
+                  <button
+                    className="flex items-center w-full px-3 py-2 rounded hover:bg-zinc-800 text-zinc-200 gap-3"
+                    onClick={() => {
+                      setShowImportCurlModal(true);
+                      setSendMenuOpen(false);
+                    }}
+                  >
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6v6H9z"/></svg>
                     <span className="flex-1 text-left">Import cURL</span>
                     <span className="text-xs bg-zinc-800 px-2 py-0.5 rounded text-zinc-400">C</span>
                   </button>
-                  <button className="flex items-center w-full px-3 py-2 rounded hover:bg-zinc-800 text-zinc-200 gap-3">
+                  <button
+                    className="flex items-center w-full px-3 py-2 rounded hover:bg-zinc-800 text-zinc-200 gap-3"
+                    onClick={() => {
+                      setShowGenerateCodeModal(true);
+                      setSendMenuOpen(false);
+                    }}
+                  >
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 18 22 12 16 6"/><path d="M8 6 2 12l6 6"/></svg>
                     <span className="flex-1 text-left">Show code</span>
                     <span className="text-xs bg-zinc-800 px-2 py-0.5 rounded text-zinc-400">S</span>
@@ -491,8 +640,8 @@ const HoppscotchClone: React.FC = () => {
             </div>
          
 
-              <button className="bg-[#1C1C1E] hover:bg-[#262626] text-white px-4 py-2 rounded-l-md  font-semibold ml-4 h-10 ">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-save-icon lucide-save"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7"/></svg>
+              <button className="bg-[#1C1C1E] hover:bg-[#262626] text-white px-4 py-2 rounded-l-md  font-semibold ml-4 h-10 " onClick={() => setShowSaveModal(true)}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-save-icon lucide-save"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7"/></svg>
               </button>
             <button className="bg-[#1C1C1E] hover:bg-[#262626] text-white px-2 py-2 rounded-r-md  font-semibold">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-chevron-down-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"/></svg>
