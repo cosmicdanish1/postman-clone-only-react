@@ -16,7 +16,10 @@ const defaultTabData = () => ({
   activeTab: 'parameters',
   parameters: [],
   body: '',
-  headers: [],
+  headers: [
+    { id: uuidv4(), key: '', value: '', description: '', locked: false },
+    { id: uuidv4(), key: 'content type', value: '', description: '', locked: true }
+  ],
   authorization: '',
   preRequest: '',
   postRequest: '',
@@ -556,42 +559,95 @@ const HoppscotchClone: React.FC = () => {
   const [octetStreamFile, setOctetStreamFile] = useState<File | null>(null);
 
   // Headers state and handlers
-  const [headers, setHeaders] = React.useState([
-    { id: uuidv4(), key: '', value: '', description: '' }
-  ]);
   const [editHeadersActive, setEditHeadersActive] = useState(false);
   const handleHeaderChange = (id: string, field: 'key' | 'value' | 'description', value: string) => {
-    setHeaders(prev => {
-      const updated = prev.map((h) => h.id === id ? { ...h, [field]: value } : h);
-      if (field === 'key' && prev[prev.length - 1].id === id && value.trim() !== '') {
-        return [...updated, { id: uuidv4(), key: '', value: '', description: '' }];
+    setTabs(tabs => tabs.map(tab => {
+      if (tab.id !== activeTabId) return tab;
+      let updatedHeaders = tab.headers.map((h: any) => h.id === id ? { ...h, [field]: value } : h);
+      // Only consider editable rows (not locked)
+      const editableRows = updatedHeaders.filter((h: any) => !h.locked);
+      const lastEditable = editableRows[editableRows.length - 1];
+      if (
+        field === 'key' &&
+        lastEditable &&
+        lastEditable.id === id &&
+        value.trim() !== '' &&
+        editableHeaderOptions.includes(value) &&
+        editableRows.length + 1 < 10 // prevent runaway row creation
+      ) {
+        // Insert a new editable row before the locked row
+        const lockedIdx = updatedHeaders.findIndex((h: any) => h.locked);
+        const newRow = { id: uuidv4(), key: '', value: '', description: '', locked: false };
+        updatedHeaders = [
+          ...updatedHeaders.slice(0, lockedIdx),
+          newRow,
+          ...updatedHeaders.slice(lockedIdx)
+        ];
       }
-      return updated;
-    });
+      return { ...tab, headers: updatedHeaders };
+    }));
   };
   const handleDeleteHeader = (id: string) => {
-    setHeaders(prev => prev.length === 1 ? prev : prev.filter((h) => h.id !== id));
+    setTabs(tabs => tabs.map(tab => {
+      if (tab.id !== activeTabId) return tab;
+      const updatedHeaders = tab.headers.filter((h: any) => h.id !== id || h.locked);
+      return { ...tab, headers: updatedHeaders };
+    }));
   };
   const handleAddHeader = () => {
-    setHeaders(prev => [...prev, { id: uuidv4(), key: '', value: '', description: '' }]);
+    setTabs(tabs => tabs.map(tab => {
+      if (tab.id !== activeTabId) return tab;
+      return { ...tab, headers: [...tab.headers, { id: uuidv4(), key: '', value: '', description: '' }] };
+    }));
   };
   const handleHeaderDragEnd = (event: any) => {
     const { active, over } = event;
     if (active.id !== over.id) {
-      setHeaders((items) => {
-        const oldIndex = items.findIndex(i => i.id === active.id);
-        const newIndex = items.findIndex(i => i.id === over.id);
-        return arrayMove(items, oldIndex, newIndex);
-      });
+      setTabs(tabs => tabs.map(tab => {
+        if (tab.id !== activeTabId) return tab;
+        const headers = tab.headers;
+        const lockedIdx = headers.findIndex((h: any) => h.locked);
+        const editable = headers.filter((h: any) => !h.locked);
+        // Only allow reordering editable rows
+        const oldIndex = editable.findIndex((i: any) => i.id === active.id);
+        const newIndex = editable.findIndex((i: any) => i.id === over.id);
+        if (oldIndex === -1 || newIndex === -1) return tab;
+        const newEditable = arrayMove(editable, oldIndex, newIndex);
+        // Rebuild headers: editable rows, then locked row
+        const newHeaders = [...newEditable, headers[lockedIdx]];
+        return { ...tab, headers: newHeaders };
+      }));
     }
   };
+  // List of common HTTP header names for dropdown
+  const headerNameOptions = [
+    'Accept', 'Accept-Charset', 'Accept-Encoding', 'Accept-Language', 'Accept-Datetime',
+    'Authorization', 'Cache-Control', 'Connection', 'Cookie', 'Content-Length', 'Content-MD5',
+    'Content-Type', 'Date', 'Expect', 'Forwarded', 'From', 'Host', 'If-Match', 'If-Modified-Since',
+    'If-None-Match', 'If-Range', 'If-Unmodified-Since', 'Max-Forwards', 'Pragma', 'Proxy-Authorization',
+    'Range', 'Referer', 'TE', 'User-Agent', 'Upgrade', 'Via', 'Warning', 'WWW-Authenticate',
+    'Proxy-Authenticate', 'Age', 'ETag', 'Location', 'Retry-After', 'Server', 'Set-Cookie', 'Vary',
+    'X-Requested-With', 'DNT', 'X-Frame-Options', 'X-XSS-Protection', 'X-Content-Type-Options',
+    'X-Forwarded-For', 'X-Forwarded-Host', 'X-Forwarded-Proto', 'Front-End-Https', 'X-Http-Method-Override',
+    'X-ATT-DeviceId', 'X-Wap-Profile', 'Proxy-Connection', 'X-UIDH', 'X-Csrf-Token', 'X-Request-ID',
+    'X-Correlation-ID',
+  ];
+  // Only these options for all editable header rows
+  const editableHeaderOptions = [
+    'WWW-Authenticate',
+    'Authorization',
+    'Proxy-Authenticate',
+    'Proxy-Authorization',
+    'Age',
+  ];
   const SortableHeaderRow = React.memo(function SortableHeaderRow({ header, handleHeaderChange, handleDeleteHeader, isOdd }: {
-    header: { id: string; key: string; value: string; description: string };
+    header: { id: string; key: string; value: string; description: string; locked?: boolean };
     handleHeaderChange: (id: string, field: 'key' | 'value' | 'description', value: string) => void;
     handleDeleteHeader: (id: string) => void;
     isOdd: boolean;
   }) {
-    const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: header.id });
+    const isLocked = !!header.locked;
+    const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: header.id, disabled: isLocked });
     return (
       <div
         ref={setNodeRef}
@@ -610,14 +666,15 @@ const HoppscotchClone: React.FC = () => {
         }}
         className="px-2 group"
       >
-        {/* Drag handle: 6-dot rectangle, only visible on hover */}
+        {/* Drag handle: hidden if locked */}
         <button
-          {...attributes}
-          {...listeners}
-          className="flex items-center justify-center cursor-grab focus:outline-none h-full"
+          {...(!isLocked ? attributes : {})}
+          {...(!isLocked ? listeners : {})}
+          className={`flex items-center justify-center cursor-grab focus:outline-none h-full ${isLocked ? 'opacity-0 pointer-events-none' : ''}`}
           style={{ background: 'none', border: 'none', padding: 0 }}
           tabIndex={-1}
           title="Drag to reorder"
+          disabled={isLocked}
         >
           <span className="inline-block opacity-0 group-hover:opacity-70 transition-opacity duration-150">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -630,29 +687,43 @@ const HoppscotchClone: React.FC = () => {
             </svg>
           </span>
         </button>
-        <input
-          className="bg-transparent text-white px-2 py-1 outline-none w-full border-r border-neutral-800"
-          value={header.key}
-          placeholder="Key"
-          onChange={e => handleHeaderChange(header.id, 'key', e.target.value)}
-        />
+        {/* Key as dropdown for editable, plain text for locked */}
+        {isLocked ? (
+          <div className="bg-[#18181A] text-white px-2 py-1 w-full border-r border-neutral-800 select-none" style={{height: 36, display: 'flex', alignItems: 'center'}}>
+            <span className="text-zinc-400">content type</span>
+          </div>
+        ) : (
+          <select
+            className="bg-[#18181A] text-white px-2 py-1 outline-none w-full border-r border-neutral-800"
+            value={header.key}
+            onChange={e => handleHeaderChange(header.id, 'key', e.target.value)}
+          >
+            <option value="">Select header</option>
+            {editableHeaderOptions.map(opt => (
+              <option key={opt} value={opt}>{opt}</option>
+            ))}
+          </select>
+        )}
+        {/* Value and Description as text inputs, disabled if locked */}
         <input
           className="bg-transparent text-white px-2 py-1 outline-none w-full border-r border-neutral-800"
           value={header.value}
           placeholder="Value"
           onChange={e => handleHeaderChange(header.id, 'value', e.target.value)}
+          disabled={isLocked}
         />
         <input
           className="bg-transparent text-white px-2 py-1 outline-none w-full border-r border-neutral-800"
           value={header.description}
           placeholder="Description"
           onChange={e => handleHeaderChange(header.id, 'description', e.target.value)}
+          disabled={isLocked}
         />
         <div className="flex items-center gap-2 justify-end px-2">
-          <button className="text-green-500 hover:text-green-400" tabIndex={-1}>
+          <button className="text-green-500 hover:text-green-400" tabIndex={-1} disabled={isLocked}>
             <span className="material-icons">check_circle</span>
           </button>
-          <button className="text-red-500 hover:text-red-400" onClick={() => handleDeleteHeader(header.id)} tabIndex={-1}>
+          <button className="text-red-500 hover:text-red-400" onClick={() => handleDeleteHeader(header.id)} tabIndex={-1} disabled={isLocked}>
             <span className="material-icons">delete</span>
           </button>
         </div>
@@ -1549,7 +1620,7 @@ Prepend # to any row you want to add but keep disabled
                   <button
                     className="text-gray-400 hover:text-white"
                     title="Delete all"
-                    onClick={() => setHeaders([{ id: uuidv4(), key: '', value: '', description: '' }])}
+                    onClick={() => setTabs(tabs => tabs.map(tab => tab.id === activeTabId ? { ...tab, headers: [{ id: uuidv4(), key: '', value: '', description: '' }] } : tab))}
                   >
                     <span className="inline-block align-middle">
                       <svg viewBox="0 0 24 24" width="1.2em" height="1.2em" className="svg-icons"><path fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2m-6 5v6m4-6v6"></path></svg>
@@ -1607,7 +1678,7 @@ Prepend # to any row you want to add but keep disabled
                   </div>
                 ) : (
                   <DndContext collisionDetection={closestCenter} onDragEnd={handleHeaderDragEnd}>
-                    <SortableContext items={headers.map(h => h.id)} strategy={verticalListSortingStrategy}>
+                    <SortableContext items={activeTabObj.headers.map((h: any) => h.id)} strategy={verticalListSortingStrategy}>
                       <div className="w-full">
                         <div className="grid grid-cols-5 border-b border-neutral-800 px-2" style={{minHeight: '38px', gridTemplateColumns: '32px 1fr 1fr 1fr auto'}}>
                           <div></div>
@@ -1616,7 +1687,7 @@ Prepend # to any row you want to add but keep disabled
                           <div className="text-gray-500 text-sm flex items-center border-r border-neutral-800 py-2">Description</div>
                           <div></div>
                         </div>
-                        {headers.map((header, idx) => (
+                        {activeTabObj.headers.map((header: any, idx: number) => (
                           <SortableHeaderRow
                             key={header.id}
                             header={header}
