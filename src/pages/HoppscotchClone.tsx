@@ -49,6 +49,110 @@ const HoppscotchClone: React.FC = () => {
   const [showSaveDropdown, setShowSaveDropdown] = useState(false);
   const saveDropdownRef = React.useRef<HTMLDivElement>(null);
 
+  // Query Parameters state and handlers
+  const [queryParams, setQueryParams] = React.useState([
+    { id: 1, key: '', value: '', description: '' }
+  ]);
+  const [focusedRow, setFocusedRow] = React.useState<number | null>(null);
+
+  const handleParamChange = (idx: number, field: 'key' | 'value' | 'description', value: string) => {
+    setQueryParams(prev => {
+      const updated = prev.map((p, i) => i === idx ? { ...p, [field]: value } : p);
+      // If editing the last row's key and it's non-empty, add a new row
+      if (field === 'key' && idx === prev.length - 1 && value.trim() !== '') {
+        return [...updated, { id: Date.now() + Math.random(), key: '', value: '', description: '' }];
+      }
+      return updated;
+    });
+  };
+  const handleDeleteParam = (idx: number) => {
+    setQueryParams(prev => prev.length === 1 ? prev : prev.filter((_, i) => i !== idx));
+  };
+
+  // Drag and drop handlers for Query Parameters
+  const handleDragEnd = (event: any) => {
+    const { active, over } = event;
+    if (active.id !== over.id) {
+      setQueryParams((items) => {
+        const oldIndex = items.findIndex(i => i.id === active.id);
+        const newIndex = items.findIndex(i => i.id === over.id);
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
+  };
+
+  // Sortable row component for Query Parameters
+  function SortableParamRow({ param, idx }: { param: any, idx: number }) {
+    const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: param.id });
+    return (
+      <div
+        ref={setNodeRef}
+        style={{
+          transform: CSS.Transform.toString(transform),
+          transition,
+          opacity: isDragging ? 0.5 : 1,
+          background: idx % 2 === 1 ? '#19191b' : undefined,
+          minHeight: '38px',
+          display: 'grid',
+          gridTemplateColumns: '32px 1fr 1fr 1fr auto',
+          borderBottom: '1px solid #27272a',
+          paddingLeft: 0,
+          paddingRight: 8,
+          alignItems: 'center',
+        }}
+        className="px-2 group"
+      >
+        {/* Drag handle: 6-dot rectangle, only visible on hover */}
+        <button
+          {...attributes}
+          {...listeners}
+          className="flex items-center justify-center cursor-grab focus:outline-none h-full"
+          style={{ background: 'none', border: 'none', padding: 0 }}
+          tabIndex={-1}
+          title="Drag to reorder"
+        >
+          <span className="inline-block opacity-0 group-hover:opacity-70 transition-opacity duration-150">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="3" cy="4" r="1" fill="#888" />
+              <circle cx="7" cy="4" r="1" fill="#888" />
+              <circle cx="11" cy="4" r="1" fill="#888" />
+              <circle cx="3" cy="9" r="1" fill="#888" />
+              <circle cx="7" cy="9" r="1" fill="#888" />
+              <circle cx="11" cy="9" r="1" fill="#888" />
+            </svg>
+          </span>
+        </button>
+        <input
+          className="bg-transparent text-white px-2 py-1 outline-none w-full border-r border-neutral-800"
+          value={param.key}
+          placeholder="Key"
+          onChange={e => handleParamChange(idx, 'key', e.target.value)}
+          onFocus={() => setFocusedRow(idx)}
+        />
+        <input
+          className="bg-transparent text-white px-2 py-1 outline-none w-full border-r border-neutral-800"
+          value={param.value}
+          placeholder="Value"
+          onChange={e => handleParamChange(idx, 'value', e.target.value)}
+        />
+        <input
+          className="bg-transparent text-white px-2 py-1 outline-none w-full border-r border-neutral-800"
+          value={param.description}
+          placeholder="Description"
+          onChange={e => handleParamChange(idx, 'description', e.target.value)}
+        />
+        <div className="flex items-center gap-2 justify-end px-2">
+          <button className="text-green-500 hover:text-green-400" tabIndex={-1}>
+            <span className="material-icons">check_circle</span>
+          </button>
+          <button className="text-red-500 hover:text-red-400" onClick={() => handleDeleteParam(idx)} tabIndex={-1}>
+            <span className="material-icons">delete</span>
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   // Helper to get the active tab object
   const activeTabObj = tabs.find(tab => tab.id === activeTabId) || tabs[0];
 
@@ -655,7 +759,7 @@ const HoppscotchClone: React.FC = () => {
                 </div>
               )}
             </div>
-         
+           
 
               <button className="bg-[#1C1C1E] hover:bg-[#262626] text-white px-4 py-2 rounded-l-md  font-semibold ml-4 h-10 " onClick={() => setShowSaveModal(true)}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-save-icon lucide-save"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7"/></svg>
@@ -696,7 +800,7 @@ const HoppscotchClone: React.FC = () => {
           </div>
 
           {/* Tabs */}
-          <div className="flex items-center gap-6 border-b border-gray-800 mb-2">
+          <div className="flex items-center gap-1 text-[12px] border-b border-gray-800 mb-2">
             {['parameters', 'body', 'headers', 'authorization', 'pre-request', 'post-request', 'variables'].map(tab => (
               <button
                 key={tab}
@@ -714,21 +818,42 @@ const HoppscotchClone: React.FC = () => {
 
           {/* Tab content area (example: Parameters) */}
           {activeTabObj.activeTab === 'parameters' && (
-            <div className="flex-1 flex flex-col bg-gray-900 rounded p-4 mt-2">
-              <div className="text-gray-400 mb-2">Query Parameters</div>
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-gray-400 flex-1">Key</span>
-                <span className="text-gray-400 flex-1">Value</span>
-                <span className="text-gray-400 flex-1">Description</span>
-                <button className="text-gray-400 hover:text-white"><span className="material-icons">add</span></button>
+            <div className="flex-1 flex flex-col bg-neutral-900 rounded p-0 mt-2">
+              {/* Query Parameters Bar */}
+              <div className="flex items-center justify-between px-4 h-10 border-b border-neutral-800">
+                <span className="text-gray-400 text-sm">Query Parameters</span>
+                <div className="flex items-center gap-3">
+                  <button className="text-gray-400 hover:text-white" title="Help">
+                    <span className="material-icons">help_outline</span>
+                  </button>
+                  <button className="text-gray-400 hover:text-white" title="Delete all">
+                    <span className="material-icons">delete</span>
+                  </button>
+                  <button className="text-gray-400 hover:text-white" title="Edit">
+                    <span className="material-icons">edit</span>
+                  </button>
+                  <button className="text-gray-400 hover:text-white" title="Add">
+                    <span className="material-icons">add</span>
+                  </button>
+                </div>
               </div>
-              <div className="flex items-center gap-2 mb-2">
-                <input className="flex-1 bg-gray-800 border-none rounded px-2 py-1 text-white" />
-                <input className="flex-1 bg-gray-800 border-none rounded px-2 py-1 text-white" />
-                <input className="flex-1 bg-gray-800 border-none rounded px-2 py-1 text-white" />
-                <button className="text-green-500"><span className="material-icons">check</span></button>
-                <button className="text-red-500"><span className="material-icons">delete</span></button>
-              </div>
+              {/* Query Parameters Table */}
+              <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                <SortableContext items={queryParams.map(p => p.id)} strategy={verticalListSortingStrategy}>
+                  <div className="w-full">
+                    <div className="grid grid-cols-5 border-b border-neutral-800 px-2" style={{minHeight: '38px', gridTemplateColumns: '32px 1fr 1fr 1fr auto'}}>
+                      <div></div>
+                      <div className="text-gray-500 text-sm flex items-center border-r border-neutral-800 py-2">Key</div>
+                      <div className="text-gray-500 text-sm flex items-center border-r border-neutral-800 py-2">Value</div>
+                      <div className="text-gray-500 text-sm flex items-center border-r border-neutral-800 py-2">Description</div>
+                      <div></div>
+                    </div>
+                    {queryParams.map((param, idx) => (
+                      <SortableParamRow key={param.id} param={param} idx={idx} />
+                    ))}
+                  </div>
+                </SortableContext>
+              </DndContext>
             </div>
           )}
         </div>
