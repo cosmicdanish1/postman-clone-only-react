@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { DndContext, closestCenter } from '@dnd-kit/core';
 import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import InterceptorCard from '../components/settings/InterceptorCard';
 
 const METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS', 'CONNECT', 'TRACE', 'CUSTOM'];
 
@@ -35,6 +36,7 @@ const HoppscotchClone: React.FC = () => {
   const eyeRef = React.useRef<HTMLSpanElement | null>(null);
   const [methodDropdownOpen, setMethodDropdownOpen] = useState(false);
   const methodDropdownRef = React.useRef<HTMLDivElement>(null);
+  const [showInterceptorInPanel, setShowInterceptorInPanel] = useState(false);
 
   // Helper to get the active tab object
   const activeTabObj = tabs.find(tab => tab.id === activeTabId) || tabs[0];
@@ -429,7 +431,15 @@ const HoppscotchClone: React.FC = () => {
               placeholder="https://echo.hoppscotch.io"
               defaultValue="https://echo.hoppscotch.io"
             />
-            <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-2 rounded-l-md  font-semibold ml-4">Send</button>
+            <button
+              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-2 rounded-l-md font-semibold"
+              onClick={() => {
+                setShowInterceptorInPanel(false);
+                setTimeout(() => setShowInterceptorInPanel(true), 1000);
+              }}
+            >
+              Send
+            </button>
             <button className="bg-blue-600 hover:bg-blue-700 text-white px-2 py-2 rounded-r-md  font-semibold">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-chevron-down-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"/></svg>
             </button>
@@ -482,34 +492,38 @@ const HoppscotchClone: React.FC = () => {
           )}
         </div>
 
-        {/* Right Shortcuts Panel */}
+        {/* Right Panel: Show InterceptorCard after Send */}
         <div className="w-1/3 flex flex-col items-center justify-center border-l border-gray-800 p-8">
-          <div className="flex flex-col gap-4 items-start">
-            <div className="flex items-center gap-2">
-              <span className="text-gray-400">Send Request</span>
-              <span className="bg-gray-800 px-2 py-1 rounded text-xs">Ctrl ↵</span>
+          {showInterceptorInPanel ? (
+            <InterceptorCard />
+          ) : (
+            <div className="flex flex-col gap-4 items-start">
+              <div className="flex items-center gap-2">
+                <span className="text-gray-400">Send Request</span>
+                <span className="bg-gray-800 px-2 py-1 rounded text-xs">Ctrl ↵</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-gray-400">Keyboard shortcuts</span>
+                <span className="bg-gray-800 px-2 py-1 rounded text-xs">Ctrl /</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-gray-400">Search & command menu</span>
+                <span className="bg-gray-800 px-2 py-1 rounded text-xs">Ctrl K</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-gray-400">Help menu</span>
+                <span className="bg-gray-800 px-2 py-1 rounded text-xs">?</span>
+              </div>
+              <a
+                href="#"
+                className="mt-4 bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded font-semibold text-center"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Documentation
+              </a>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-gray-400">Keyboard shortcuts</span>
-              <span className="bg-gray-800 px-2 py-1 rounded text-xs">Ctrl /</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-gray-400">Search & command menu</span>
-              <span className="bg-gray-800 px-2 py-1 rounded text-xs">Ctrl K</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-gray-400">Help menu</span>
-              <span className="bg-gray-800 px-2 py-1 rounded text-xs">?</span>
-            </div>
-            <a
-              href="#"
-              className="mt-4 bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded font-semibold text-center"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Documentation
-            </a>
-          </div>
+          )}
         </div>
       </div>
     </div>
@@ -564,4 +578,4 @@ const TabContent: React.FC<TabContentProps> = ({ tab, isActive, onSwitchTab, onC
   </div>
 );
 
-export default HoppscotchClone;
+export default HoppscotchClone; 

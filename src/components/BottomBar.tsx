@@ -59,8 +59,8 @@ const BottomBar: React.FC = () => {
 
   // Positioning: popup appears just above the icon, always fully visible
   return (
-    <footer className="fixed bottom-0 left-0 right-0 h-8 bg-neutral-900 border-t border-zinc-800 text-gray-300 flex items-center justify-between px-3 select-none z-40">
-      {/* Left side icons */}
+  <footer className="fixed bottom-0 left-0 right-0 h-8 bg-neutral-900 border-t border-zinc-800 text-gray-300 flex items-center justify-between px-3 select-none z-40">
+    {/* Left side icons */}
       <div className="flex items-center space-x-4 text-gray-400 relative">
         <button 
           className="hover:text-gray-100" 
@@ -82,7 +82,7 @@ const BottomBar: React.FC = () => {
             <path d="M3 3h18v18H3z"></path>
             <path d="M9 3v18"></path>
           </svg>
-        </button>
+      </button>
         <button
           ref={iconRef}
           className="hover:text-gray-100 relative"
@@ -109,10 +109,10 @@ const BottomBar: React.FC = () => {
               </motion.div>
             )}
           </AnimatePresence>
-        </button>
-      </div>
+      </button>
+    </div>
 
-      {/* Right side help link */}
+    {/* Right side help link */}
       <div className="flex items-center gap-4">
         <div className="relative">
           <a
@@ -231,8 +231,8 @@ const BottomBar: React.FC = () => {
         </button>
       </div>
       <ShortcutsPanel open={shortcutsPanelOpen} onClose={() => setShortcutsPanelOpen(false)} />
-    </footer>
-  );
+  </footer>
+);
 };
 
 export default BottomBar;

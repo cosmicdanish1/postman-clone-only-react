@@ -73,9 +73,9 @@ const GeneralSettings: React.FC = () => {
   );
 
   return (
-    <div className="space-y-10">
-      {/* Language */} 
-      <div>
+  <div className="space-y-10">
+    {/* Language */}
+    <div>
         <label className="block text-sm font-semibold text-zinc-300 mb-5">Language</label>
         <div className="relative w-48" ref={dropdownRef}>
           <button
@@ -130,9 +130,9 @@ const GeneralSettings: React.FC = () => {
             )}
           </AnimatePresence>
         </div>
-      </div>
-      {/* Query Parameters Encoding */} 
-      <div>
+    </div>
+    {/* Query Parameters Encoding */}
+    <div>
         <label className="block text-sm font-semibold text-zinc-300 mb-1">
           Query Parameters Encoding
         </label>
@@ -155,14 +155,14 @@ const GeneralSettings: React.FC = () => {
                 )}
               </button>
               <span>{option}</span>
-            </label>
+        </label>
           ))}
         </div>
       </div>
 
-      {/* Experiments */} 
-      <div>
-        <label className="block text-sm font-semibold text-zinc-300 mb-2">Experiments</label>
+    {/* Experiments */}
+    <div>
+      <label className="block text-sm font-semibold text-zinc-300 mb-2">Experiments</label>
         <div className="my-1 text-gray-400 text-sm">This is a collection of experiments we're working on that might turn out to be useful, fun, both, or neither. They're not final and may not be stable, so if something overly weird happens, don't panic.
            Just turn the dang thing off. Jokes aside,  <a aria-label="Link" href="https://github.com/hoppscotch/hoppscotch/issues/new/choose" role="link" target="_blank" rel="noopener" className="inline-flex items-center justify-center text-blue-500 focus:outline-none hover:text-secondaryDark focus-visible:text-secondaryDark link" tabIndex={0}> Contact us</a>. </div>
          <div className="space-y-4 mt-6">
@@ -209,7 +209,7 @@ const GeneralSettings: React.FC = () => {
       />
     </button>
     Telemetry
-  </label>
+        </label>
 
   {/* Telemetry Opt-out Modal */} 
   <AnimatePresence>
@@ -291,7 +291,7 @@ const GeneralSettings: React.FC = () => {
       />
     </button>
     Expand navigation
-  </label>
+        </label>
 
   {/* Sidebar on left */} 
   <label className="flex items-center justify-start gap-5  text-sm  text-neutral-500 font-semibold hover:text-white">
@@ -323,7 +323,7 @@ const GeneralSettings: React.FC = () => {
       />
     </button>
     Sidebar on left
-  </label>
+        </label>
 
   {/* All Experiments */} 
   <label className="flex items-center justify-start gap-5  text-sm  text-neutral-500 font-semibold hover:text-white">
@@ -355,7 +355,7 @@ const GeneralSettings: React.FC = () => {
       />
     </button>
     All Experiments
-  </label>
+        </label>
 
   {allExperiments && (
     <motion.div
@@ -439,9 +439,9 @@ const GeneralSettings: React.FC = () => {
     Experimental scripting sandbox
   </label>
 
-</div>
+    </div>
 
-      </div>
+    </div>
       {/* Add style for custom red scrollbar */}
       <style>{`
         .custom-scrollbar::-webkit-scrollbar {
@@ -459,8 +459,8 @@ const GeneralSettings: React.FC = () => {
           scrollbar-width: thin;
         }
       `}</style>
-    </div>
-  );
+  </div>
+);
 };
 
 export default GeneralSettings; 

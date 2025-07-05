@@ -86,12 +86,12 @@ const Sidebar: React.FC = () => {
                   className="absolute left-0 top-0 h-full w-1 bg-blue-500 rounded-l"
                 />
               )}
-            </Link>
+      </Link>
           );
         })}
       </nav>
     </div>
-  );
+);
 };
 
 export default Sidebar; 

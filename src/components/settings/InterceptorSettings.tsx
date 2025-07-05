@@ -96,10 +96,10 @@ const InterceptorSettings: React.FC = () => {
   const [domainInput, setDomainInput] = useState('');
 
   return (
-    <div className="space-y-8">
-      {/* Interceptor */} 
-      <div>
-        <label className="block text-sm font-semibold text-zinc-300 mb-2">Interceptor</label>
+  <div className="space-y-8">
+    {/* Interceptor */}
+    <div>
+      <label className="block text-sm font-semibold text-zinc-300 mb-2">Interceptor</label>
         <div className="flex flex-col gap-4 mb-2 pt-2">
           {interceptorOptions.map(option => (
             <React.Fragment key={option}>
@@ -117,7 +117,7 @@ const InterceptorSettings: React.FC = () => {
                   )}
                 </button>
                 <span>{option}</span>
-              </label>
+        </label>
               {option === 'Agent' && selected === 'Agent' && (
                 <AnimatePresence>
                   <motion.button
@@ -162,21 +162,21 @@ const InterceptorSettings: React.FC = () => {
               )}
             </React.Fragment>
           ))}
-        </div>
-        {/* Proxy input */} 
-        <div className="mt-2">
+      </div>
+      {/* Proxy input */}
+      <div className="mt-2">
           <label className="block text-sm font-semibold text-white mb-1">Proxy</label>
           <div className="my-1 text-gray-300 opacity-55 font-semibold text-sm">
             Official Proxy is hosted by Hoppscotch. Read the 
             <a aria-label="Link" href="https://docs.hoppscotch.io/support/privacy" role="link" target="_blank" rel="noopener" className="inline-flex items-center justify-center text-blue-800 ml-1 focus:outline-none hover:text-secondaryDark focus-visible: link">
              Proxy privacy policy</a>. </div>
           <div className="relative w-[840px]">
-            <input
-              type="text"
+        <input
+          type="text"
               className="bg-neutral-900 text-zinc-200 w-full pr-8 pl-3 py-2 text-sm focus:outline-none border border-zinc-700 border-opacity-55 rounded-sm"
-              value="https://proxy.hoppscotch.io/"
-              readOnly
-            />
+          value="https://proxy.hoppscotch.io/"
+          readOnly
+        />
             <button
               type="button"
               className="absolute right-2 top-1/2 -translate-y-1/2 p-0 m-0 text-zinc-400 hover:text-blue-500 focus:outline-none"
@@ -188,9 +188,9 @@ const InterceptorSettings: React.FC = () => {
             </button>
           </div>
         </div>
-      </div>
-      {/* Agent */} 
-      <div>
+    </div>
+    {/* Agent */}
+    <div>
         <div className="relative flex items-center mb-2 w-full">
           <span className="block text-sm font-semibold text-zinc-300">Agent</span>
           <button type="button" className="absolute right-0 top-1/2 -translate-y-1/2 p-1 text-zinc-400 hover:text-blue-500 focus:outline-none" onClick={() => setShowDomainModal(true)}>
@@ -227,7 +227,7 @@ const InterceptorSettings: React.FC = () => {
               />
             </button>
             Verify Host
-          </label>
+        </label>
           <label className="flex items-center justify-start gap-5 text-sm text-neutral-500 font-semibold hover:text-white">
             <button
               type="button"
@@ -257,7 +257,7 @@ const InterceptorSettings: React.FC = () => {
               />
             </button>
             Verify Peer
-          </label>
+        </label>
           <div className="flex gap-3 mt-2">
             <button
               type="button"
@@ -305,8 +305,8 @@ const InterceptorSettings: React.FC = () => {
               />
             </button>
             Proxy
-          </label>
-        </div>
+        </label>
+      </div>
         <div className="text-xs font-semibold text-zinc-400 mt-2">Hoppscotch Agent and Desktop App supports HTTP/HTTPS/SOCKS proxies with NTLM and Basic Auth support.</div>
       </div>
       {proxyToggle && (
@@ -590,8 +590,8 @@ const InterceptorSettings: React.FC = () => {
           </div>
         </AnimatePresence>
       )}
-    </div>
-  );
+  </div>
+);
 };
 
 export default InterceptorSettings; 
