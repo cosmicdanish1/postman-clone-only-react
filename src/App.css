@@ -46,3 +46,25 @@
 .read-the-docs {
   color: #888;
 }
+
+.method-dropdown {
+  scrollbar-width: thin;
+  scrollbar-color: #232326 #18181A;
+}
+.method-dropdown::-webkit-scrollbar {
+  width: 8px;
+  background: #18181A;
+}
+.method-dropdown::-webkit-scrollbar-thumb {
+  background: #232326;
+  border-radius: 4px;
+}
+
+div.custom-scroll {
+  scrollbar-width: none !important;
+}
+div.custom-scroll::-webkit-scrollbar {
+  display: none !important;
+}
+
+/* Removed .hide-scrollbar custom CSS, now using tailwind-scrollbar-hide plugin */

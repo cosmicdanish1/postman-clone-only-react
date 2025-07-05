@@ -4,7 +4,7 @@ import { DndContext, closestCenter } from '@dnd-kit/core';
 import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
-const METHODS = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'];
+const METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS', 'CONNECT', 'TRACE', 'CUSTOM'];
 
 const defaultTabData = () => ({
   id: uuidv4(),
@@ -30,16 +30,26 @@ const HoppscotchClone: React.FC = () => {
   const [activeTabId, setActiveTabId] = useState(tabs[0].id);
   const [envDropdownOpen, setEnvDropdownOpen] = useState(false);
   const [envTab, setEnvTab] = useState<'personal' | 'workspace'>('personal');
+  const [showVarsPopover, setShowVarsPopover] = useState(false);
+  const [editModal, setEditModal] = useState<null | 'global' | 'environment'>(null);
+  const eyeRef = React.useRef<HTMLSpanElement | null>(null);
+  const [methodDropdownOpen, setMethodDropdownOpen] = useState(false);
+  const methodDropdownRef = React.useRef<HTMLDivElement>(null);
 
   // Helper to get the active tab object
   const activeTabObj = tabs.find(tab => tab.id === activeTabId) || tabs[0];
 
   const methodColors: Record<string, string> = {
-    GET: 'text-green-400',
-    POST: 'text-blue-400',
-    PUT: 'text-yellow-400',
-    DELETE: 'text-red-400',
-    PATCH: 'text-purple-400',
+    GET: '#10B981',
+    POST: '#E3AE09',
+    PUT: '#0EA4E8',
+    PATCH: '#8B5CF6',
+    DELETE: '#F43F5E',
+    HEAD: '#14B8A6',
+    OPTIONS: '#4F51AD',
+    CONNECT: '#737373',
+    TRACE: '#737373',
+    CUSTOM: '#737373',
   };
 
   // Modal logic for renaming tab
@@ -78,8 +88,83 @@ const HoppscotchClone: React.FC = () => {
     setTabs(tabs => tabs.map(tab => tab.id === activeTabId ? { ...tab, modalValue: val } : tab));
   };
 
+  // Click-away handler for variable popover
+  React.useEffect(() => {
+    if (!showVarsPopover) return;
+    function handleClick(e: MouseEvent) {
+      if (
+        eyeRef.current &&
+        !eyeRef.current.contains(e.target as Node) &&
+        !(document.getElementById('vars-popover')?.contains(e.target as Node))
+      ) {
+        setShowVarsPopover(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [showVarsPopover]);
+
+  // Click-away handler for edit modal
+  React.useEffect(() => {
+    if (!editModal) return;
+    function handleClick(e: MouseEvent) {
+      if (!(document.getElementById('edit-env-modal')?.contains(e.target as Node))) {
+        setEditModal(null);
+      }
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [editModal]);
+
+  // Close custom dropdown on outside click
+  React.useEffect(() => {
+    if (!methodDropdownOpen) return;
+    function handleClick(e: MouseEvent) {
+      if (
+        methodDropdownRef.current &&
+        !methodDropdownRef.current.contains(e.target as Node)
+      ) {
+        setMethodDropdownOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [methodDropdownOpen]);
+
   return (
     <div className="flex flex-col h-full w-full bg-neutral-900 text-white">
+      {/* Edit Environment Modal */}
+      {editModal && (
+        <div className="fixed inset-0 z-50 flex items-start justify-center bg-black bg-opacity-60">
+          <div id="edit-env-modal" className="mt-8 bg-[#18181A] rounded-2xl shadow-2xl border border-zinc-800 w-[600px] max-w-full p-0">
+            <div className="flex flex-col">
+              <div className="flex items-center justify-between px-8 pt-8 pb-4">
+                <div className="text-2xl font-bold text-center w-full">Edit Environment</div>
+                <button className="absolute right-8 top-8 text-gray-400 hover:text-white text-2xl" onClick={() => setEditModal(null)}>&times;</button>
+              </div>
+              <div className="px-8 pb-4">
+                <label className="block text-xs text-gray-400 mb-1">Label</label>
+                <input className="w-full bg-zinc-900 border border-zinc-800 rounded px-3 py-2 text-white text-base mb-4" value={editModal === 'global' ? 'Global' : 'Environment'} readOnly />
+              </div>
+              <div className="px-8 flex gap-6 border-b border-zinc-800">
+                <button className="py-2 font-semibold border-b-2 border-blue-500 text-white">Variables</button>
+                <button className="py-2 font-semibold text-zinc-400">Secrets</button>
+              </div>
+              <div className="px-8 py-8 flex flex-col items-center justify-center min-h-[200px]">
+                <svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg" className="mb-4 opacity-40"><rect x="8" y="8" width="40" height="40" rx="8" fill="#232326"/><path d="M28 20V36" stroke="#fff" strokeWidth="2" strokeLinecap="round"/><path d="M20 28H36" stroke="#fff" strokeWidth="2" strokeLinecap="round"/></svg>
+                <span className="text-zinc-400 text-sm mt-2 mb-4">Environments are empty</span>
+                <button className="bg-zinc-800 hover:bg-zinc-700 text-white px-6 py-2 rounded font-semibold flex items-center gap-2">
+                  + Add new
+                </button>
+              </div>
+              <div className="flex gap-4 justify-start px-8 pb-8">
+                <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded font-semibold" onClick={() => setEditModal(null)}>Save</button>
+                <button className="bg-zinc-800 hover:bg-zinc-700 text-white px-6 py-2 rounded font-semibold" onClick={() => setEditModal(null)}>Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Top full-width bar */}
       <div className="w-full bg-[#1C1C1E] border-b h-10 border-zinc-800 relative">
         <div className="flex items-center h-full w-full">
@@ -113,7 +198,7 @@ const HoppscotchClone: React.FC = () => {
               +
             </span>
           </div>
-          <div className="flex items-center h-full px-4 rounded gap-2 min-w-[220px]">
+          <div className="flex items-center h-full px-4 rounded gap-2 min-w-[220px] relative">
             {/* Layers icon */}
             <button
               className="flex items-center h-full opacity-50 hover:opacity-100"
@@ -121,13 +206,13 @@ const HoppscotchClone: React.FC = () => {
               tabIndex={0}
             >
               {/* Group icon and text */}
-              <div className="flex items-center gap-1 ">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 -2 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
+              <div className="flex items-center gap-2   ">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 -2 24 24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white  w-4 h-4">
                   <path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z" />
                   <path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12" />
                   <path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17" />
                 </svg>
-                <span className="text-white text-sm font-medium">Select environment</span>
+                <span className="text-white text-[13px] font-medium mt-[1px]">Select environment</span>
               </div>
 
               {/* Chevron with left margin */}
@@ -141,13 +226,64 @@ const HoppscotchClone: React.FC = () => {
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="text-white ml-2"
+                className="text-white ml-9 mt-1"
               >
                 <path d="m6 9 6 6 6-6" />
               </svg>
             </button>
 
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-eye-icon lucide-eye opacity-50 ml-4 hover:opacity-100"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>
+            {/* Eye icon with popover */}
+            <span ref={eyeRef} className="relative">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="lucide lucide-eye-icon lucide-eye opacity-50 ml-7 hover:opacity-100 cursor-pointer"
+                onClick={() => setShowVarsPopover(v => !v)}
+              >
+                <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+              {showVarsPopover && (
+                <div
+                  id="vars-popover"
+                  className="absolute z-50 mt-2 right-0 w-96 bg-[#18181A] rounded-xl shadow-2xl border border-zinc-800 p-0"
+                  style={{ top: '100%' }}
+                >
+                  {/* Global variables section */}
+                  <div className="p-4 border-b border-zinc-800">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-zinc-200 font-semibold text-base">Global variables</span>
+                      <span className="cursor-pointer p-1 rounded hover:bg-zinc-800" onClick={() => setEditModal('global')}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-square-pen-icon lucide-square-pen"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"/></svg>
+                      </span>
+                    </div>
+                    <div className="flex text-xs text-zinc-400 mb-1">
+                      <div className="flex-1">Name</div>
+                      <div className="flex-1">Initial value</div>
+                      <div className="flex-1">Current value</div>
+                    </div>
+                    <div className="text-zinc-500 text-xs py-4 text-center">No variables</div>
+                  </div>
+                  {/* Environment variables section */}
+                  <div className="p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-zinc-200 font-semibold text-base">Environment variables</span>
+                      <span className="cursor-pointer p-1 rounded hover:bg-zinc-800" onClick={() => setEditModal('environment')}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-square-pen-icon lucide-square-pen"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"/></svg>
+                      </span>
+                    </div>
+                    <div className="text-zinc-500 text-xs py-4 text-center">No active environment</div>
+                  </div>
+                </div>
+              )}
+            </span>
             {/* Dropdown card */}
             {envDropdownOpen && (
               <motion.div
@@ -250,25 +386,62 @@ const HoppscotchClone: React.FC = () => {
       {/* Main layout below top bar */}
       <div className="flex flex-1">
         {/* Left Content */}
-        <div className="flex flex-col flex-1 p-4">
+        <div className="flex flex-col flex-1 p-4 ">
           {/* URL bar */}
-          <div className="flex items-center gap-2 mb-4">
-            <select
-              className="bg-black text-green-400 font-bold px-2 py-1 rounded border-none focus:outline-none"
-              value={activeTabObj.method}
-              onChange={e => setMethod(e.target.value)}
-            >
-              {METHODS.map(m => <option key={m} value={m}>{m}</option>)}
-            </select>
+          <div className="flex items-center mb-4">
+            <div className="relative" ref={methodDropdownRef}>
+              <button
+                type="button"
+                className="font-bold px-2 py-1 h-9 rounded-l-sm border-s-0 border-opacity-5 focus:outline-none flex items-center w-24 relative"
+                style={{ color: methodColors[activeTabObj.method] || '#737373', background: '#1B1B1B' }}
+                onClick={() => setMethodDropdownOpen(v => !v)}
+              >
+                <span className="flex-1 text-left">{activeTabObj.method}</span>
+                <span className="flex items-center justify-end" style={{ minWidth: 24 }}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="m6 9 6 6 6-6"/>
+                  </svg>
+                </span>
+              </button>
+              {methodDropdownOpen && (
+                <div
+                  className="absolute left-0 mt-1 w-32 max-h-64 rounded-md shadow-lg z-50 overflow-y-auto border border-zinc-800 bg-[#1B1B1B] scrollbar-hide"
+                  style={{ top: '100%' }}
+                >
+                  {METHODS.map(m => (
+                    <button
+                      key={m}
+                      className="w-full text-left px-4 py-2 font-bold hover:bg-[#232326] focus:outline-none"
+                      style={{ color: methodColors[m] || '#737373', background: 'inherit' }}
+                      onClick={() => {
+                        setMethod(m);
+                        setMethodDropdownOpen(false);
+                      }}
+                    >
+                      {m}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
             <input
-              className="flex-1 bg-gray-900 border-none rounded px-4 py-2 text-white focus:outline-none"
+              className="flex-1 bg-[#1B1B1B] rounded-r-sm  border-s-0 border-opacity-5 px-4 py-2 h-9 text-white focus:outline-none"
               placeholder="https://echo.hoppscotch.io"
               defaultValue="https://echo.hoppscotch.io"
             />
-            <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-2 rounded font-semibold">Send</button>
-            <button className="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded font-semibold">
-              <span className="material-icons">save</span>
+            <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-2 rounded-l-md  font-semibold ml-4">Send</button>
+            <button className="bg-blue-600 hover:bg-blue-700 text-white px-2 py-2 rounded-r-md  font-semibold">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-chevron-down-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"/></svg>
             </button>
+
+              <button className="bg-[#1C1C1E] hover:bg-[#262626] text-white px-4 py-2 rounded-l-md  font-semibold ml-4 h-10 ">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-save-icon lucide-save"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7"/></svg>
+              </button>
+            <button className="bg-[#1C1C1E] hover:bg-[#262626] text-white px-2 py-2 rounded-r-md  font-semibold">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-chevron-down-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+              
+            
           </div>
 
           {/* Tabs */}
@@ -362,7 +535,10 @@ const TabContent: React.FC<TabContentProps> = ({ tab, isActive, onSwitchTab, onC
       <div className="absolute left-0 top-0 w-full h-1 bg-blue-500 rounded-t-md" style={{zIndex: 2}} />
     )}
     <div className="flex items-center w-36 overflow-hidden z-10 px-6">
-      <span className={`${methodColors[tab.method] || 'text-white'} font-medium text-[13px] mr-2 whitespace-nowrap`}>
+      <span
+        className="font-medium text-[13px] mr-2 whitespace-nowrap"
+        style={{ color: methodColors[tab.method] || '#737373' }}
+      >
         {tab.method}
       </span>
       <span className="text-xs flex-1 overflow-hidden text-ellipsis whitespace-nowrap font-bold">
