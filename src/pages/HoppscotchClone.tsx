@@ -597,7 +597,7 @@ const HoppscotchClone: React.FC = () => {
   const handleAddHeader = () => {
     setTabs(tabs => tabs.map(tab => {
       if (tab.id !== activeTabId) return tab;
-      return { ...tab, headers: [...tab.headers, { id: uuidv4(), key: '', value: '', description: '' }] };
+      return { ...tab, headers: [...tab.headers, { id: uuidv4(), key: '', value: '', description: '', locked: false }] };
     }));
   };
   const handleHeaderDragEnd = (event: any) => {
@@ -982,6 +982,107 @@ const HoppscotchClone: React.FC = () => {
       return <div key={idx} style={{color:'#e5e7eb'}}>{line || '\u00A0'}</div>;
     });
   }
+
+  // Add at the top of the component, after queryParams state:
+  const [variables, setVariables] = React.useState([
+    { id: uuidv4(), key: '', value: '' }
+  ]);
+
+  // Handler for variable changes
+  const handleVariableChange = (id: string, field: 'key' | 'value', value: string) => {
+    setVariables(prev => {
+      const updated = prev.map((v) => v.id === id ? { ...v, [field]: value } : v);
+      // If editing the last row and it's non-empty, add a new row
+      const last = updated[updated.length - 1];
+      if ((last.key !== '' || last.value !== '') && prev.length === updated.length) {
+        return [...updated, { id: uuidv4(), key: '', value: '' }];
+      }
+      return updated;
+    });
+  };
+  const handleDeleteVariable = (id: string) => {
+    setVariables(prev => prev.length === 1 ? prev : prev.filter((v) => v.id !== id));
+  };
+  const handleVariableDragEnd = (event: any) => {
+    const { active, over } = event;
+    if (active.id !== over.id) {
+      setVariables((items) => {
+        const oldIndex = items.findIndex(i => i.id === active.id);
+        const newIndex = items.findIndex(i => i.id === over.id);
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
+  };
+
+  // Sortable row component for Variables
+  const SortableVariableRow = React.memo(function SortableVariableRow({ variable, handleVariableChange, handleDeleteVariable, isOdd }: {
+    variable: any,
+    handleVariableChange: (id: string, field: 'key' | 'value', value: string) => void,
+    handleDeleteVariable: (id: string) => void,
+    isOdd: boolean,
+  }) {
+    const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: variable.id });
+    return (
+      <div
+        ref={setNodeRef}
+        style={{
+          transform: CSS.Transform.toString(transform),
+          transition,
+          opacity: isDragging ? 0.5 : 1,
+          background: isOdd ? '#19191b' : undefined,
+          minHeight: '38px',
+          display: 'grid',
+          gridTemplateColumns: '32px 1fr 1fr 48px',
+          borderBottom: '1px solid #27272a',
+          paddingLeft: 0,
+          paddingRight: 8,
+          alignItems: 'center',
+        }}
+        className="px-2 group"
+      >
+        {/* Drag handle: 6-dot rectangle, only visible on hover */}
+        <button
+          {...attributes}
+          {...listeners}
+          className="flex items-center justify-center cursor-grab focus:outline-none h-full"
+          style={{ background: 'none', border: 'none', padding: 0 }}
+          tabIndex={-1}
+          title="Drag to reorder"
+        >
+          <span className="inline-block opacity-0 group-hover:opacity-70 transition-opacity duration-150">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="3" cy="4" r="1" fill="#888" />
+              <circle cx="7" cy="4" r="1" fill="#888" />
+              <circle cx="11" cy="4" r="1" fill="#888" />
+              <circle cx="3" cy="9" r="1" fill="#888" />
+              <circle cx="7" cy="9" r="1" fill="#888" />
+              <circle cx="11" cy="9" r="1" fill="#888" />
+            </svg>
+          </span>
+        </button>
+        <input
+          className="bg-transparent text-white px-2 py-1 outline-none w-full border-r border-neutral-800 placeholder-gray-500"
+          placeholder="Variable 1"
+          value={variable.key}
+          onChange={e => handleVariableChange(variable.id, 'key', e.target.value)}
+        />
+        <input
+          className="bg-transparent text-white px-2 py-1 outline-none w-full border-r border-neutral-800 placeholder-gray-500"
+          placeholder="Value 1"
+          value={variable.value}
+          onChange={e => handleVariableChange(variable.id, 'value', e.target.value)}
+        />
+        <div className="flex items-center gap-2 justify-end px-2">
+          <button className="text-green-500 hover:text-green-400" tabIndex={-1}>
+            <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M16 12l-4 4-2-2"/></svg>
+          </button>
+          <button className="text-red-500 hover:text-red-400" tabIndex={-1} onClick={() => handleDeleteVariable(variable.id)}>
+            <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6v14a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M5 6V4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2"/></svg>
+          </button>
+        </div>
+      </div>
+    );
+  });
 
   return (
     <div className="flex flex-col h-full w-full bg-neutral-900 text-white">
@@ -1872,7 +1973,7 @@ Prepend # to any row you want to add but keep disabled
                   <button
                     className="text-gray-400 hover:text-white"
                     title="Delete all"
-                    onClick={() => setTabs(tabs => tabs.map(tab => tab.id === activeTabId ? { ...tab, headers: [{ id: uuidv4(), key: '', value: '', description: '' }] } : tab))}
+                    onClick={() => setTabs(tabs => tabs.map(tab => tab.id === activeTabId ? { ...tab, headers: [{ id: uuidv4(), key: '', value: '', description: '', locked: false }] } : tab))}
                   >
                     <span className="inline-block align-middle">
                       <svg viewBox="0 0 24 24" width="1.2em" height="1.2em" className="svg-icons"><path fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2m-6 5v6m4-6v6"></path></svg>
@@ -2925,54 +3026,49 @@ Prepend # to any row you want to add but keep disabled
           {activeTabObj.activeTab === 'variables' && (
             <div className="flex-1 flex flex-col bg-neutral-900 rounded p-0 mt-2">
               {/* Variables Bar */}
-              <div className="flex items-center gap-3 px-4 h-10 border-b border-neutral-800 relative">
-                <span className="text-gray-400 text-sm">Variables</span>
-                <div className="relative">
-                  <button
-                    className="flex items-center gap-1 bg-zinc-800 text-gray-200 text-sm px-3 py-1 rounded border border-zinc-700 focus:outline-none min-w-[90px]"
-                    onClick={() => setDropdownOpen(v => !v)}
-                  >
-                    {contentTypeOptions.find(opt => opt.value === contentType)?.label || 'None'}
-                    <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+              <div className="flex items-center justify-between px-4 h-10 bg-[#18181A] w-full">
+                <span className="text-gray-400 text-base">Request variables</span>
+                <div className="flex items-center gap-3">
+                  {/* Help icon */}
+                  <button className="text-gray-400 hover:text-white" title="Help">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
                   </button>
-                  {dropdownOpen && (
-                    <div
-                      className="absolute left-0 mt-1 w-56 bg-zinc-900 border border-zinc-800 rounded shadow-lg z-50 py-2 max-h-72 overflow-y-auto"
-                      style={{ ...hideScrollbarStyle }}
-                    >
-                      {contentTypeOptions.map((opt, idx) => (
-                        opt.isSection ? (
-                          <div key={opt.label} className="px-4 py-1 text-xs text-zinc-500 uppercase tracking-wider select-none">
-                            {opt.label}
-                          </div>
-                        ) : (
-                          <button
-                            key={opt.value}
-                            className={`flex items-center w-full px-4 py-2 text-left text-sm hover:bg-zinc-800 ${contentType === opt.value ? 'text-violet-400' : 'text-gray-200'}`}
-                            onClick={() => { setContentType(opt.value); setDropdownOpen(false); }}
-                          >
-                            <span className="flex-1">{opt.label}</span>
-                            {contentType === opt.value && (
-                              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
-                            )}
-                          </button>
-                        )
-                      ))}
-                    </div>
-                  )}
+                  {/* Delete icon */}
+                  <button className="text-gray-400 hover:text-white" title="Delete">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6v14a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M5 6V4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2"/></svg>
+                  </button>
+                  {/* Edit icon */}
+                  <button className="text-gray-400 hover:text-white" title="Edit">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"></path></g></svg>
+                  </button>
+                  {/* Add icon */}
+                  <button className="text-gray-400 hover:text-white" title="Add">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                  </button>
                 </div>
-                <button
-                  className="bg-zinc-800 border border-zinc-700 text-gray-200 text-sm px-3 py-1 rounded ml-2 flex items-center gap-1 focus:outline-none"
-                  onClick={() => setActiveTab('headers')}
-                >
-                  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M2 12h20"/><path d="M12 2v20"/></svg>
-                  Override
-                </button>
               </div>
-              {/* Variables Content */}
-              <div className="px-4 py-6">
-                {/* Add your variables content here */}
-              </div>
+              {/* Variables Table with DnD */}
+              <DndContext collisionDetection={closestCenter} onDragEnd={handleVariableDragEnd}>
+                <SortableContext items={variables.map((v: any) => v.id)} strategy={verticalListSortingStrategy}>
+                  <div className="w-full">
+                    <div className="grid grid-cols-4 border-b border-neutral-800 px-2" style={{minHeight: '38px', gridTemplateColumns: '32px 1fr 1fr 48px'}}>
+                      <div></div>
+                      <div className="text-gray-500 text-sm flex items-center border-r border-neutral-800 py-2">Variable 1</div>
+                      <div className="text-gray-500 text-sm flex items-center border-r border-neutral-800 py-2">Value 1</div>
+                      <div></div>
+                    </div>
+                    {variables.map((variable: any, idx: number) => (
+                      <SortableVariableRow
+                        key={variable.id}
+                        variable={variable}
+                        handleVariableChange={handleVariableChange}
+                        handleDeleteVariable={handleDeleteVariable}
+                        isOdd={idx % 2 === 1}
+                      />
+                    ))}
+                  </div>
+                </SortableContext>
+              </DndContext>
             </div>
           )}
         </div>
