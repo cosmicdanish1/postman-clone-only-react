@@ -32,7 +32,7 @@ const HoppscotchClone: React.FC = () => {
   const [envDropdownOpen, setEnvDropdownOpen] = useState(false);
   const [envTab, setEnvTab] = useState<'personal' | 'workspace'>('personal');
   const [showVarsPopover, setShowVarsPopover] = useState(false);
-  const [editModal, setEditModal] = useState<null | 'global' | 'environment'>(null);
+  const [editModal, setEditModal] = useState<null | 'global' | 'environment'>('global');
   const eyeRef = React.useRef<HTMLSpanElement | null>(null);
   const [methodDropdownOpen, setMethodDropdownOpen] = useState(false);
   const methodDropdownRef = React.useRef<HTMLDivElement>(null);
@@ -671,18 +671,8 @@ const HoppscotchClone: React.FC = () => {
 
       {/* Main layout below top bar */}
       <div className="flex flex-1">
-        {/* Edit panel on left when editActive */}
-        {editActive && (
-          <div className="w-1/3 min-w-[320px] max-w-[400px] bg-[#18181A] border-r border-zinc-800 p-6 flex flex-col text-gray-400 text-[15px] font-mono" style={{height: '100%'}}>
-            <div>
-              Entries are separated by newline<br/>
-              Keys and values are separated by :<br/>
-              Prepend # to any row you want to add but keep disabled
-            </div>
-          </div>
-        )}
         {/* Left Content (hide when editActive) */}
-        <div className={`flex flex-col flex-1 p-4 ${editActive ? 'hidden' : ''}`}>
+        <div className="flex flex-col flex-1 p-4">
           {/* URL bar */}
           <div className="flex items-center mb-4">
             <div className="relative" ref={methodDropdownRef}>
@@ -855,28 +845,30 @@ const HoppscotchClone: React.FC = () => {
                       <svg viewBox="0 0 24 24" width="1.2em" height="1.2em" className="svg-icons"><path fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2m-6 5v6m4-6v6"></path></svg>
                     </span>
                   </button>
-                  {editActive && (
-                    <AnimatePresence>
-                      <motion.span
-                        className="inline-block align-middle mr-2"
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -10 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <svg viewBox="0 0 24 24" width="1.2em" height="1.2em" className="svg-icons"><g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"><path d="M3 6h18M3 12h15a3 3 0 1 1 0 6h-4"></path><path d="m16 16l-2 2l2 2M3 18h7"></path></g></svg>
-                      </motion.span>
-                    </AnimatePresence>
-                  )}
-                  <button
-                    className={`text-gray-400 hover:text-white ${editActive ? 'text-blue-500' : ''}`}
-                    title="Edit"
-                    onClick={() => setEditActive(v => !v)}
-                  >
-                    <span className="inline-block align-middle">
-                      <svg viewBox="0 0 24 24" width="1.2em" height="1.2em" className="svg-icons"><g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"></path></g></svg>
-                    </span>
-                  </button>
+                  <div className="relative flex items-center">
+                    {editActive && (
+                      <AnimatePresence>
+                        <motion.span
+                          className="inline-block align-middle mr-2"
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: -10 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <svg viewBox="0 0 24 24" width="1.2em" height="1.2em" className="svg-icons"><g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"><path d="M3 6h18M3 12h15a3 3 0 1 1 0 6h-4"></path><path d="m16 16l-2 2l2 2M3 18h7"></path></g></svg>
+                        </motion.span>
+                      </AnimatePresence>
+                    )}
+                    <button
+                      className={`text-gray-400 hover:text-white ${editActive ? 'text-blue-500' : ''}`}
+                      title="Edit"
+                      onClick={() => setEditActive(v => !v)}
+                    >
+                      <span className="inline-block align-middle">
+                        <svg viewBox="0 0 24 24" width="1.2em" height="1.2em" className="svg-icons"><g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"></path></g></svg>
+                      </span>
+                    </button>
+                  </div>
                   <button
                     className="text-gray-400 hover:text-white"
                     title="Add"
@@ -888,45 +880,47 @@ const HoppscotchClone: React.FC = () => {
                   </button>
                 </div>
               </div>
-              {/* Below the bar, show either instructional/code area or table */}
-              {editActive ? (
-                <div className="bg-[#18181A] rounded-b-2xl p-0 border-t border-neutral-800" style={{minHeight: '120px', maxWidth: '100%'}}>
-                  <div className="relative">
-                    <div className="absolute left-0 top-0 bottom-0 w-8 flex flex-col items-end pt-4 pl-1 pr-2 select-none text-zinc-700 text-sm font-mono">
-                      <span>1</span>
-                    </div>
-                    <pre className="pl-10 pt-4 pb-4 pr-4 text-gray-400 text-[15px] font-mono whitespace-pre-wrap select-none bg-transparent m-0" style={{minHeight: '120px'}}>
+              {/* Query Parameters table or instructional area always directly below the bar */}
+              <div>
+                {editActive ? (
+                  <div className="bg-[#18181A] rounded-b-2xl p-0 border-t border-neutral-800" style={{minHeight: '120px', maxWidth: '100%'}}>
+                    <div className="relative">
+                      <div className="absolute left-0 top-0 bottom-0 w-8 flex flex-col items-end pt-4 pl-1 pr-2 select-none text-zinc-700 text-sm font-mono">
+                        <span>1</span>
+                      </div>
+                      <pre className="pl-10 pt-4 pb-4 pr-4 text-gray-400 text-[15px] font-mono whitespace-pre-wrap select-none bg-transparent m-0" style={{minHeight: '120px'}}>
 Entries are separated by newline
 Keys and values are separated by :
 Prepend # to any row you want to add but keep disabled
-                    </pre>
-                  </div>
-                </div>
-              ) : (
-                <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                  <SortableContext items={queryParams.map(p => p.id)} strategy={verticalListSortingStrategy}>
-                    <div className="w-full">
-                      <div className="grid grid-cols-5 border-b border-neutral-800 px-2" style={{minHeight: '38px', gridTemplateColumns: '32px 1fr 1fr 1fr auto'}}>
-                        <div></div>
-                        <div className="text-gray-500 text-sm flex items-center border-r border-neutral-800 py-2">Key</div>
-                        <div className="text-gray-500 text-sm flex items-center border-r border-neutral-800 py-2">Value</div>
-                        <div className="text-gray-500 text-sm flex items-center border-r border-neutral-800 py-2">Description</div>
-                        <div></div>
-                      </div>
-                      {queryParams.map((param, idx) => (
-                        <SortableParamRow
-                          key={param.id}
-                          param={param}
-                          handleParamChange={handleParamChange}
-                          handleDeleteParam={handleDeleteParam}
-                          setFocusedRow={setFocusedRow}
-                          isOdd={idx % 2 === 1}
-                        />
-                      ))}
+                      </pre>
                     </div>
-                  </SortableContext>
-                </DndContext>
-              )}
+                  </div>
+                ) : (
+                  <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                    <SortableContext items={queryParams.map(p => p.id)} strategy={verticalListSortingStrategy}>
+                      <div className="w-full">
+                        <div className="grid grid-cols-5 border-b border-neutral-800 px-2" style={{minHeight: '38px', gridTemplateColumns: '32px 1fr 1fr 1fr auto'}}>
+                          <div></div>
+                          <div className="text-gray-500 text-sm flex items-center border-r border-neutral-800 py-2">Key</div>
+                          <div className="text-gray-500 text-sm flex items-center border-r border-neutral-800 py-2">Value</div>
+                          <div className="text-gray-500 text-sm flex items-center border-r border-neutral-800 py-2">Description</div>
+                          <div></div>
+                        </div>
+                        {queryParams.map((param, idx) => (
+                          <SortableParamRow
+                            key={param.id}
+                            param={param}
+                            handleParamChange={handleParamChange}
+                            handleDeleteParam={handleDeleteParam}
+                            setFocusedRow={setFocusedRow}
+                            isOdd={idx % 2 === 1}
+                          />
+                        ))}
+                      </div>
+                    </SortableContext>
+                  </DndContext>
+                )}
+              </div>
             </div>
           )}
         </div>
