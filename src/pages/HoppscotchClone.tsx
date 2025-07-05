@@ -46,6 +46,8 @@ const HoppscotchClone: React.FC = () => {
   const [showGenerateCodeModal, setShowGenerateCodeModal] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState('Shell - cURL');
   const generatedCode = `curl --request GET \\n  --url https://echo.hoppscotch.io/`;
+  const [showSaveDropdown, setShowSaveDropdown] = useState(false);
+  const saveDropdownRef = React.useRef<HTMLDivElement>(null);
 
   // Helper to get the active tab object
   const activeTabObj = tabs.find(tab => tab.id === activeTabId) || tabs[0];
@@ -156,6 +158,21 @@ const HoppscotchClone: React.FC = () => {
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
   }, [sendMenuOpen]);
+
+  // Close save dropdown on outside click
+  React.useEffect(() => {
+    if (!showSaveDropdown) return;
+    function handleClick(e: MouseEvent) {
+      if (
+        saveDropdownRef.current &&
+        !saveDropdownRef.current.contains(e.target as Node)
+      ) {
+        setShowSaveDropdown(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [showSaveDropdown]);
 
   return (
     <div className="flex flex-col h-full w-full bg-neutral-900 text-white">
@@ -600,7 +617,7 @@ const HoppscotchClone: React.FC = () => {
                 onClick={() => setSendMenuOpen(v => !v)}
                 aria-label="Send options"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
               </button>
               {sendMenuOpen && (
                 <div
@@ -643,11 +660,39 @@ const HoppscotchClone: React.FC = () => {
               <button className="bg-[#1C1C1E] hover:bg-[#262626] text-white px-4 py-2 rounded-l-md  font-semibold ml-4 h-10 " onClick={() => setShowSaveModal(true)}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-save-icon lucide-save"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7"/></svg>
               </button>
-            <button className="bg-[#1C1C1E] hover:bg-[#262626] text-white px-2 py-2 rounded-r-md  font-semibold">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-chevron-down-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"/></svg>
-            </button>
-              
-            
+            <div className="relative inline-block">
+              <button
+                className="bg-[#1C1C1E] hover:bg-[#262626] text-white px-2 py-2 rounded-r-md font-semibold"
+                onClick={() => setShowSaveDropdown(v => !v)}
+                aria-label="Save options"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-down-icon lucide-chevron-down"><path d="m6 9 6 6 6-6"/></svg>
+              </button>
+              {showSaveDropdown && (
+                <div
+                  ref={saveDropdownRef}
+                  className="absolute right-0 mt-2 w-56 bg-[#18181A] rounded-xl shadow-2xl border border-zinc-800 z-50 p-4"
+                  style={{ top: '100%' }}
+                >
+                  <div className="mb-4">
+                    <input
+                      className="w-full bg-zinc-900 border border-zinc-800 rounded px-3 py-2 text-white text-base font-semibold mb-2 text-center"
+                      value={saveRequestName}
+                      readOnly
+                    />
+                  </div>
+                  <button className="flex items-center w-full px-2 py-2 rounded hover:bg-zinc-800 text-zinc-200 gap-3 mb-2">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6v6H9z"/></svg>
+                    <span className="flex-1 text-left">Save as</span>
+                  </button>
+                  <hr className="my-2 border-zinc-800" />
+                  <button className="flex items-center w-full px-2 py-2 rounded hover:bg-zinc-800 text-zinc-400 gap-3">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12v2a2 2 0 0 0 2 2h2"/><rect x="8" y="8" width="8" height="8" rx="2"/><path d="M16 12h2a2 2 0 0 1 2 2v2"/><path d="M8 16v2a2 2 0 0 0 2 2h2"/></svg>
+                    <span className="flex-1 text-left">Share Request</span>
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Tabs */}
