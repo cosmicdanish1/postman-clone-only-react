@@ -731,6 +731,122 @@ const HoppscotchClone: React.FC = () => {
     );
   });
 
+  // Add at the top of the component:
+  const authorizationTypes = [
+    'Inherit',
+    'None',
+    'Basic Auth',
+    'Digest Auth',
+    'Bearer',
+    'OAuth 2.0',
+    'API Key',
+    'AWS Signature',
+    'HAWK',
+    'JWT',
+  ];
+  const [authDropdownOpen, setAuthDropdownOpen] = useState(false);
+  const [selectedAuthType, setSelectedAuthType] = useState('Inherit');
+  const authDropdownRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    if (!authDropdownOpen) return;
+    function handleClick(e: MouseEvent) {
+      if (authDropdownRef.current && !authDropdownRef.current.contains(e.target as Node)) {
+        setAuthDropdownOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [authDropdownOpen]);
+
+  // Add at the top of the component:
+  const digestAlgorithms = ['MD5', 'MD5-sess'];
+  const [digestAlgorithm, setDigestAlgorithm] = useState('MD5');
+  const [digestAlgDropdownOpen, setDigestAlgDropdownOpen] = useState(false);
+  const digestAlgDropdownRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    if (!digestAlgDropdownOpen) return;
+    function handleClick(e: MouseEvent) {
+      if (digestAlgDropdownRef.current && !digestAlgDropdownRef.current.contains(e.target as Node)) {
+        setDigestAlgDropdownOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [digestAlgDropdownOpen]);
+
+  // Add at the top of the component:
+  const oauthGrantTypes = ['Authorization Code', 'Client Credentials', 'Password', 'Implicit'];
+  const [oauthGrantType, setOauthGrantType] = useState('Authorization Code');
+  const [oauthGrantDropdownOpen, setOauthGrantDropdownOpen] = useState(false);
+  const oauthGrantDropdownRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    if (!oauthGrantDropdownOpen) return;
+    function handleClick(e: MouseEvent) {
+      if (oauthGrantDropdownRef.current && !oauthGrantDropdownRef.current.contains(e.target as Node)) {
+        setOauthGrantDropdownOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [oauthGrantDropdownOpen]);
+
+  // Add at the top of the component:
+  const oauthPassByOptions = ['Headers', 'Query Params'];
+  const [oauthPassBy, setOauthPassBy] = useState('Headers');
+  const [oauthPassByDropdownOpen, setOauthPassByDropdownOpen] = useState(false);
+  const oauthPassByDropdownRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    if (!oauthPassByDropdownOpen) return;
+    function handleClick(e: MouseEvent) {
+      if (oauthPassByDropdownRef.current && !oauthPassByDropdownRef.current.contains(e.target as Node)) {
+        setOauthPassByDropdownOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [oauthPassByDropdownOpen]);
+
+  // Add at the top of the component:
+  const hawkAlgorithms = ['HS256', 'SHA256', 'SHA1'];
+  const [hawkAlgorithm, setHawkAlgorithm] = useState('HS256');
+  const [hawkAlgDropdownOpen, setHawkAlgDropdownOpen] = useState(false);
+  const hawkAlgDropdownRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    if (!hawkAlgDropdownOpen) return;
+    function handleClick(e: MouseEvent) {
+      if (hawkAlgDropdownRef.current && !hawkAlgDropdownRef.current.contains(e.target as Node)) {
+        setHawkAlgDropdownOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [hawkAlgDropdownOpen]);
+
+  const jwtAlgorithms = ['HS256', 'RS256', 'HS384', 'HS512', 'RS384', 'RS512'];
+  const [jwtAlgorithm, setJwtAlgorithm] = useState('HS256');
+  const [jwtAlgDropdownOpen, setJwtAlgDropdownOpen] = useState(false);
+  const jwtAlgDropdownRef = React.useRef<HTMLDivElement>(null);
+  const [jwtSecret, setJwtSecret] = useState('');
+  const [jwtSecretBase64, setJwtSecretBase64] = useState(false);
+  const [jwtPayload, setJwtPayload] = useState('{}');
+  const [jwtHeaders, setJwtHeaders] = useState('{}');
+
+  React.useEffect(() => {
+    if (!jwtAlgDropdownOpen) return;
+    function handleClick(e: MouseEvent) {
+      if (jwtAlgDropdownRef.current && !jwtAlgDropdownRef.current.contains(e.target as Node)) {
+        setJwtAlgDropdownOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [jwtAlgDropdownOpen]);
+
   return (
     <div className="flex flex-col h-full w-full bg-neutral-900 text-white">
       {/* Edit Environment Modal */}
@@ -1706,54 +1822,822 @@ Prepend # to any row you want to add but keep disabled
           {activeTabObj.activeTab === 'authorization' && (
             <div className="flex-1 flex flex-col bg-neutral-900 rounded p-0 mt-2">
               {/* Authorization Bar */}
-              <div className="flex items-center gap-3 px-4 h-10 border-b border-neutral-800 relative">
-                <span className="text-gray-400 text-sm">Authorization</span>
-                <div className="relative">
+              <div className="flex items-center px-4 h-10 border-b border-neutral-800 relative bg-[#18181A]" style={{minHeight: 40}}>
+                <span className="text-zinc-400 text-sm mr-4" style={{minWidth: 140}}>Authorization Type</span>
+                <div className="relative" ref={authDropdownRef}>
                   <button
-                    className="flex items-center gap-1 bg-zinc-800 text-gray-200 text-sm px-3 py-1 rounded border border-zinc-700 focus:outline-none min-w-[90px]"
-                    onClick={() => setDropdownOpen(v => !v)}
+                    className="flex items-center gap-1 text-zinc-200 font-semibold text-sm px-0 py-0 bg-transparent border-none outline-none cursor-pointer"
+                    style={{minWidth: 70}}
+                    onClick={() => setAuthDropdownOpen(v => !v)}
                   >
-                    {contentTypeOptions.find(opt => opt.value === contentType)?.label || 'None'}
-                    <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+                    {selectedAuthType}
+                    <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
                   </button>
-                  {dropdownOpen && (
-                    <div
-                      className="absolute left-0 mt-1 w-56 bg-zinc-900 border border-zinc-800 rounded shadow-lg z-50 py-2 max-h-72 overflow-y-auto"
-                      style={{ ...hideScrollbarStyle }}
-                    >
-                      {contentTypeOptions.map((opt, idx) => (
-                        opt.isSection ? (
-                          <div key={opt.label} className="px-4 py-1 text-xs text-zinc-500 uppercase tracking-wider select-none">
-                            {opt.label}
-                          </div>
-                        ) : (
-                          <button
-                            key={opt.value}
-                            className={`flex items-center w-full px-4 py-2 text-left text-sm hover:bg-zinc-800 ${contentType === opt.value ? 'text-violet-400' : 'text-gray-200'}`}
-                            onClick={() => { setContentType(opt.value); setDropdownOpen(false); }}
-                          >
-                            <span className="flex-1">{opt.label}</span>
-                            {contentType === opt.value && (
-                              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
-                            )}
-                          </button>
-                        )
+                  {authDropdownOpen && (
+                    <div className="absolute left-0 mt-2 w-56 bg-[#18181A] border border-neutral-800 rounded shadow-lg z-50 py-2 max-h-80 overflow-y-auto" style={{minWidth: 180}}>
+                      {authorizationTypes.map(type => (
+                        <label
+                          key={type}
+                          className={`flex items-center gap-3 px-4 py-2 text-sm cursor-pointer select-none ${selectedAuthType === type ? 'text-violet-400 font-semibold' : 'text-zinc-200'}`}
+                          style={{userSelect: 'none'}}
+                        >
+                          <input
+                            type="radio"
+                            name="authorizationType"
+                            value={type}
+                            checked={selectedAuthType === type}
+                            onChange={() => { setSelectedAuthType(type); setAuthDropdownOpen(false); }}
+                            className="accent-violet-600 mr-2"
+                            style={{pointerEvents: 'none'}}
+                            readOnly
+                          />
+                          {type}
+                        </label>
                       ))}
                     </div>
                   )}
                 </div>
-                <button
-                  className="bg-zinc-800 border border-zinc-700 text-gray-200 text-sm px-3 py-1 rounded ml-2 flex items-center gap-1 focus:outline-none"
-                  onClick={() => setActiveTab('headers')}
-                >
-                  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M2 12h20"/><path d="M12 2v20"/></svg>
-                  Override
+                <div className="flex-1" />
+                <label className="flex items-center gap-1 text-zinc-300 text-sm mr-4 cursor-pointer select-none">
+                  <input type="checkbox" className="accent-violet-600" style={{marginRight: 4}} />
+                  Enabled
+                </label>
+                <button className="text-zinc-400 hover:text-violet-400 mx-1" tabIndex={-1} title="Help">
+                  <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 1 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="1"/></svg>
+                </button>
+                <button className="text-zinc-400 hover:text-red-500 mx-1" tabIndex={-1} title="Delete">
+                  <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4c0-1 1-2 2-2h2a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
                 </button>
               </div>
-              {/* Authorization Content */}
-              <div className="px-4 py-6">
-                {/* Add your authorization content here */}
-              </div>
+              {/* No content below for now */}
+              {selectedAuthType === 'Inherit' && (
+                <div className="flex flex-row w-full flex-1 bg-[#18181A] border-t border-neutral-900 min-h-0" style={{height: '100%'}}>
+                  <div className="flex-1 flex items-start p-6">
+                    <span className="text-zinc-400 text-base">Please save this request in any collection to inherit the authorization</span>
+                  </div>
+                  <div className="w-px bg-neutral-800" />
+                  <div className="w-[32%] min-w-[300px] flex flex-col items-start p-6">
+                    <span className="text-zinc-400 text-base mb-2">The authorization header will be automatically generated when you send the request.</span>
+                    <a
+                      href="https://learning.postman.com/docs/sending-requests/authorization/#inheriting-auth"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-500 hover:underline flex items-center gap-1 text-base"
+                    >
+                      Learn how
+                      <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                    </a>
+                  </div>
+                </div>
+              )}
+              {selectedAuthType === 'None' && (
+                <div className="flex flex-1 flex-col items-center justify-center w-full h-full bg-[#18181A]">
+                  <svg width="64" height="64" fill="none" viewBox="0 0 64 64" className="mb-6 opacity-40">
+                    <rect x="12" y="12" width="40" height="40" rx="8" stroke="#888" strokeWidth="2" fill="none" />
+                    <rect x="22" y="28" width="20" height="4" rx="2" fill="#888" opacity="0.3" />
+                    <rect x="22" y="36" width="20" height="4" rx="2" fill="#888" opacity="0.3" />
+                    <circle cx="32" cy="22" r="4" fill="#888" opacity="0.3" />
+                  </svg>
+                  <div className="text-zinc-400 text-lg mb-6">This request does not use any authorization</div>
+                  <a
+                    href="https://learning.postman.com/docs/sending-requests/authorization/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-6 py-2 rounded border border-zinc-700 text-zinc-200 bg-transparent hover:bg-zinc-800 flex items-center gap-2 text-base font-medium transition"
+                  >
+                    Documentation
+                    <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                  </a>
+                </div>
+              )}
+              {selectedAuthType === 'Basic Auth' && (
+                <div className="flex flex-row w-full flex-1 bg-[#18181A] border-t border-neutral-900 min-h-0" style={{height: '100%'}}>
+                  <div className="flex-1 flex flex-col justify-start p-0">
+                    <input
+                      type="text"
+                      placeholder="Username"
+                      className="w-full bg-transparent text-zinc-200 placeholder-zinc-400 border-b border-neutral-800 px-4 py-3 text-base outline-none"
+                      style={{borderTop: 'none', borderLeft: 'none', borderRight: 'none', borderRadius: 0}}
+                      autoComplete="username"
+                    />
+                    <input
+                      type="password"
+                      placeholder="Password"
+                      className="w-full bg-transparent text-zinc-200 placeholder-zinc-400 border-b border-neutral-800 px-4 py-3 text-base outline-none"
+                      style={{borderTop: 'none', borderLeft: 'none', borderRight: 'none', borderRadius: 0}}
+                      autoComplete="current-password"
+                    />
+                  </div>
+                  <div className="w-px bg-neutral-800" />
+                  <div className="w-[32%] min-w-[300px] flex flex-col items-start p-6">
+                    <span className="text-zinc-400 text-base mb-2">The authorization header will be automatically generated when you send the request.</span>
+                    <a
+                      href="https://learning.postman.com/docs/sending-requests/authorization/#basic-auth"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-500 hover:underline flex items-center gap-1 text-base"
+                    >
+                      Learn how
+                      <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                    </a>
+                  </div>
+                </div>
+              )}
+              {selectedAuthType === 'Digest Auth' && (
+                <div className="flex flex-row w-full flex-1 bg-[#18181A] border-t border-neutral-900 min-h-0" style={{height: '100%'}}>
+                  <div className="flex-1 flex flex-col justify-start p-0">
+                    <input
+                      type="text"
+                      placeholder="Username"
+                      className="w-full bg-transparent text-zinc-200 placeholder-zinc-400 border-b border-neutral-800 px-4 py-3 text-base outline-none"
+                      style={{borderTop: 'none', borderLeft: 'none', borderRight: 'none', borderRadius: 0}}
+                      autoComplete="username"
+                    />
+                    <input
+                      type="password"
+                      placeholder="Password"
+                      className="w-full bg-transparent text-zinc-200 placeholder-zinc-400 border-b border-neutral-800 px-4 py-3 text-base outline-none"
+                      style={{borderTop: 'none', borderLeft: 'none', borderRight: 'none', borderRadius: 0}}
+                      autoComplete="current-password"
+                    />
+                    <div className="px-4 pt-6 pb-2">
+                      <div className="font-semibold text-zinc-200 text-[15px] mb-1">Advanced Configuration</div>
+                      <div className="text-zinc-400 text-sm mb-4">Hoppscotch automatically assigns default values to certain fields if no explicit value is provided</div>
+                      <input
+                        type="text"
+                        placeholder="Realm (e.g. testrealm@example.com)"
+                        className="w-full bg-transparent text-zinc-200 placeholder-zinc-400 border-b border-neutral-800 py-3 text-base outline-none mb-0"
+                        style={{borderTop: 'none', borderLeft: 'none', borderRight: 'none', borderRadius: 0}}
+                      />
+                      <input
+                        type="text"
+                        placeholder="Nonce"
+                        className="w-full bg-transparent text-zinc-200 placeholder-zinc-400 border-b border-neutral-800 py-3 text-base outline-none mb-0"
+                        style={{borderTop: 'none', borderLeft: 'none', borderRight: 'none', borderRadius: 0}}
+                      />
+                      <div className="flex items-center border-b border-neutral-800" style={{height: 48}}>
+                        <span className="text-zinc-400 text-base px-0 mr-4" style={{minWidth: 90}}>Algorithm</span>
+                        <div className="relative" ref={digestAlgDropdownRef}>
+                          <button
+                            className="flex items-center gap-1 text-zinc-200 font-semibold text-base px-0 py-0 bg-transparent border-none outline-none cursor-pointer"
+                            style={{minWidth: 70}}
+                            onClick={() => setDigestAlgDropdownOpen(v => !v)}
+                            type="button"
+                          >
+                            {digestAlgorithm}
+                            <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+                          </button>
+                          {digestAlgDropdownOpen && (
+                            <div className="absolute left-0 mt-2 w-40 bg-[#18181A] border border-neutral-800 rounded shadow-lg z-50 py-2" style={{zIndex: 9999}}>
+                              {digestAlgorithms.map(alg => (
+                                <label
+                                  key={alg}
+                                  className={`flex items-center gap-3 px-4 py-2 text-base cursor-pointer select-none ${digestAlgorithm === alg ? 'text-violet-400 font-semibold' : 'text-zinc-200'}`}
+                                  style={{userSelect: 'none'}}
+                                >
+                                  <input
+                                    type="radio"
+                                    name="digestAlgorithm"
+                                    value={alg}
+                                    checked={digestAlgorithm === alg}
+                                    onChange={() => { setDigestAlgorithm(alg); setDigestAlgDropdownOpen(false); }}
+                                    className="accent-violet-600 mr-2"
+                                    style={{pointerEvents: 'none'}}
+                                    readOnly
+                                  />
+                                  {alg}
+                                </label>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <input
+                        type="text"
+                        placeholder="qop (e.g. auth-int)"
+                        className="w-full bg-transparent text-zinc-200 placeholder-zinc-400 border-b border-neutral-800 py-3 text-base outline-none mb-0"
+                        style={{borderTop: 'none', borderLeft: 'none', borderRight: 'none', borderRadius: 0}}
+                      />
+                      <input
+                        type="text"
+                        placeholder="Nonce Count (e.g. 00000001)"
+                        className="w-full bg-transparent text-zinc-200 placeholder-zinc-400 border-b border-neutral-800 py-3 text-base outline-none mb-0"
+                        style={{borderTop: 'none', borderLeft: 'none', borderRight: 'none', borderRadius: 0}}
+                      />
+                      <input
+                        type="text"
+                        placeholder="Client Nonce (e.g. 0a4f113b)"
+                        className="w-full bg-transparent text-zinc-200 placeholder-zinc-400 border-b border-neutral-800 py-3 text-base outline-none mb-0"
+                        style={{borderTop: 'none', borderLeft: 'none', borderRight: 'none', borderRadius: 0}}
+                      />
+                      <input
+                        type="text"
+                        placeholder="Opaque"
+                        className="w-full bg-transparent text-zinc-200 placeholder-zinc-400 border-b border-neutral-800 py-3 text-base outline-none mb-0"
+                        style={{borderTop: 'none', borderLeft: 'none', borderRight: 'none', borderRadius: 0}}
+                      />
+                    </div>
+                  </div>
+                  <div className="w-px bg-neutral-800" />
+                  <div className="w-[32%] min-w-[300px] flex flex-col items-start p-6">
+                    <span className="text-zinc-400 text-base mb-2">The authorization header will be automatically generated when you send the request.</span>
+                    <a
+                      href="https://learning.postman.com/docs/sending-requests/authorization/#digest-auth"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-500 hover:underline flex items-center gap-1 text-base"
+                    >
+                      Learn how
+                      <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                    </a>
+                  </div>
+                </div>
+              )}
+              {selectedAuthType === 'Bearer' && (
+                <div className="flex flex-row w-full flex-1 bg-[#18181A] border-t border-neutral-900 min-h-0" style={{height: '100%'}}>
+                  <div className="flex-1 flex flex-col justify-start p-0">
+                    <input
+                      type="text"
+                      placeholder="Token"
+                      className="w-full bg-transparent text-zinc-200 placeholder-zinc-400 border-b border-neutral-800 px-4 py-3 text-base outline-none"
+                      style={{borderTop: 'none', borderLeft: 'none', borderRight: 'none', borderRadius: 0}}
+                      autoComplete="off"
+                    />
+                  </div>
+                  <div className="w-px bg-neutral-800" />
+                  <div className="w-[32%] min-w-[300px] flex flex-col items-start p-6">
+                    <span className="text-zinc-400 text-base mb-2">The authorization header will be automatically generated when you send the request.</span>
+                    <a
+                      href="https://learning.postman.com/docs/sending-requests/authorization/#bearer-token"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-500 hover:underline flex items-center gap-1 text-base"
+                    >
+                      Learn how
+                      <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                    </a>
+                  </div>
+                </div>
+              )}
+              {selectedAuthType === 'OAuth 2.0' && (
+                <div className="flex flex-row w-full flex-1 bg-[#18181A] border-t border-neutral-900 min-h-0" style={{height: '100%'}}>
+                  <div className="flex-1 flex flex-col justify-start p-0">
+                    <input
+                      type="text"
+                      placeholder="Token"
+                      className="w-full bg-transparent text-zinc-200 placeholder-zinc-400 border-b border-neutral-800 px-4 py-3 text-base outline-none"
+                      style={{borderTop: 'none', borderLeft: 'none', borderRight: 'none', borderRadius: 0}}
+                      autoComplete="off"
+                    />
+                    <div className="flex items-center border-b border-neutral-800 px-4" style={{height: 48}}>
+                      <span className="text-zinc-400 text-base mr-4" style={{minWidth: 90}}>Grant Type</span>
+                      <div className="relative" ref={oauthGrantDropdownRef}>
+                        <button
+                          className="flex items-center gap-1 text-zinc-200 font-semibold text-base px-0 py-0 bg-transparent border-none outline-none cursor-pointer"
+                          style={{minWidth: 120}}
+                          type="button"
+                          onClick={() => setOauthGrantDropdownOpen(v => !v)}
+                        >
+                          {oauthGrantType}
+                          <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+                        </button>
+                        {oauthGrantDropdownOpen && (
+                          <div className="absolute left-0 mt-2 w-56 bg-[#18181A] border border-neutral-800 rounded shadow-lg z-50 py-2">
+                            {oauthGrantTypes.map(type => (
+                              <label
+                                key={type}
+                                className={`flex items-center gap-3 px-4 py-2 text-base cursor-pointer select-none ${oauthGrantType === type ? 'text-violet-400 font-semibold' : 'text-zinc-200'}`}
+                                style={{userSelect: 'none'}}
+                              >
+                                <input
+                                  type="radio"
+                                  name="oauthGrantType"
+                                  value={type}
+                                  checked={oauthGrantType === type}
+                                  onChange={() => { setOauthGrantType(type); setOauthGrantDropdownOpen(false); }}
+                                  className="accent-violet-600 mr-2"
+                                  style={{pointerEvents: 'none'}}
+                                  readOnly
+                                />
+                                {type}
+                              </label>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center border-b border-neutral-800 px-4" style={{height: 48}}>
+                      <label className="flex items-center gap-2 text-zinc-400 text-base cursor-pointer select-none">
+                        <input type="checkbox" className="accent-violet-600" style={{marginRight: 4}} />
+                        Use PKCE
+                      </label>
+                    </div>
+                    <input
+                      type="text"
+                      placeholder="Authorization Endpoint"
+                      className="w-full bg-transparent text-zinc-200 placeholder-zinc-400 border-b border-neutral-800 px-4 py-3 text-base outline-none"
+                      style={{borderTop: 'none', borderLeft: 'none', borderRight: 'none', borderRadius: 0}}
+                    />
+                    <input
+                      type="text"
+                      placeholder="Token Endpoint"
+                      className="w-full bg-transparent text-zinc-200 placeholder-zinc-400 border-b border-neutral-800 px-4 py-3 text-base outline-none"
+                      style={{borderTop: 'none', borderLeft: 'none', borderRight: 'none', borderRadius: 0}}
+                    />
+                    <input
+                      type="text"
+                      placeholder="Client ID"
+                      className="w-full bg-transparent text-zinc-200 placeholder-zinc-400 border-b border-neutral-800 px-4 py-3 text-base outline-none"
+                      style={{borderTop: 'none', borderLeft: 'none', borderRight: 'none', borderRadius: 0}}
+                    />
+                    <input
+                      type="text"
+                      placeholder="Client Secret"
+                      className="w-full bg-transparent text-zinc-200 placeholder-zinc-400 border-b border-neutral-800 px-4 py-3 text-base outline-none"
+                      style={{borderTop: 'none', borderLeft: 'none', borderRight: 'none', borderRadius: 0}}
+                    />
+                    <input
+                      type="text"
+                      placeholder="Scopes"
+                      className="w-full bg-transparent text-zinc-200 placeholder-zinc-400 border-b border-neutral-800 px-4 py-3 text-base outline-none"
+                      style={{borderTop: 'none', borderLeft: 'none', borderRight: 'none', borderRadius: 0}}
+                    />
+                    <div className="flex items-center border-b border-neutral-800 px-4" style={{height: 48}}>
+                      <span className="text-zinc-400 text-base mr-4" style={{minWidth: 90}}>Pass by</span>
+                      <div className="relative" ref={oauthPassByDropdownRef}>
+                        <button
+                          className="flex items-center gap-1 text-zinc-200 font-semibold text-base px-0 py-0 bg-transparent border-none outline-none cursor-pointer"
+                          style={{minWidth: 90}}
+                          type="button"
+                          onClick={() => setOauthPassByDropdownOpen(v => !v)}
+                        >
+                          {oauthPassBy}
+                          <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+                        </button>
+                        {oauthPassByDropdownOpen && (
+                          <div className="absolute left-0 mt-2 w-40 bg-[#18181A] border border-neutral-800 rounded shadow-lg z-50 py-2">
+                            {oauthPassByOptions.map(opt => (
+                              <label
+                                key={opt}
+                                className={`flex items-center gap-3 px-4 py-2 text-base cursor-pointer select-none ${oauthPassBy === opt ? 'text-violet-400 font-semibold' : 'text-zinc-200'}`}
+                                style={{userSelect: 'none'}}
+                              >
+                                <input
+                                  type="radio"
+                                  name="oauthPassBy"
+                                  value={opt}
+                                  checked={oauthPassBy === opt}
+                                  onChange={() => { setOauthPassBy(opt); setOauthPassByDropdownOpen(false); }}
+                                  className="accent-violet-600 mr-2"
+                                  style={{pointerEvents: 'none'}}
+                                  readOnly
+                                />
+                                {opt}
+                              </label>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex gap-4 px-4 py-6">
+                      <button className="px-6 py-2 rounded border border-zinc-700 text-zinc-200 bg-transparent hover:bg-zinc-800 text-base font-medium transition">Generate Token</button>
+                      <button className="px-6 py-2 rounded border border-zinc-700 text-zinc-200 bg-transparent hover:bg-zinc-800 text-base font-medium transition">Refresh Token</button>
+                    </div>
+                  </div>
+                  <div className="w-px bg-neutral-800" />
+                  <div className="w-[32%] min-w-[300px] flex flex-col items-start p-6">
+                    <span className="text-zinc-400 text-base mb-2">The authorization header will be automatically generated when you send the request.</span>
+                    <a
+                      href="https://learning.postman.com/docs/sending-requests/authorization/#oauth-2-0"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-500 hover:underline flex items-center gap-1 text-base"
+                    >
+                      Learn how
+                      <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                    </a>
+                  </div>
+                </div>
+              )}
+              {selectedAuthType === 'API Key' && (
+                <div className="flex flex-row w-full flex-1 bg-[#18181A] border-t border-neutral-900 min-h-0" style={{height: '100%'}}>
+                  <div className="flex-1 flex flex-col justify-start p-0">
+                    <input
+                      type="text"
+                      placeholder="Key"
+                      className="w-full bg-transparent text-zinc-200 placeholder-zinc-400 border-b border-neutral-800 px-4 py-3 text-base outline-none"
+                      style={{borderTop: 'none', borderLeft: 'none', borderRight: 'none', borderRadius: 0}}
+                      autoComplete="off"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Value"
+                      className="w-full bg-transparent text-zinc-200 placeholder-zinc-400 border-b border-neutral-800 px-4 py-3 text-base outline-none"
+                      style={{borderTop: 'none', borderLeft: 'none', borderRight: 'none', borderRadius: 0}}
+                      autoComplete="off"
+                    />
+                    <div className="flex items-center border-b border-neutral-800 px-4" style={{height: 48}}>
+                      <span className="text-zinc-400 text-base mr-4" style={{minWidth: 90}}>Pass by</span>
+                      <div className="relative" ref={oauthPassByDropdownRef}>
+                        <button
+                          className="flex items-center gap-1 text-zinc-200 font-semibold text-base px-0 py-0 bg-transparent border-none outline-none cursor-pointer"
+                          style={{minWidth: 90}}
+                          type="button"
+                          onClick={() => setOauthPassByDropdownOpen(v => !v)}
+                        >
+                          {oauthPassBy}
+                          <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+                        </button>
+                        {oauthPassByDropdownOpen && (
+                          <div className="absolute left-0 mt-2 w-40 bg-[#18181A] border border-neutral-800 rounded shadow-lg z-50 py-2">
+                            {oauthPassByOptions.map(opt => (
+                              <label
+                                key={opt}
+                                className={`flex items-center gap-3 px-4 py-2 text-base cursor-pointer select-none ${oauthPassBy === opt ? 'text-violet-400 font-semibold' : 'text-zinc-200'}`}
+                                style={{userSelect: 'none'}}
+                              >
+                                <input
+                                  type="radio"
+                                  name="oauthPassBy"
+                                  value={opt}
+                                  checked={oauthPassBy === opt}
+                                  onChange={() => { setOauthPassBy(opt); setOauthPassByDropdownOpen(false); }}
+                                  className="accent-violet-600 mr-2"
+                                  style={{pointerEvents: 'none'}}
+                                  readOnly
+                                />
+                                {opt}
+                              </label>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="w-px bg-neutral-800" />
+                  <div className="w-[32%] min-w-[300px] flex flex-col items-start p-6">
+                    <span className="text-zinc-400 text-base mb-2">The authorization header will be automatically generated when you send the request.</span>
+                    <a
+                      href="https://learning.postman.com/docs/sending-requests/authorization/#api-key"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-500 hover:underline flex items-center gap-1 text-base"
+                    >
+                      Learn how
+                      <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                    </a>
+                  </div>
+                </div>
+              )}
+              {selectedAuthType === 'AWS Signature' && (
+                <div className="flex flex-row w-full flex-1 bg-[#18181A] border-t border-neutral-900 min-h-0" style={{height: '100%'}}>
+                  <div className="flex-1 flex flex-col justify-start p-0">
+                    <input
+                      type="text"
+                      placeholder="Access Key"
+                      className="w-full bg-transparent text-zinc-200 placeholder-zinc-400 border-b border-neutral-800 px-4 py-3 text-base outline-none"
+                      style={{borderTop: 'none', borderLeft: 'none', borderRight: 'none', borderRadius: 0}}
+                      autoComplete="off"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Secret Key"
+                      className="w-full bg-transparent text-zinc-200 placeholder-zinc-400 border-b border-neutral-800 px-4 py-3 text-base outline-none"
+                      style={{borderTop: 'none', borderLeft: 'none', borderRight: 'none', borderRadius: 0}}
+                      autoComplete="off"
+                    />
+                    <div className="px-4 pt-6 pb-2">
+                      <div className="font-semibold text-zinc-200 text-[15px] mb-1">Advanced Configuration</div>
+                      <div className="text-zinc-400 text-sm mb-4">Hoppscotch automatically assigns default values to certain fields if no explicit value is provided</div>
+                      <input
+                        type="text"
+                        placeholder="AWS Region (default: us-east-1)"
+                        className="w-full bg-transparent text-zinc-200 placeholder-zinc-400 border-b border-neutral-800 py-3 text-base outline-none mb-0"
+                        style={{borderTop: 'none', borderLeft: 'none', borderRight: 'none', borderRadius: 0}}
+                      />
+                      <input
+                        type="text"
+                        placeholder="Service Name"
+                        className="w-full bg-transparent text-zinc-200 placeholder-zinc-400 border-b border-neutral-800 py-3 text-base outline-none mb-0"
+                        style={{borderTop: 'none', borderLeft: 'none', borderRight: 'none', borderRadius: 0}}
+                      />
+                      <input
+                        type="text"
+                        placeholder="Service Token"
+                        className="w-full bg-transparent text-zinc-200 placeholder-zinc-400 border-b border-neutral-800 py-3 text-base outline-none mb-0"
+                        style={{borderTop: 'none', borderLeft: 'none', borderRight: 'none', borderRadius: 0}}
+                      />
+                    </div>
+                    <div className="flex items-center border-b border-neutral-800 px-4" style={{height: 48}}>
+                      <span className="text-zinc-400 text-base mr-4" style={{minWidth: 90}}>Pass by</span>
+                      <div className="relative" ref={oauthPassByDropdownRef}>
+                        <button
+                          className="flex items-center gap-1 text-zinc-200 font-semibold text-base px-0 py-0 bg-transparent border-none outline-none cursor-pointer"
+                          style={{minWidth: 90}}
+                          type="button"
+                          onClick={() => setOauthPassByDropdownOpen(v => !v)}
+                        >
+                          {oauthPassBy}
+                          <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+                        </button>
+                        {oauthPassByDropdownOpen && (
+                          <div className="absolute left-0 mt-2 w-40 bg-[#18181A] border border-neutral-800 rounded shadow-lg z-50 py-2">
+                            {oauthPassByOptions.map(opt => (
+                              <label
+                                key={opt}
+                                className={`flex items-center gap-3 px-4 py-2 text-base cursor-pointer select-none ${oauthPassBy === opt ? 'text-violet-400 font-semibold' : 'text-zinc-200'}`}
+                                style={{userSelect: 'none'}}
+                              >
+                                <input
+                                  type="radio"
+                                  name="oauthPassBy"
+                                  value={opt}
+                                  checked={oauthPassBy === opt}
+                                  onChange={() => { setOauthPassBy(opt); setOauthPassByDropdownOpen(false); }}
+                                  className="accent-violet-600 mr-2"
+                                  style={{pointerEvents: 'none'}}
+                                  readOnly
+                                />
+                                {opt}
+                              </label>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="w-px bg-neutral-800" />
+                  <div className="w-[32%] min-w-[300px] flex flex-col items-start p-6">
+                    <span className="text-zinc-400 text-base mb-2">The authorization header will be automatically generated when you send the request.</span>
+                    <a
+                      href="https://learning.postman.com/docs/sending-requests/authorization/#aws-signature"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-500 hover:underline flex items-center gap-1 text-base"
+                    >
+                      Learn how
+                      <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                    </a>
+                  </div>
+                </div>
+              )}
+              {selectedAuthType === 'HAWK' && (
+                <div className="flex flex-row w-full flex-1 bg-[#18181A] border-t border-neutral-900 min-h-0" style={{height: '100%'}}>
+                  <div className="flex-1 flex flex-col justify-start p-0">
+                    <input
+                      type="text"
+                      placeholder="HAWK Auth ID"
+                      className="w-full bg-transparent text-zinc-200 placeholder-zinc-400 border-b border-neutral-800 px-4 py-3 text-base outline-none"
+                      style={{borderTop: 'none', borderLeft: 'none', borderRight: 'none', borderRadius: 0}}
+                      autoComplete="off"
+                    />
+                    <input
+                      type="text"
+                      placeholder="HAWK Auth Key"
+                      className="w-full bg-transparent text-zinc-200 placeholder-zinc-400 border-b border-neutral-800 px-4 py-3 text-base outline-none"
+                      style={{borderTop: 'none', borderLeft: 'none', borderRight: 'none', borderRadius: 0}}
+                      autoComplete="off"
+                    />
+                    <div className="flex items-center border-b border-neutral-800 px-4 relative" style={{height: 48}}>
+                      <span className="text-zinc-400 text-base mr-4" style={{minWidth: 90}}>Algorithm</span>
+                      <div className="relative" ref={hawkAlgDropdownRef}>
+                        <button
+                          className="flex items-center gap-1 text-zinc-200 font-semibold text-base px-0 py-0 bg-transparent border-none outline-none cursor-pointer"
+                          style={{minWidth: 90}}
+                          type="button"
+                          onClick={() => setHawkAlgDropdownOpen(v => !v)}
+                        >
+                          {hawkAlgorithm}
+                          <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+                        </button>
+                        {hawkAlgDropdownOpen && (
+                          <div className="absolute left-0 mt-2 w-40 bg-[#18181A] border border-neutral-800 rounded shadow-lg z-50 py-2">
+                            {hawkAlgorithms.map(alg => (
+                              <label
+                                key={alg}
+                                className={`flex items-center gap-3 px-4 py-2 text-base cursor-pointer select-none ${hawkAlgorithm === alg ? 'text-violet-400 font-semibold' : 'text-zinc-200'}`}
+                                style={{userSelect: 'none'}}
+                              >
+                                <input
+                                  type="radio"
+                                  name="hawkAlgorithm"
+                                  value={alg}
+                                  checked={hawkAlgorithm === alg}
+                                  onChange={() => { setHawkAlgorithm(alg); setHawkAlgDropdownOpen(false); }}
+                                  className="accent-violet-600 mr-2"
+                                  style={{pointerEvents: 'none'}}
+                                  readOnly
+                                />
+                                {alg}
+                              </label>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="px-4 pt-6 pb-2">
+                      <div className="font-semibold text-zinc-200 text-[15px] mb-1">Advanced Configuration</div>
+                      <div className="text-zinc-400 text-sm mb-4">Hoppscotch automatically assigns default values to certain fields if no explicit value is provided</div>
+                      <input
+                        type="text"
+                        placeholder="Username"
+                        className="w-full bg-transparent text-zinc-200 placeholder-zinc-400 border-b border-neutral-800 py-3 text-base outline-none mb-0"
+                        style={{borderTop: 'none', borderLeft: 'none', borderRight: 'none', borderRadius: 0}}
+                      />
+                      <input
+                        type="text"
+                        placeholder="Nonce"
+                        className="w-full bg-transparent text-zinc-200 placeholder-zinc-400 border-b border-neutral-800 py-3 text-base outline-none mb-0"
+                        style={{borderTop: 'none', borderLeft: 'none', borderRight: 'none', borderRadius: 0}}
+                      />
+                      <input
+                        type="text"
+                        placeholder="ext"
+                        className="w-full bg-transparent text-zinc-200 placeholder-zinc-400 border-b border-neutral-800 py-3 text-base outline-none mb-0"
+                        style={{borderTop: 'none', borderLeft: 'none', borderRight: 'none', borderRadius: 0}}
+                      />
+                      <input
+                        type="text"
+                        placeholder="app"
+                        className="w-full bg-transparent text-zinc-200 placeholder-zinc-400 border-b border-neutral-800 py-3 text-base outline-none mb-0"
+                        style={{borderTop: 'none', borderLeft: 'none', borderRight: 'none', borderRadius: 0}}
+                      />
+                      <input
+                        type="text"
+                        placeholder="dlg"
+                        className="w-full bg-transparent text-zinc-200 placeholder-zinc-400 border-b border-neutral-800 py-3 text-base outline-none mb-0"
+                        style={{borderTop: 'none', borderLeft: 'none', borderRight: 'none', borderRadius: 0}}
+                      />
+                      <input
+                        type="text"
+                        placeholder="Timestamp"
+                        className="w-full bg-transparent text-zinc-200 placeholder-zinc-400 border-b border-neutral-800 py-3 text-base outline-none mb-0"
+                        style={{borderTop: 'none', borderLeft: 'none', borderRight: 'none', borderRadius: 0}}
+                      />
+                    </div>
+                  </div>
+                  <div className="w-px bg-neutral-800" />
+                  <div className="w-[32%] min-w-[300px] flex flex-col items-start p-6">
+                    <span className="text-zinc-400 text-base mb-2">The authorization header will be automatically generated when you send the request.</span>
+                    <a
+                      href="https://learning.postman.com/docs/sending-requests/authorization/#hawk-authentication"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-500 hover:underline flex items-center gap-1 text-base"
+                    >
+                      Learn how
+                      <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                    </a>
+                  </div>
+                </div>
+              )}
+              {selectedAuthType === 'JWT' && (
+                <div className="flex flex-row w-full flex-1 bg-[#18181A] border-t border-neutral-900 min-h-0" style={{height: '100%'}}>
+                  <div className="flex-1 flex flex-col justify-start p-0">
+                    <div className="flex items-center border-b border-neutral-800 px-4 relative" style={{height: 48}}>
+                      <span className="text-zinc-400 text-base mr-4" style={{minWidth: 90}}>Algorithm</span>
+                      <div className="relative" ref={jwtAlgDropdownRef}>
+                        <button
+                          className="flex items-center gap-1 text-zinc-200 font-semibold text-base px-0 py-0 bg-transparent border-none outline-none cursor-pointer"
+                          style={{minWidth: 90}}
+                          type="button"
+                          onClick={() => setJwtAlgDropdownOpen(v => !v)}
+                        >
+                          {jwtAlgorithm}
+                          <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+                        </button>
+                        {jwtAlgDropdownOpen && (
+                          <div className="absolute left-0 mt-2 w-40 bg-[#18181A] border border-neutral-800 rounded shadow-lg z-50 py-2">
+                            {jwtAlgorithms.map(alg => (
+                              <label
+                                key={alg}
+                                className={`flex items-center gap-3 px-4 py-2 text-base cursor-pointer select-none ${jwtAlgorithm === alg ? 'text-violet-400 font-semibold' : 'text-zinc-200'}`}
+                                style={{userSelect: 'none'}}
+                              >
+                                <input
+                                  type="radio"
+                                  name="jwtAlgorithm"
+                                  value={alg}
+                                  checked={jwtAlgorithm === alg}
+                                  onChange={() => { setJwtAlgorithm(alg); setJwtAlgDropdownOpen(false); }}
+                                  className="accent-violet-600 mr-2"
+                                  style={{pointerEvents: 'none'}}
+                                  readOnly
+                                />
+                                {alg}
+                              </label>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <input
+                      type="text"
+                      placeholder="Secret"
+                      value={jwtSecret}
+                      onChange={e => setJwtSecret(e.target.value)}
+                      className="w-full bg-transparent text-zinc-200 placeholder-zinc-400 border-b border-neutral-800 px-4 py-3 text-base outline-none"
+                      style={{borderTop: 'none', borderLeft: 'none', borderRight: 'none', borderRadius: 0}}
+                      autoComplete="off"
+                    />
+                    <label className="flex items-center gap-2 font-semibold text-zinc-200 px-4 py-3 border-b border-neutral-800 cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        checked={jwtSecretBase64}
+                        onChange={e => setJwtSecretBase64(e.target.checked)}
+                        className="accent-violet-600"
+                      />
+                      Secret Base64 Encoded
+                    </label>
+                    <div className="px-0 pt-4 flex flex-col flex-1">
+                      <div className="text-zinc-400 text-base mb-2 px-4">Payload</div>
+                      {/* Toolbar */}
+                      <div className="flex items-center justify-between px-4 h-9 border-b border-neutral-800 bg-[#18181A]">
+                        <span></span>
+                        <div className="flex items-center gap-3">
+                          {/* Help icon */}
+                          <button className="text-gray-400 hover:text-white" title="Help">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                          </button>
+                          {/* Delete icon */}
+                          <button className="text-gray-400 hover:text-white" title="Delete">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6v14a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M5 6V4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2"/></svg>
+                          </button>
+                          {/* Format icon */}
+                          <button className="text-gray-400 hover:text-white" title="Format">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+                          </button>
+                          {/* Magic wand icon */}
+                          <button className="text-gray-400 hover:text-white" title="Magic">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M15 4V2m0 20v-2m7-7h-2M4 15H2m2.93-7.07l-1.42-1.42m16.97 16.97l-1.42-1.42m16.97-16.97l-1.42 1.42"/><path d="M8 12l4 4 6-6"/></svg>
+                          </button>
+                          {/* Graph icon */}
+                          <button className="text-gray-400 hover:text-white" title="Graph">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0z"/></svg>
+                          </button>
+                          {/* Copy icon */}
+                          <button className="text-gray-400 hover:text-white" title="Copy">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><rect x="2" y="2" width="13" height="13" rx="2"/></svg>
+                          </button>
+                        </div>
+                      </div>
+                      {/* Code editor area */}
+                      <div className="flex-1 flex bg-[#18181A] min-h-0" style={{ fontFamily: 'monospace' }}>
+                        {/* Line numbers */}
+                        <div className="flex flex-col items-end py-3 px-2 select-none text-zinc-700 text-sm border-r border-neutral-800 min-h-0" style={{ minWidth: 32 }}>
+                          {Array.from({ length: (jwtPayload.match(/\n/g)?.length ?? 0) + 1 }, (_, i) => (
+                            <span key={i}>{i + 1}</span>
+                          ))}
+                        </div>
+                        {/* Textarea */}
+                        <textarea
+                          value={jwtPayload}
+                          onChange={e => setJwtPayload(e.target.value)}
+                          className="flex-1 bg-transparent text-zinc-200 px-3 py-3 text-sm outline-none resize-none h-full min-h-0"
+                          style={{ fontFamily: 'monospace', border: 'none' }}
+                          spellCheck={false}
+                          placeholder="{}"
+                        />
+                      </div>
+                    </div>
+                    {/* Bearer section below Payload */}
+                    <div className="w-full border-b border-neutral-800 bg-[#18181A] px-4 py-2 font-bold text-zinc-200 text-base">Bearer</div>
+                    <div className="px-4 pt-4 flex flex-col flex-1">
+                      <div className="text-zinc-400 text-base mb-2">JWT Headers</div>
+                      <div className="flex-1 flex bg-[#18181A] min-h-0" style={{ fontFamily: 'monospace' }}>
+                        {/* Line numbers */}
+                        <div className="flex flex-col items-end py-3 px-2 select-none text-zinc-700 text-sm border-r border-neutral-800 min-h-0" style={{ minWidth: 32 }}>
+                          {Array.from({ length: (jwtHeaders.match(/\n/g)?.length ?? 0) + 1 }, (_, i) => (
+                            <span key={i}>{i + 1}</span>
+                          ))}
+                        </div>
+                        {/* Textarea */}
+                        <textarea
+                          value={jwtHeaders}
+                          onChange={e => setJwtHeaders(e.target.value)}
+                          className="flex-1 bg-transparent text-zinc-200 px-3 py-3 text-sm outline-none resize-none h-full min-h-0"
+                          style={{ fontFamily: 'monospace', border: 'none' }}
+                          spellCheck={false}
+                          placeholder="{}"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="w-px bg-neutral-800" />
+                  <div className="w-[32%] min-w-[300px] flex flex-col items-start p-6">
+                    <span className="text-zinc-400 text-base mb-2">The authorization header will be automatically generated when you send the request.</span>
+                    <a
+                      href="https://learning.postman.com/docs/sending-requests/authorization/#jwt"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-500 hover:underline flex items-center gap-1 text-base"
+                    >
+                      Learn how
+                      <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                    </a>
+                  </div>
+                </div>
+              )}
             </div>
           )}
           {activeTabObj.activeTab === 'pre-request' && (
