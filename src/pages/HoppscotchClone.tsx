@@ -23,7 +23,7 @@ const defaultTabData = () => ({
   variables: [],
 });
 
-// Simple unique ID generator for tabs
+// Simple unique ID generator for tabs and params
 const uuidv4 = () => '_' + Math.random().toString(36).substr(2, 9);
 
 const HoppscotchClone: React.FC = () => {
@@ -32,7 +32,7 @@ const HoppscotchClone: React.FC = () => {
   const [envDropdownOpen, setEnvDropdownOpen] = useState(false);
   const [envTab, setEnvTab] = useState<'personal' | 'workspace'>('personal');
   const [showVarsPopover, setShowVarsPopover] = useState(false);
-  const [editModal, setEditModal] = useState<null | 'global' | 'environment'>('global');
+  const [editModal, setEditModal] = useState<null | 'global' | 'environment'>(null);
   const eyeRef = React.useRef<HTMLSpanElement | null>(null);
   const [methodDropdownOpen, setMethodDropdownOpen] = useState(false);
   const methodDropdownRef = React.useRef<HTMLDivElement>(null);
@@ -51,22 +51,25 @@ const HoppscotchClone: React.FC = () => {
 
   // Query Parameters state and handlers
   const [queryParams, setQueryParams] = React.useState([
-    { id: 1, key: '', value: '', description: '' }
+    { id: uuidv4(), key: '', value: '', description: '' }
   ]);
-  const [focusedRow, setFocusedRow] = React.useState<number | null>(null);
+  const [focusedRow, setFocusedRow] = React.useState<string | null>(null);
 
-  const handleParamChange = (idx: number, field: 'key' | 'value' | 'description', value: string) => {
+  // Add state for edit button active
+  const [editActive, setEditActive] = useState(false);
+
+  const handleParamChange = (id: string, field: 'key' | 'value' | 'description', value: string) => {
     setQueryParams(prev => {
-      const updated = prev.map((p, i) => i === idx ? { ...p, [field]: value } : p);
-      // If editing the last row's key and it's non-empty, add a new row
-      if (field === 'key' && idx === prev.length - 1 && value.trim() !== '') {
-        return [...updated, { id: Date.now() + Math.random(), key: '', value: '', description: '' }];
+      const updated = prev.map((p) => p.id === id ? { ...p, [field]: value } : p);
+      // If editing the last row's key and it's non-empty, add a new row with a stable id
+      if (field === 'key' && prev[prev.length - 1].id === id && value.trim() !== '') {
+        return [...updated, { id: uuidv4(), key: '', value: '', description: '' }];
       }
       return updated;
     });
   };
-  const handleDeleteParam = (idx: number) => {
-    setQueryParams(prev => prev.length === 1 ? prev : prev.filter((_, i) => i !== idx));
+  const handleDeleteParam = (id: string) => {
+    setQueryParams(prev => prev.length === 1 ? prev : prev.filter((p) => p.id !== id));
   };
 
   // Drag and drop handlers for Query Parameters
@@ -81,8 +84,14 @@ const HoppscotchClone: React.FC = () => {
     }
   };
 
-  // Sortable row component for Query Parameters
-  function SortableParamRow({ param, idx }: { param: any, idx: number }) {
+  // Sortable row component for Query Parameters (memoized, outside main component)
+  const SortableParamRow = React.memo(function SortableParamRow({ param, handleParamChange, handleDeleteParam, setFocusedRow, isOdd }: {
+    param: any,
+    handleParamChange: (id: string, field: 'key' | 'value' | 'description', value: string) => void,
+    handleDeleteParam: (id: string) => void,
+    setFocusedRow: (id: string) => void,
+    isOdd: boolean,
+  }) {
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: param.id });
     return (
       <div
@@ -91,7 +100,7 @@ const HoppscotchClone: React.FC = () => {
           transform: CSS.Transform.toString(transform),
           transition,
           opacity: isDragging ? 0.5 : 1,
-          background: idx % 2 === 1 ? '#19191b' : undefined,
+          background: isOdd ? '#19191b' : undefined,
           minHeight: '38px',
           display: 'grid',
           gridTemplateColumns: '32px 1fr 1fr 1fr auto',
@@ -126,32 +135,32 @@ const HoppscotchClone: React.FC = () => {
           className="bg-transparent text-white px-2 py-1 outline-none w-full border-r border-neutral-800"
           value={param.key}
           placeholder="Key"
-          onChange={e => handleParamChange(idx, 'key', e.target.value)}
-          onFocus={() => setFocusedRow(idx)}
+          onChange={e => handleParamChange(param.id, 'key', e.target.value)}
+          onFocus={() => setFocusedRow(param.id)}
         />
         <input
           className="bg-transparent text-white px-2 py-1 outline-none w-full border-r border-neutral-800"
           value={param.value}
           placeholder="Value"
-          onChange={e => handleParamChange(idx, 'value', e.target.value)}
+          onChange={e => handleParamChange(param.id, 'value', e.target.value)}
         />
         <input
           className="bg-transparent text-white px-2 py-1 outline-none w-full border-r border-neutral-800"
           value={param.description}
           placeholder="Description"
-          onChange={e => handleParamChange(idx, 'description', e.target.value)}
+          onChange={e => handleParamChange(param.id, 'description', e.target.value)}
         />
         <div className="flex items-center gap-2 justify-end px-2">
           <button className="text-green-500 hover:text-green-400" tabIndex={-1}>
             <span className="material-icons">check_circle</span>
           </button>
-          <button className="text-red-500 hover:text-red-400" onClick={() => handleDeleteParam(idx)} tabIndex={-1}>
+          <button className="text-red-500 hover:text-red-400" onClick={() => handleDeleteParam(param.id)} tabIndex={-1}>
             <span className="material-icons">delete</span>
           </button>
         </div>
       </div>
     );
-  }
+  });
 
   // Helper to get the active tab object
   const activeTabObj = tabs.find(tab => tab.id === activeTabId) || tabs[0];
@@ -662,8 +671,18 @@ const HoppscotchClone: React.FC = () => {
 
       {/* Main layout below top bar */}
       <div className="flex flex-1">
-        {/* Left Content */}
-        <div className="flex flex-col flex-1 p-4 ">
+        {/* Edit panel on left when editActive */}
+        {editActive && (
+          <div className="w-1/3 min-w-[320px] max-w-[400px] bg-[#18181A] border-r border-zinc-800 p-6 flex flex-col text-gray-400 text-[15px] font-mono" style={{height: '100%'}}>
+            <div>
+              Entries are separated by newline<br/>
+              Keys and values are separated by :<br/>
+              Prepend # to any row you want to add but keep disabled
+            </div>
+          </div>
+        )}
+        {/* Left Content (hide when editActive) */}
+        <div className={`flex flex-col flex-1 p-4 ${editActive ? 'hidden' : ''}`}>
           {/* URL bar */}
           <div className="flex items-center mb-4">
             <div className="relative" ref={methodDropdownRef}>
@@ -786,11 +805,6 @@ const HoppscotchClone: React.FC = () => {
                     />
                   </div>
                   <button className="flex items-center w-full px-2 py-2 rounded hover:bg-zinc-800 text-zinc-200 gap-3 mb-2">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6v6H9z"/></svg>
-                    <span className="flex-1 text-left">Save as</span>
-                  </button>
-                  <hr className="my-2 border-zinc-800" />
-                  <button className="flex items-center w-full px-2 py-2 rounded hover:bg-zinc-800 text-zinc-400 gap-3">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12v2a2 2 0 0 0 2 2h2"/><rect x="8" y="8" width="8" height="8" rx="2"/><path d="M16 12h2a2 2 0 0 1 2 2v2"/><path d="M8 16v2a2 2 0 0 0 2 2h2"/></svg>
                     <span className="flex-1 text-left">Share Request</span>
                   </button>
@@ -819,41 +833,100 @@ const HoppscotchClone: React.FC = () => {
           {/* Tab content area (example: Parameters) */}
           {activeTabObj.activeTab === 'parameters' && (
             <div className="flex-1 flex flex-col bg-neutral-900 rounded p-0 mt-2">
-              {/* Query Parameters Bar */}
+              {/* Query Parameters Bar - always visible */}
               <div className="flex items-center justify-between px-4 h-10 border-b border-neutral-800">
                 <span className="text-gray-400 text-sm">Query Parameters</span>
                 <div className="flex items-center gap-3">
-                  <button className="text-gray-400 hover:text-white" title="Help">
-                    <span className="material-icons">help_outline</span>
+                  <button
+                    className="text-gray-400 hover:text-white"
+                    title="Help"
+                    onClick={() => window.open('https://docs.hoppscotch.io/documentation/features/rest-api-testing', '_blank')}
+                  >
+                    <span className="inline-block align-middle">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-circle-question-mark-icon lucide-circle-question-mark"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                    </span>
                   </button>
-                  <button className="text-gray-400 hover:text-white" title="Delete all">
-                    <span className="material-icons">delete</span>
+                  <button
+                    className="text-gray-400 hover:text-white"
+                    title="Delete all"
+                    onClick={() => setQueryParams([{ id: uuidv4(), key: '', value: '', description: '' }])}
+                  >
+                    <span className="inline-block align-middle">
+                      <svg viewBox="0 0 24 24" width="1.2em" height="1.2em" className="svg-icons"><path fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2m-6 5v6m4-6v6"></path></svg>
+                    </span>
                   </button>
-                  <button className="text-gray-400 hover:text-white" title="Edit">
-                    <span className="material-icons">edit</span>
+                  {editActive && (
+                    <AnimatePresence>
+                      <motion.span
+                        className="inline-block align-middle mr-2"
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -10 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <svg viewBox="0 0 24 24" width="1.2em" height="1.2em" className="svg-icons"><g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"><path d="M3 6h18M3 12h15a3 3 0 1 1 0 6h-4"></path><path d="m16 16l-2 2l2 2M3 18h7"></path></g></svg>
+                      </motion.span>
+                    </AnimatePresence>
+                  )}
+                  <button
+                    className={`text-gray-400 hover:text-white ${editActive ? 'text-blue-500' : ''}`}
+                    title="Edit"
+                    onClick={() => setEditActive(v => !v)}
+                  >
+                    <span className="inline-block align-middle">
+                      <svg viewBox="0 0 24 24" width="1.2em" height="1.2em" className="svg-icons"><g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"></path></g></svg>
+                    </span>
                   </button>
-                  <button className="text-gray-400 hover:text-white" title="Add">
-                    <span className="material-icons">add</span>
+                  <button
+                    className="text-gray-400 hover:text-white"
+                    title="Add"
+                    onClick={() => setQueryParams(prev => [...prev, { id: uuidv4(), key: '', value: '', description: '' }])}
+                  >
+                    <span className="inline-block align-middle">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-plus-icon lucide-plus"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                    </span>
                   </button>
                 </div>
               </div>
-              {/* Query Parameters Table */}
-              <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                <SortableContext items={queryParams.map(p => p.id)} strategy={verticalListSortingStrategy}>
-                  <div className="w-full">
-                    <div className="grid grid-cols-5 border-b border-neutral-800 px-2" style={{minHeight: '38px', gridTemplateColumns: '32px 1fr 1fr 1fr auto'}}>
-                      <div></div>
-                      <div className="text-gray-500 text-sm flex items-center border-r border-neutral-800 py-2">Key</div>
-                      <div className="text-gray-500 text-sm flex items-center border-r border-neutral-800 py-2">Value</div>
-                      <div className="text-gray-500 text-sm flex items-center border-r border-neutral-800 py-2">Description</div>
-                      <div></div>
+              {/* Below the bar, show either instructional/code area or table */}
+              {editActive ? (
+                <div className="bg-[#18181A] rounded-b-2xl p-0 border-t border-neutral-800" style={{minHeight: '120px', maxWidth: '100%'}}>
+                  <div className="relative">
+                    <div className="absolute left-0 top-0 bottom-0 w-8 flex flex-col items-end pt-4 pl-1 pr-2 select-none text-zinc-700 text-sm font-mono">
+                      <span>1</span>
                     </div>
-                    {queryParams.map((param, idx) => (
-                      <SortableParamRow key={param.id} param={param} idx={idx} />
-                    ))}
+                    <pre className="pl-10 pt-4 pb-4 pr-4 text-gray-400 text-[15px] font-mono whitespace-pre-wrap select-none bg-transparent m-0" style={{minHeight: '120px'}}>
+Entries are separated by newline
+Keys and values are separated by :
+Prepend # to any row you want to add but keep disabled
+                    </pre>
                   </div>
-                </SortableContext>
-              </DndContext>
+                </div>
+              ) : (
+                <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                  <SortableContext items={queryParams.map(p => p.id)} strategy={verticalListSortingStrategy}>
+                    <div className="w-full">
+                      <div className="grid grid-cols-5 border-b border-neutral-800 px-2" style={{minHeight: '38px', gridTemplateColumns: '32px 1fr 1fr 1fr auto'}}>
+                        <div></div>
+                        <div className="text-gray-500 text-sm flex items-center border-r border-neutral-800 py-2">Key</div>
+                        <div className="text-gray-500 text-sm flex items-center border-r border-neutral-800 py-2">Value</div>
+                        <div className="text-gray-500 text-sm flex items-center border-r border-neutral-800 py-2">Description</div>
+                        <div></div>
+                      </div>
+                      {queryParams.map((param, idx) => (
+                        <SortableParamRow
+                          key={param.id}
+                          param={param}
+                          handleParamChange={handleParamChange}
+                          handleDeleteParam={handleDeleteParam}
+                          setFocusedRow={setFocusedRow}
+                          isOdd={idx % 2 === 1}
+                        />
+                      ))}
+                    </div>
+                  </SortableContext>
+                </DndContext>
+              )}
             </div>
           )}
         </div>
