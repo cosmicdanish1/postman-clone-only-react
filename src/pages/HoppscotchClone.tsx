@@ -58,6 +58,35 @@ const HoppscotchClone: React.FC = () => {
   // Add state for edit button active
   const [editActive, setEditActive] = useState(false);
 
+  // Content type options for Body tab
+  const contentTypeOptions = [
+    { label: 'None', value: 'none' },
+    { label: 'Text', value: 'text', isSection: true },
+    { label: 'application/json', value: 'application/json' },
+    { label: 'application/ld+json', value: 'application/ld+json' },
+    { label: 'application/hal+json', value: 'application/hal+json' },
+    { label: 'application/vnd.api+json', value: 'application/vnd.api+json' },
+    { label: 'application/xml', value: 'application/xml' },
+    { label: 'text/xml', value: 'text/xml' },
+    { label: 'Structured', value: 'structured', isSection: true },
+    { label: 'application/x-www-form-urlencoded', value: 'application/x-www-form-urlencoded' },
+    { label: 'multipart/form-data', value: 'multipart/form-data' },
+    { label: 'Binary', value: 'binary', isSection: true },
+    { label: 'application/octet-stream', value: 'application/octet-stream' },
+    { label: 'Others', value: 'others', isSection: true },
+    { label: 'text/html', value: 'text/html' },
+    { label: 'text/plain', value: 'text/plain' },
+  ];
+  const [contentType, setContentType] = useState('none');
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  // Add custom style for hiding scrollbar
+  const hideScrollbarStyle: React.CSSProperties = {
+    scrollbarWidth: 'none', // Firefox
+    msOverflowStyle: 'none', // IE 10+
+    overflowY: 'auto',
+  };
+
   const handleParamChange = (id: string, field: 'key' | 'value' | 'description', value: string) => {
     setQueryParams(prev => {
       const updated = prev.map((p) => p.id === id ? { ...p, [field]: value } : p);
@@ -286,6 +315,350 @@ const HoppscotchClone: React.FC = () => {
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
   }, [showSaveDropdown]);
+
+  // State for code editor content
+  const [rawBody, setRawBody] = useState('');
+
+  // State for x-www-form-urlencoded body parameters
+  const [bodyParams, setBodyParams] = useState([
+    { id: uuidv4(), key: '', value: '' }
+  ]);
+  const handleBodyParamChange = (id: string, field: 'key' | 'value', value: string) => {
+    setBodyParams(prev => {
+      const updated = prev.map((p) => p.id === id ? { ...p, [field]: value } : p);
+      // If editing the last row's key and it's non-empty, add a new row
+      if (field === 'key' && prev[prev.length - 1].id === id && value.trim() !== '') {
+        return [...updated, { id: uuidv4(), key: '', value: '' }];
+      }
+      return updated;
+    });
+  };
+  const handleDeleteBodyParam = (id: string) => {
+    setBodyParams(prev => prev.length === 1 ? prev : prev.filter((p) => p.id !== id));
+  };
+  const handleAddBodyParam = () => {
+    setBodyParams(prev => [...prev, { id: uuidv4(), key: '', value: '' }]);
+  };
+
+  // Drag and drop handlers for bodyParams
+  const handleBodyDragEnd = (event: any) => {
+    const { active, over } = event;
+    if (active.id !== over.id) {
+      setBodyParams((items) => {
+        const oldIndex = items.findIndex(i => i.id === active.id);
+        const newIndex = items.findIndex(i => i.id === over.id);
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
+  };
+
+  // Sortable row component for bodyParams
+  const SortableBodyParamRow = React.memo(function SortableBodyParamRow({ param, handleBodyParamChange, handleDeleteBodyParam, isOdd }: {
+    param: { id: string; key: string; value: string };
+    handleBodyParamChange: (id: string, field: 'key' | 'value', value: string) => void;
+    handleDeleteBodyParam: (id: string) => void;
+    isOdd: boolean;
+  }) {
+    const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: param.id });
+    return (
+      <div
+        ref={setNodeRef}
+        style={{
+          transform: CSS.Transform.toString(transform),
+          transition,
+          opacity: isDragging ? 0.5 : 1,
+          background: isOdd ? '#19191b' : undefined,
+          minHeight: '38px',
+          display: 'grid',
+          gridTemplateColumns: '32px 1fr 1fr auto',
+          borderBottom: '1px solid #27272a',
+          paddingLeft: 0,
+          paddingRight: 8,
+          alignItems: 'center',
+        }}
+        className="px-2 group"
+      >
+        {/* Drag handle: 6-dot rectangle, only visible on hover */}
+        <button
+          {...attributes}
+          {...listeners}
+          className="flex items-center justify-center cursor-grab focus:outline-none h-full"
+          style={{ background: 'none', border: 'none', padding: 0 }}
+          tabIndex={-1}
+          title="Drag to reorder"
+        >
+          <span className="inline-block opacity-0 group-hover:opacity-70 transition-opacity duration-150">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="3" cy="4" r="1" fill="#888" />
+              <circle cx="7" cy="4" r="1" fill="#888" />
+              <circle cx="11" cy="4" r="1" fill="#888" />
+              <circle cx="3" cy="9" r="1" fill="#888" />
+              <circle cx="7" cy="9" r="1" fill="#888" />
+              <circle cx="11" cy="9" r="1" fill="#888" />
+            </svg>
+          </span>
+        </button>
+        <input
+          className="bg-transparent text-white px-2 py-1 outline-none w-full border-r border-neutral-800"
+          value={param.key}
+          placeholder="Parameter"
+          onChange={e => handleBodyParamChange(param.id, 'key', e.target.value)}
+        />
+        <input
+          className="bg-transparent text-white px-2 py-1 outline-none w-full border-r border-neutral-800"
+          value={param.value}
+          placeholder="Value"
+          onChange={e => handleBodyParamChange(param.id, 'value', e.target.value)}
+        />
+        <div className="flex items-center gap-2 justify-end px-2">
+          <button className="text-green-500 hover:text-green-400" tabIndex={-1}>
+            <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg>
+          </button>
+          <button className="text-red-500 hover:text-red-400" onClick={() => handleDeleteBodyParam(param.id)} tabIndex={-1}>
+            <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" /></svg>
+          </button>
+        </div>
+      </div>
+    );
+  });
+
+  // State for multipart/form-data body parameters
+  const [multipartBodyParams, setMultipartBodyParams] = useState([
+    { id: uuidv4(), key: '', value: '', contentType: '', file: null as File | null }
+  ]);
+  const [showMultipartContentType, setShowMultipartContentType] = useState(false);
+  const handleMultipartBodyParamChange = (id: string, field: 'key' | 'value' | 'contentType', value: string) => {
+    setMultipartBodyParams(prev => {
+      const updated = prev.map((p) => p.id === id ? { ...p, [field]: value } : p);
+      if (field === 'key' && prev[prev.length - 1].id === id && value.trim() !== '') {
+        return [...updated, { id: uuidv4(), key: '', value: '', contentType: '', file: null }];
+      }
+      return updated;
+    });
+  };
+  const handleMultipartFileChange = (id: string, file: File | null) => {
+    setMultipartBodyParams(prev => prev.map((p) => p.id === id ? { ...p, file, value: file ? file.name : '' } : p));
+  };
+  const handleMultipartContentTypeChange = (id: string, value: string) => {
+    setMultipartBodyParams(prev => prev.map((p) => p.id === id ? { ...p, contentType: value } : p));
+  };
+  const handleDeleteMultipartBodyParam = (id: string) => {
+    setMultipartBodyParams(prev => prev.length === 1 ? prev : prev.filter((p) => p.id !== id));
+  };
+  const handleAddMultipartBodyParam = () => {
+    setMultipartBodyParams(prev => [...prev, { id: uuidv4(), key: '', value: '', contentType: '', file: null }]);
+  };
+  const handleMultipartBodyDragEnd = (event: any) => {
+    const { active, over } = event;
+    if (active.id !== over.id) {
+      setMultipartBodyParams((items) => {
+        const oldIndex = items.findIndex(i => i.id === active.id);
+        const newIndex = items.findIndex(i => i.id === over.id);
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
+  };
+
+  type SortableMultipartBodyParamRowProps = {
+    param: {
+      id: string;
+      key: string;
+      value: string;
+      contentType: string;
+      file: File | null;
+    };
+    handleMultipartBodyParamChange: (id: string, field: 'key' | 'value' | 'contentType', value: string) => void;
+    handleDeleteMultipartBodyParam: (id: string) => void;
+    handleMultipartFileChange: (id: string, file: File | null) => void;
+    handleMultipartContentTypeChange: (id: string, value: string) => void;
+    isOdd: boolean;
+    showContentType: boolean;
+  };
+  const SortableMultipartBodyParamRow = React.memo(function SortableMultipartBodyParamRow({ param, handleMultipartBodyParamChange, handleDeleteMultipartBodyParam, handleMultipartFileChange, handleMultipartContentTypeChange, isOdd, showContentType }: SortableMultipartBodyParamRowProps) {
+    const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: param.id });
+    return (
+      <div
+        ref={setNodeRef}
+        style={{
+          transform: CSS.Transform.toString(transform),
+          transition,
+          opacity: isDragging ? 0.5 : 1,
+          background: isOdd ? '#19191b' : undefined,
+          minHeight: '38px',
+          display: 'grid',
+          gridTemplateColumns: showContentType ? '32px 1fr 1fr 1fr auto' : '32px 1fr 1fr auto',
+          borderBottom: '1px solid #27272a',
+          paddingLeft: 0,
+          paddingRight: 8,
+          alignItems: 'center',
+        }}
+        className="px-2 group"
+      >
+        {/* Drag handle */}
+        <button
+          {...attributes}
+          {...listeners}
+          className="flex items-center justify-center cursor-grab focus:outline-none h-full"
+          style={{ background: 'none', border: 'none', padding: 0 }}
+          tabIndex={-1}
+          title="Drag to reorder"
+        >
+          <span className="inline-block opacity-0 group-hover:opacity-70 transition-opacity duration-150">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="3" cy="4" r="1" fill="#888" />
+              <circle cx="7" cy="4" r="1" fill="#888" />
+              <circle cx="11" cy="4" r="1" fill="#888" />
+              <circle cx="3" cy="9" r="1" fill="#888" />
+              <circle cx="7" cy="9" r="1" fill="#888" />
+              <circle cx="11" cy="9" r="1" fill="#888" />
+            </svg>
+          </span>
+        </button>
+        <input
+          className="bg-transparent text-white px-2 py-1 outline-none w-full border-r border-neutral-800"
+          value={param.key}
+          placeholder="Parameter"
+          onChange={e => handleMultipartBodyParamChange(param.id, 'key', e.target.value)}
+        />
+        {/* File input and value display */}
+        <div className="flex items-center border-r border-neutral-800 px-2">
+          <label className="flex items-center cursor-pointer">
+            <span className="text-blue-400 hover:underline mr-2">Choose files</span>
+            <input
+              type="file"
+              className="hidden"
+              onChange={e => handleMultipartFileChange(param.id, e.target.files?.[0] || null)}
+            />
+          </label>
+          <span className="ml-2 text-zinc-400 text-xs">{param.file ? param.file.name : 'No file chosen'}</span>
+        </div>
+        {showContentType && (
+          <input
+            className="bg-transparent text-white px-2 py-1 outline-none w-full border-r border-neutral-800"
+            value={param.contentType}
+            placeholder="Content-Type"
+            onChange={e => handleMultipartContentTypeChange(param.id, e.target.value)}
+          />
+        )}
+        <div className="flex items-center gap-2 justify-end px-2">
+          <button className="text-green-500 hover:text-green-400" tabIndex={-1}>
+            <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg>
+          </button>
+          <button className="text-red-500 hover:text-red-400" onClick={() => handleDeleteMultipartBodyParam(param.id)} tabIndex={-1}>
+            <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" /></svg>
+          </button>
+        </div>
+      </div>
+    );
+  });
+
+  // Add state for octet-stream file
+  const [octetStreamFile, setOctetStreamFile] = useState<File | null>(null);
+
+  // Headers state and handlers
+  const [headers, setHeaders] = React.useState([
+    { id: uuidv4(), key: '', value: '', description: '' }
+  ]);
+  const [editHeadersActive, setEditHeadersActive] = useState(false);
+  const handleHeaderChange = (id: string, field: 'key' | 'value' | 'description', value: string) => {
+    setHeaders(prev => {
+      const updated = prev.map((h) => h.id === id ? { ...h, [field]: value } : h);
+      if (field === 'key' && prev[prev.length - 1].id === id && value.trim() !== '') {
+        return [...updated, { id: uuidv4(), key: '', value: '', description: '' }];
+      }
+      return updated;
+    });
+  };
+  const handleDeleteHeader = (id: string) => {
+    setHeaders(prev => prev.length === 1 ? prev : prev.filter((h) => h.id !== id));
+  };
+  const handleAddHeader = () => {
+    setHeaders(prev => [...prev, { id: uuidv4(), key: '', value: '', description: '' }]);
+  };
+  const handleHeaderDragEnd = (event: any) => {
+    const { active, over } = event;
+    if (active.id !== over.id) {
+      setHeaders((items) => {
+        const oldIndex = items.findIndex(i => i.id === active.id);
+        const newIndex = items.findIndex(i => i.id === over.id);
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
+  };
+  const SortableHeaderRow = React.memo(function SortableHeaderRow({ header, handleHeaderChange, handleDeleteHeader, isOdd }: {
+    header: { id: string; key: string; value: string; description: string };
+    handleHeaderChange: (id: string, field: 'key' | 'value' | 'description', value: string) => void;
+    handleDeleteHeader: (id: string) => void;
+    isOdd: boolean;
+  }) {
+    const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: header.id });
+    return (
+      <div
+        ref={setNodeRef}
+        style={{
+          transform: CSS.Transform.toString(transform),
+          transition,
+          opacity: isDragging ? 0.5 : 1,
+          background: isOdd ? '#19191b' : undefined,
+          minHeight: '38px',
+          display: 'grid',
+          gridTemplateColumns: '32px 1fr 1fr 1fr auto',
+          borderBottom: '1px solid #27272a',
+          paddingLeft: 0,
+          paddingRight: 8,
+          alignItems: 'center',
+        }}
+        className="px-2 group"
+      >
+        {/* Drag handle: 6-dot rectangle, only visible on hover */}
+        <button
+          {...attributes}
+          {...listeners}
+          className="flex items-center justify-center cursor-grab focus:outline-none h-full"
+          style={{ background: 'none', border: 'none', padding: 0 }}
+          tabIndex={-1}
+          title="Drag to reorder"
+        >
+          <span className="inline-block opacity-0 group-hover:opacity-70 transition-opacity duration-150">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="3" cy="4" r="1" fill="#888" />
+              <circle cx="7" cy="4" r="1" fill="#888" />
+              <circle cx="11" cy="4" r="1" fill="#888" />
+              <circle cx="3" cy="9" r="1" fill="#888" />
+              <circle cx="7" cy="9" r="1" fill="#888" />
+              <circle cx="11" cy="9" r="1" fill="#888" />
+            </svg>
+          </span>
+        </button>
+        <input
+          className="bg-transparent text-white px-2 py-1 outline-none w-full border-r border-neutral-800"
+          value={header.key}
+          placeholder="Key"
+          onChange={e => handleHeaderChange(header.id, 'key', e.target.value)}
+        />
+        <input
+          className="bg-transparent text-white px-2 py-1 outline-none w-full border-r border-neutral-800"
+          value={header.value}
+          placeholder="Value"
+          onChange={e => handleHeaderChange(header.id, 'value', e.target.value)}
+        />
+        <input
+          className="bg-transparent text-white px-2 py-1 outline-none w-full border-r border-neutral-800"
+          value={header.description}
+          placeholder="Description"
+          onChange={e => handleHeaderChange(header.id, 'description', e.target.value)}
+        />
+        <div className="flex items-center gap-2 justify-end px-2">
+          <button className="text-green-500 hover:text-green-400" tabIndex={-1}>
+            <span className="material-icons">check_circle</span>
+          </button>
+          <button className="text-red-500 hover:text-red-400" onClick={() => handleDeleteHeader(header.id)} tabIndex={-1}>
+            <span className="material-icons">delete</span>
+          </button>
+        </div>
+      </div>
+    );
+  });
 
   return (
     <div className="flex flex-col h-full w-full bg-neutral-900 text-white">
@@ -920,6 +1293,554 @@ Prepend # to any row you want to add but keep disabled
                     </SortableContext>
                   </DndContext>
                 )}
+              </div>
+            </div>
+          )}
+          {activeTabObj.activeTab === 'body' && (
+            <div className="flex-1 flex flex-col bg-neutral-900 rounded p-0 mt-2">
+              {/* Body Bar: Content Type */}
+              <div className="flex items-center gap-3 px-4 h-10 border-b border-neutral-800 relative">
+                <span className="text-gray-400 text-sm">Content Type</span>
+                <div className="relative">
+                  <button
+                    className="flex items-center gap-1 bg-zinc-800 text-gray-200 text-sm px-3 py-1 rounded border border-zinc-700 focus:outline-none min-w-[90px]"
+                    onClick={() => setDropdownOpen(v => !v)}
+                  >
+                    {contentTypeOptions.find(opt => opt.value === contentType)?.label || 'None'}
+                    <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+                  </button>
+                  {dropdownOpen && (
+                    <div
+                      className="absolute left-0 mt-1 w-56 bg-zinc-900 border border-zinc-800 rounded shadow-lg z-50 py-2 max-h-72 overflow-y-auto"
+                      style={{ ...hideScrollbarStyle }}
+                    >
+                      {contentTypeOptions.map((opt, idx) => (
+                        opt.isSection ? (
+                          <div key={opt.label} className="px-4 py-1 text-xs text-zinc-500 uppercase tracking-wider select-none">
+                            {opt.label}
+                          </div>
+                        ) : (
+                          <button
+                            key={opt.value}
+                            className={`flex items-center w-full px-4 py-2 text-left text-sm hover:bg-zinc-800 ${contentType === opt.value ? 'text-violet-400' : 'text-gray-200'}`}
+                            onClick={() => { setContentType(opt.value); setDropdownOpen(false); }}
+                          >
+                            <span className="flex-1">{opt.label}</span>
+                            {contentType === opt.value && (
+                              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+                            )}
+                          </button>
+                        )
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <button
+                  className="bg-zinc-800 border border-zinc-700 text-gray-200 text-sm px-3 py-1 rounded ml-2 flex items-center gap-1 focus:outline-none"
+                  onClick={() => setActiveTab('headers')}
+                >
+                  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M2 12h20"/><path d="M12 2v20"/></svg>
+                  Override
+                </button>
+              </div>
+              {/* Raw Request Body Bar (only for application/json) */}
+              {(
+                contentType === 'application/json' ||
+                contentType === 'application/ld+json' ||
+                contentType === 'application/hal+json' ||
+                contentType === 'application/vnd.api+json' ||
+                contentType === 'application/xml' ||
+                contentType === 'text/xml' ||
+                contentType === 'text/html' ||
+                contentType === 'text/plain'
+              ) && (
+                <>
+                  <div className="flex items-center justify-between px-4 h-9 border-b border-neutral-800 bg-[#18181A]">
+                    <span className="text-gray-400 text-sm">Raw Request Body</span>
+                    <div className="flex items-center gap-3">
+                      {/* Help icon */}
+                      <button className="text-gray-400 hover:text-white" title="Help">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                      </button>
+                      {/* Delete icon */}
+                      <button className="text-gray-400 hover:text-white" title="Delete">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6v14a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M5 6V4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2"/></svg>
+                      </button>
+                      {/* Format icon */}
+                      <button className="text-gray-400 hover:text-white" title="Format">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+                      </button>
+                      {/* Magic wand icon (only omit for text/xml) */}
+                      {(contentType !== 'text/xml') && (
+                        <button className="text-gray-400 hover:text-white" title="Magic">
+                          <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M15 4V2m0 20v-2m7-7h-2M4 15H2m2.93-7.07l-1.42-1.42m16.97 16.97l-1.42-1.42m16.97-16.97l-1.42 1.42"/><path d="M8 12l4 4 6-6"/></svg>
+                        </button>
+                      )}
+                      {/* Graph icon */}
+                      <button className="text-gray-400 hover:text-white" title="Graph">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0z"/></svg>
+                      </button>
+                      {/* Copy icon */}
+                      <button className="text-gray-400 hover:text-white" title="Copy">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><rect x="2" y="2" width="13" height="13" rx="2"/></svg>
+                      </button>
+                    </div>
+                  </div>
+                  {/* Code editor area */}
+                  <div className="flex-1 flex bg-[#18181A] min-h-0" style={{ fontFamily: 'monospace' }}>
+                    {/* Line numbers */}
+                    <div className="flex flex-col items-end py-3 px-2 select-none text-zinc-700 text-sm border-r border-neutral-800 min-h-0" style={{ minWidth: 32 }}>
+                      {Array.from({ length: (rawBody.match(/\n/g)?.length ?? 0) + 1 }, (_, i) => (
+                        <span key={i}>{i + 1}</span>
+                      ))}
+                    </div>
+                    {/* Textarea */}
+                    <textarea
+                      value={rawBody}
+                      onChange={e => setRawBody(e.target.value)}
+                      className="flex-1 bg-transparent text-zinc-200 px-3 py-3 text-sm outline-none resize-none h-full min-h-0"
+                      style={{ fontFamily: 'monospace', border: 'none' }}
+                      spellCheck={false}
+                      placeholder={contentType === 'application/json' ? '{\n  "key": "value"\n}' : ''}
+                    />
+                  </div>
+                </>
+              )}
+              {contentType === 'application/x-www-form-urlencoded' && (
+                <>
+                  {/* Request Body Bar */}
+                  <div className="flex items-center justify-between px-4 h-9 border-b border-neutral-800 bg-[#18181A]">
+                    <span className="text-gray-400 text-sm">Request Body</span>
+                    <div className="flex items-center gap-3">
+                      {/* Help icon */}
+                      <button className="text-gray-400 hover:text-white" title="Help">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                      </button>
+                      {/* Delete icon */}
+                      <button className="text-gray-400 hover:text-white" title="Delete All" onClick={() => setBodyParams([{ id: uuidv4(), key: '', value: '' }])}>
+                        <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6v14a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M5 6V4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2"/></svg>
+                      </button>
+                      {/* Edit icon */}
+                      <button className="text-gray-400 hover:text-white" title="Edit">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"></path></g></svg>
+                      </button>
+                      {/* Add icon */}
+                      <button className="text-gray-400 hover:text-white" title="Add" onClick={handleAddBodyParam}>
+                        <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                      </button>
+                    </div>
+                  </div>
+                  {/* Table for key-value pairs */}
+                  <div className="w-full">
+                    <div className="grid grid-cols-4 border-b border-neutral-800 px-2" style={{ minHeight: '38px', gridTemplateColumns: '32px 1fr 1fr auto' }}>
+                      <div></div>
+                      <div className="text-gray-500 text-sm flex items-center border-r border-neutral-800 py-2">Parameter</div>
+                      <div className="text-gray-500 text-sm flex items-center border-r border-neutral-800 py-2">Value</div>
+                      <div></div>
+                    </div>
+                    <DndContext collisionDetection={closestCenter} onDragEnd={handleBodyDragEnd}>
+                      <SortableContext items={bodyParams.map(p => p.id)} strategy={verticalListSortingStrategy}>
+                        <div className="w-full">
+                          {bodyParams.map((param, idx) => (
+                            <SortableBodyParamRow
+                              key={param.id}
+                              param={param}
+                              handleBodyParamChange={handleBodyParamChange}
+                              handleDeleteBodyParam={handleDeleteBodyParam}
+                              isOdd={idx % 2 === 1}
+                            />
+                          ))}
+                        </div>
+                      </SortableContext>
+                    </DndContext>
+                  </div>
+                </>
+              )}
+              {contentType === 'multipart/form-data' && (
+                <>
+                  {/* Request Body Bar */}
+                  <div className="flex items-center justify-between px-4 h-9 border-b border-neutral-800 bg-[#18181A]">
+                    <span className="text-gray-400 text-sm">Request Body</span>
+                    <div className="flex items-center gap-3">
+                      <label className="flex items-center gap-1 text-xs text-zinc-400 select-none cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={showMultipartContentType}
+                          onChange={e => setShowMultipartContentType(e.target.checked)}
+                          className="accent-blue-500"
+                        />
+                        Show Content Type
+                      </label>
+                      {/* Help icon */}
+                      <button className="text-gray-400 hover:text-white" title="Help">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                      </button>
+                      {/* Delete icon */}
+                      <button className="text-gray-400 hover:text-white" title="Delete All" onClick={() => setMultipartBodyParams([{ id: uuidv4(), key: '', value: '', contentType: '', file: null }])}>
+                        <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6v14a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M5 6V4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2"/></svg>
+                      </button>
+                      {/* Edit icon */}
+                      <button className="text-gray-400 hover:text-white" title="Edit">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"></path></g></svg>
+                      </button>
+                      {/* Add icon */}
+                      <button className="text-gray-400 hover:text-white" title="Add" onClick={handleAddMultipartBodyParam}>
+                        <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                      </button>
+                    </div>
+                  </div>
+                  {/* Table for multipart/form-data */}
+                  <div className="w-full">
+                    <div className={`grid border-b border-neutral-800 px-2`} style={{ minHeight: '38px', gridTemplateColumns: showMultipartContentType ? '32px 1fr 1fr 1fr auto' : '32px 1fr 1fr auto' }}>
+                      <div></div>
+                      <div className="text-gray-500 text-sm flex items-center border-r border-neutral-800 py-2">Parameter</div>
+                      <div className="text-gray-500 text-sm flex items-center border-r border-neutral-800 py-2">Value</div>
+                      {showMultipartContentType && <div className="text-gray-500 text-sm flex items-center border-r border-neutral-800 py-2">Content Type</div>}
+                      <div></div>
+                    </div>
+                    <DndContext collisionDetection={closestCenter} onDragEnd={handleMultipartBodyDragEnd}>
+                      <SortableContext items={multipartBodyParams.map(p => p.id)} strategy={verticalListSortingStrategy}>
+                        <div className="w-full">
+                          {multipartBodyParams.map((param, idx) => (
+                            <SortableMultipartBodyParamRow
+                              key={param.id}
+                              param={param}
+                              handleMultipartBodyParamChange={handleMultipartBodyParamChange}
+                              handleDeleteMultipartBodyParam={handleDeleteMultipartBodyParam}
+                              handleMultipartFileChange={handleMultipartFileChange}
+                              handleMultipartContentTypeChange={handleMultipartContentTypeChange}
+                              isOdd={idx % 2 === 1}
+                              showContentType={showMultipartContentType}
+                            />
+                          ))}
+                        </div>
+                      </SortableContext>
+                    </DndContext>
+                  </div>
+                </>
+              )}
+              {contentType === 'application/octet-stream' && (
+                <div className="px-4 pt-4">
+                  <input
+                    type="file"
+                    onChange={e => setOctetStreamFile(e.target.files?.[0] || null)}
+                  />
+                </div>
+              )}
+              {/* Body Content Placeholder */}
+            
+            </div>
+          )}
+          {activeTabObj.activeTab === 'headers' && (
+            <div className="flex-1 flex flex-col bg-neutral-900 rounded p-0 mt-2">
+              {/* Header List Bar - always visible */}
+              <div className="flex items-center justify-between px-4 h-10 border-b border-neutral-800">
+                <span className="text-gray-400 text-sm">Header List</span>
+                <div className="flex items-center gap-3">
+                  <button
+                    className="text-gray-400 hover:text-white"
+                    title="Help"
+                    onClick={() => window.open('https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers', '_blank')}
+                  >
+                    <span className="inline-block align-middle">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-circle-question-mark-icon lucide-circle-question-mark"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                    </span>
+                  </button>
+                  <button
+                    className="text-gray-400 hover:text-white"
+                    title="Delete all"
+                    onClick={() => setHeaders([{ id: uuidv4(), key: '', value: '', description: '' }])}
+                  >
+                    <span className="inline-block align-middle">
+                      <svg viewBox="0 0 24 24" width="1.2em" height="1.2em" className="svg-icons"><path fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2m-6 5v6m4-6v6"></path></svg>
+                    </span>
+                  </button>
+                  <div className="relative flex items-center">
+                    {editHeadersActive && (
+                      <AnimatePresence>
+                        <motion.span
+                          className="inline-block align-middle mr-2"
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: -10 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <svg viewBox="0 0 24 24" width="1.2em" height="1.2em" className="svg-icons"><g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"><path d="M3 6h18M3 12h15a3 3 0 1 1 0 6h-4"></path><path d="m16 16l-2 2l2 2M3 18h7"></path></g></svg>
+                        </motion.span>
+                      </AnimatePresence>
+                    )}
+                    <button
+                      className={`text-gray-400 hover:text-white ${editHeadersActive ? 'text-blue-500' : ''}`}
+                      title="Edit"
+                      onClick={() => setEditHeadersActive(v => !v)}
+                    >
+                      <span className="inline-block align-middle">
+                        <svg viewBox="0 0 24 24" width="1.2em" height="1.2em" className="svg-icons"><g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"></path></g></svg>
+                      </span>
+                    </button>
+                  </div>
+                  <button
+                    className="text-gray-400 hover:text-white"
+                    title="Add"
+                    onClick={handleAddHeader}
+                  >
+                    <span className="inline-block align-middle">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-plus-icon lucide-plus"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                    </span>
+                  </button>
+                </div>
+              </div>
+              {/* Header List table or instructional area always directly below the bar */}
+              <div>
+                {editHeadersActive ? (
+                  <div className="bg-[#18181A] rounded-b-2xl p-0 border-t border-neutral-800" style={{minHeight: '120px', maxWidth: '100%'}}>
+                    <div className="relative">
+                      <div className="absolute left-0 top-0 bottom-0 w-8 flex flex-col items-end pt-4 pl-1 pr-2 select-none text-zinc-700 text-sm font-mono">
+                        <span>1</span>
+                      </div>
+                      <pre className="pl-10 pt-4 pb-4 pr-4 text-gray-400 text-[15px] font-mono whitespace-pre-wrap select-none bg-transparent m-0" style={{minHeight: '120px'}}>
+Headers are key-value pairs sent with requests
+You can drag to reorder or disable
+Prepend # to any row you want to add but keep disabled
+                      </pre>
+                    </div>
+                  </div>
+                ) : (
+                  <DndContext collisionDetection={closestCenter} onDragEnd={handleHeaderDragEnd}>
+                    <SortableContext items={headers.map(h => h.id)} strategy={verticalListSortingStrategy}>
+                      <div className="w-full">
+                        <div className="grid grid-cols-5 border-b border-neutral-800 px-2" style={{minHeight: '38px', gridTemplateColumns: '32px 1fr 1fr 1fr auto'}}>
+                          <div></div>
+                          <div className="text-gray-500 text-sm flex items-center border-r border-neutral-800 py-2">Key</div>
+                          <div className="text-gray-500 text-sm flex items-center border-r border-neutral-800 py-2">Value</div>
+                          <div className="text-gray-500 text-sm flex items-center border-r border-neutral-800 py-2">Description</div>
+                          <div></div>
+                        </div>
+                        {headers.map((header, idx) => (
+                          <SortableHeaderRow
+                            key={header.id}
+                            header={header}
+                            handleHeaderChange={handleHeaderChange}
+                            handleDeleteHeader={handleDeleteHeader}
+                            isOdd={idx % 2 === 1}
+                          />
+                        ))}
+                      </div>
+                    </SortableContext>
+                  </DndContext>
+                )}
+              </div>
+            </div>
+          )}
+          {activeTabObj.activeTab === 'authorization' && (
+            <div className="flex-1 flex flex-col bg-neutral-900 rounded p-0 mt-2">
+              {/* Authorization Bar */}
+              <div className="flex items-center gap-3 px-4 h-10 border-b border-neutral-800 relative">
+                <span className="text-gray-400 text-sm">Authorization</span>
+                <div className="relative">
+                  <button
+                    className="flex items-center gap-1 bg-zinc-800 text-gray-200 text-sm px-3 py-1 rounded border border-zinc-700 focus:outline-none min-w-[90px]"
+                    onClick={() => setDropdownOpen(v => !v)}
+                  >
+                    {contentTypeOptions.find(opt => opt.value === contentType)?.label || 'None'}
+                    <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+                  </button>
+                  {dropdownOpen && (
+                    <div
+                      className="absolute left-0 mt-1 w-56 bg-zinc-900 border border-zinc-800 rounded shadow-lg z-50 py-2 max-h-72 overflow-y-auto"
+                      style={{ ...hideScrollbarStyle }}
+                    >
+                      {contentTypeOptions.map((opt, idx) => (
+                        opt.isSection ? (
+                          <div key={opt.label} className="px-4 py-1 text-xs text-zinc-500 uppercase tracking-wider select-none">
+                            {opt.label}
+                          </div>
+                        ) : (
+                          <button
+                            key={opt.value}
+                            className={`flex items-center w-full px-4 py-2 text-left text-sm hover:bg-zinc-800 ${contentType === opt.value ? 'text-violet-400' : 'text-gray-200'}`}
+                            onClick={() => { setContentType(opt.value); setDropdownOpen(false); }}
+                          >
+                            <span className="flex-1">{opt.label}</span>
+                            {contentType === opt.value && (
+                              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+                            )}
+                          </button>
+                        )
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <button
+                  className="bg-zinc-800 border border-zinc-700 text-gray-200 text-sm px-3 py-1 rounded ml-2 flex items-center gap-1 focus:outline-none"
+                  onClick={() => setActiveTab('headers')}
+                >
+                  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M2 12h20"/><path d="M12 2v20"/></svg>
+                  Override
+                </button>
+              </div>
+              {/* Authorization Content */}
+              <div className="px-4 py-6">
+                {/* Add your authorization content here */}
+              </div>
+            </div>
+          )}
+          {activeTabObj.activeTab === 'pre-request' && (
+            <div className="flex-1 flex flex-col bg-neutral-900 rounded p-0 mt-2">
+              {/* Pre-request Script Bar */}
+              <div className="flex items-center gap-3 px-4 h-10 border-b border-neutral-800 relative">
+                <span className="text-gray-400 text-sm">Pre-request Script</span>
+                <div className="relative">
+                  <button
+                    className="flex items-center gap-1 bg-zinc-800 text-gray-200 text-sm px-3 py-1 rounded border border-zinc-700 focus:outline-none min-w-[90px]"
+                    onClick={() => setDropdownOpen(v => !v)}
+                  >
+                    {contentTypeOptions.find(opt => opt.value === contentType)?.label || 'None'}
+                    <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+                  </button>
+                  {dropdownOpen && (
+                    <div
+                      className="absolute left-0 mt-1 w-56 bg-zinc-900 border border-zinc-800 rounded shadow-lg z-50 py-2 max-h-72 overflow-y-auto"
+                      style={{ ...hideScrollbarStyle }}
+                    >
+                      {contentTypeOptions.map((opt, idx) => (
+                        opt.isSection ? (
+                          <div key={opt.label} className="px-4 py-1 text-xs text-zinc-500 uppercase tracking-wider select-none">
+                            {opt.label}
+                          </div>
+                        ) : (
+                          <button
+                            key={opt.value}
+                            className={`flex items-center w-full px-4 py-2 text-left text-sm hover:bg-zinc-800 ${contentType === opt.value ? 'text-violet-400' : 'text-gray-200'}`}
+                            onClick={() => { setContentType(opt.value); setDropdownOpen(false); }}
+                          >
+                            <span className="flex-1">{opt.label}</span>
+                            {contentType === opt.value && (
+                              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+                            )}
+                          </button>
+                        )
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <button
+                  className="bg-zinc-800 border border-zinc-700 text-gray-200 text-sm px-3 py-1 rounded ml-2 flex items-center gap-1 focus:outline-none"
+                  onClick={() => setActiveTab('headers')}
+                >
+                  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M2 12h20"/><path d="M12 2v20"/></svg>
+                  Override
+                </button>
+              </div>
+              {/* Pre-request Script Content */}
+              <div className="px-4 py-6">
+                {/* Add your pre-request script content here */}
+              </div>
+            </div>
+          )}
+          {activeTabObj.activeTab === 'post-request' && (
+            <div className="flex-1 flex flex-col bg-neutral-900 rounded p-0 mt-2">
+              {/* Post-request Script Bar */}
+              <div className="flex items-center gap-3 px-4 h-10 border-b border-neutral-800 relative">
+                <span className="text-gray-400 text-sm">Post-request Script</span>
+                <div className="relative">
+                  <button
+                    className="flex items-center gap-1 bg-zinc-800 text-gray-200 text-sm px-3 py-1 rounded border border-zinc-700 focus:outline-none min-w-[90px]"
+                    onClick={() => setDropdownOpen(v => !v)}
+                  >
+                    {contentTypeOptions.find(opt => opt.value === contentType)?.label || 'None'}
+                    <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+                  </button>
+                  {dropdownOpen && (
+                    <div
+                      className="absolute left-0 mt-1 w-56 bg-zinc-900 border border-zinc-800 rounded shadow-lg z-50 py-2 max-h-72 overflow-y-auto"
+                      style={{ ...hideScrollbarStyle }}
+                    >
+                      {contentTypeOptions.map((opt, idx) => (
+                        opt.isSection ? (
+                          <div key={opt.label} className="px-4 py-1 text-xs text-zinc-500 uppercase tracking-wider select-none">
+                            {opt.label}
+                          </div>
+                        ) : (
+                          <button
+                            key={opt.value}
+                            className={`flex items-center w-full px-4 py-2 text-left text-sm hover:bg-zinc-800 ${contentType === opt.value ? 'text-violet-400' : 'text-gray-200'}`}
+                            onClick={() => { setContentType(opt.value); setDropdownOpen(false); }}
+                          >
+                            <span className="flex-1">{opt.label}</span>
+                            {contentType === opt.value && (
+                              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+                            )}
+                          </button>
+                        )
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <button
+                  className="bg-zinc-800 border border-zinc-700 text-gray-200 text-sm px-3 py-1 rounded ml-2 flex items-center gap-1 focus:outline-none"
+                  onClick={() => setActiveTab('headers')}
+                >
+                  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M2 12h20"/><path d="M12 2v20"/></svg>
+                  Override
+                </button>
+              </div>
+              {/* Post-request Script Content */}
+              <div className="px-4 py-6">
+                {/* Add your post-request script content here */}
+              </div>
+            </div>
+          )}
+          {activeTabObj.activeTab === 'variables' && (
+            <div className="flex-1 flex flex-col bg-neutral-900 rounded p-0 mt-2">
+              {/* Variables Bar */}
+              <div className="flex items-center gap-3 px-4 h-10 border-b border-neutral-800 relative">
+                <span className="text-gray-400 text-sm">Variables</span>
+                <div className="relative">
+                  <button
+                    className="flex items-center gap-1 bg-zinc-800 text-gray-200 text-sm px-3 py-1 rounded border border-zinc-700 focus:outline-none min-w-[90px]"
+                    onClick={() => setDropdownOpen(v => !v)}
+                  >
+                    {contentTypeOptions.find(opt => opt.value === contentType)?.label || 'None'}
+                    <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+                  </button>
+                  {dropdownOpen && (
+                    <div
+                      className="absolute left-0 mt-1 w-56 bg-zinc-900 border border-zinc-800 rounded shadow-lg z-50 py-2 max-h-72 overflow-y-auto"
+                      style={{ ...hideScrollbarStyle }}
+                    >
+                      {contentTypeOptions.map((opt, idx) => (
+                        opt.isSection ? (
+                          <div key={opt.label} className="px-4 py-1 text-xs text-zinc-500 uppercase tracking-wider select-none">
+                            {opt.label}
+                          </div>
+                        ) : (
+                          <button
+                            key={opt.value}
+                            className={`flex items-center w-full px-4 py-2 text-left text-sm hover:bg-zinc-800 ${contentType === opt.value ? 'text-violet-400' : 'text-gray-200'}`}
+                            onClick={() => { setContentType(opt.value); setDropdownOpen(false); }}
+                          >
+                            <span className="flex-1">{opt.label}</span>
+                            {contentType === opt.value && (
+                              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+                            )}
+                          </button>
+                        )
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <button
+                  className="bg-zinc-800 border border-zinc-700 text-gray-200 text-sm px-3 py-1 rounded ml-2 flex items-center gap-1 focus:outline-none"
+                  onClick={() => setActiveTab('headers')}
+                >
+                  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M2 12h20"/><path d="M12 2v20"/></svg>
+                  Override
+                </button>
+              </div>
+              {/* Variables Content */}
+              <div className="px-4 py-6">
+                {/* Add your variables content here */}
               </div>
             </div>
           )}
