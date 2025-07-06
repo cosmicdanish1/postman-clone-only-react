@@ -1,10 +1,11 @@
 import React from 'react';
 import ParametersTab from './ParametersTab';
 import BodyTab from './BodyTab';
-import HeadersTab from './HeadersTab';
 import AuthorizationTab from './AuthorizationTab';
 import ScriptTab from './ScriptTab';
 import ResponsePanel from './ResponsePanel';
+import DraggableHeaders from './DraggableHeaders';
+import type { DraggableHeader } from './DraggableHeaders';
 
 const methods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'];
 const tabs = [
@@ -19,11 +20,18 @@ const tabs = [
 const RequestPanel: React.FC = () => {
   const [selectedMethod, setSelectedMethod] = React.useState('GET');
   const [activeTab, setActiveTab] = React.useState('Parameters');
+  const [headers, setHeaders] = React.useState<DraggableHeader[]>([{ key: '', value: '' }]);
 
   let tabContent: React.ReactNode = null;
   if (activeTab === 'Parameters') tabContent = <ParametersTab />;
   else if (activeTab === 'Body') tabContent = <BodyTab />;
-  else if (activeTab === 'Headers') tabContent = <HeadersTab />;
+  else if (activeTab === 'Headers') tabContent = (
+    <DraggableHeaders
+      headers={headers}
+      setHeaders={setHeaders}
+      title="Headers"
+    />
+  );
   else if (activeTab === 'Authorization') tabContent = <AuthorizationTab />;
   else if (activeTab === 'Pre-request Script') tabContent = <ScriptTab label="Pre-request Script" />;
   else if (activeTab === 'Post-request Script') tabContent = <ScriptTab label="Post-request Script" />;

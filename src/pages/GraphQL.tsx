@@ -34,7 +34,7 @@ const defaultTabData = () => ({
   query: '',
   variables: '',
   headers: [
-    { id: uuidv4(), key: '', value: '', description: '' }
+    { key: '', value: '' }
   ],
 });
 
@@ -245,43 +245,8 @@ const GraphQL: React.FC = () => {
           {/* Left: Tab content */}
           <div className="flex-1 p-0">
             {activeTabObj.activeTab === 'headers' && (
-              <div className="p-0">
-                {/* Headers Bar */}
-                <div className="flex items-center justify-between px-4 py-3 border-b border-[#232329]">
-                  <span className="font-semibold text-gray-200">Headers</span>
-                  <div className="flex items-center gap-4">
-                    <button className="text-gray-400 hover:text-white"><FiHelpCircle size={18} /></button>
-                    <button className="text-gray-400 hover:text-white"><FiTrash2 size={18} /></button>
-                    <button className="text-gray-400 hover:text-white"><FiEdit2 size={18} /></button>
-                    <button onClick={addHeader} className="text-gray-400 hover:text-white"><FiPlus size={18} /></button>
-                  </div>
-                </div>
-                {/* Headers Table */}
-                <div className="overflow-x-auto">
-                  <table className="min-w-full text-sm text-gray-400">
-                    <thead>
-                      <tr className="border-b border-[#232329]">
-                        <th className="px-4 py-2 font-normal text-left">Key</th>
-                        <th className="px-4 py-2 font-normal text-left">Value</th>
-                        <th className="px-4 py-2 font-normal text-left">Description</th>
-                        <th className="px-2 py-2 font-normal text-left"></th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {activeTabObj.headers.map((header, idx) => (
-                        <tr key={header.id} className="border-b border-[#232329] hover:bg-[#232329]">
-                          <td className="px-4 py-2"><input value={header.key} onChange={e => updateHeader(header.id, 'key', e.target.value)} className="bg-transparent w-full outline-none text-white" placeholder="" /></td>
-                          <td className="px-4 py-2"><input value={header.value} onChange={e => updateHeader(header.id, 'value', e.target.value)} className="bg-transparent w-full outline-none text-white" placeholder="" /></td>
-                          <td className="px-4 py-2"><input value={header.description} onChange={e => updateHeader(header.id, 'description', e.target.value)} className="bg-transparent w-full outline-none text-white" placeholder="" /></td>
-                          <td className="px-2 py-2 flex gap-2 items-center">
-                            <button className="text-green-500 hover:text-green-400"><FiCheck /></button>
-                            <button onClick={() => deleteHeader(header.id)} className="text-red-500 hover:text-red-400"><FiTrash2 /></button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+              <div className="p-4">
+                {/* Placeholder for the removed HeaderCom component */}
               </div>
             )}
             {activeTabObj.activeTab === 'query' && (
