@@ -723,7 +723,7 @@ const HoppscotchClone: React.FC = () => {
           <button className="text-green-500 hover:text-green-400" tabIndex={-1} disabled={isLocked}>
             <span className="material-icons">check_circle</span>
           </button>
-          <button className="text-red-500 hover:text-red-400" onClick={() => handleDeleteHeader(header.id)} tabIndex={-1} disabled={isLocked}>
+          <button className="text-red-500  hover:text-red-400" onClick={() => handleDeleteHeader(header.id)} tabIndex={-1} disabled={isLocked}>
             <span className="material-icons">delete</span>
           </button>
         </div>
@@ -2631,7 +2631,7 @@ Prepend # to any row you want to add but keep disabled
                     <input
                       type="text"
                       placeholder="HAWK Auth Key"
-                      className="w-full bg-transparent text-zinc-200 placeholder-zinc-400 border-b border-neutral-800 px-4 py-3 text-base outline-none"
+                      className="w-full bg-transparent  text-zinc-200 placeholder-zinc-400 border-b border-neutral-800 px-4 py-3 text-base outline-none"
                       style={{borderTop: 'none', borderLeft: 'none', borderRight: 'none', borderRadius: 0}}
                       autoComplete="off"
                     />
