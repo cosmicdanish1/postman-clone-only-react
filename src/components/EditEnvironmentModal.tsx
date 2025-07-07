@@ -1,3 +1,9 @@
+// File: EditEnvironmentModal.tsx
+// Type: Component (modal dialog for editing environments)
+// Imports: React, utility functions
+// Imported by: Main request/response editors or layout components
+// Role: Renders a modal dialog for editing environment variables.
+// Located at: src/components/EditEnvironmentModal.tsx
 import React from 'react';
 
 interface EditEnvironmentModalProps {

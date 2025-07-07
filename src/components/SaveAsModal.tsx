@@ -1,3 +1,9 @@
+// File: SaveAsModal.tsx
+// Type: Component (modal dialog for saving as)
+// Imports: React, utility functions
+// Imported by: Main request/response editors or layout components
+// Role: Renders a modal dialog for saving requests or collections under a new name.
+// Located at: src/components/SaveAsModal.tsx
 import React from 'react';
 
 interface SaveAsModalProps {

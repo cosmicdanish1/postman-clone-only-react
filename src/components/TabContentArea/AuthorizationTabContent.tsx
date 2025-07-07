@@ -1,3 +1,9 @@
+// File: AuthorizationTabContent.tsx
+// Type: Component (authorization tab content)
+// Imports: React, MonacoEditor
+// Imported by: TabContentArea.tsx
+// Role: Renders the UI for configuring request authorization (various auth types) in the request editor.
+// Located at: src/components/TabContentArea/AuthorizationTabContent.tsx
 import React, { useState, useRef, useEffect } from 'react';
 import MonacoEditor from '@monaco-editor/react';
 

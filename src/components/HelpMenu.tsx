@@ -1,3 +1,9 @@
+// File: HelpMenu.tsx
+// Type: Component (help menu panel)
+// Imports: React, utility functions
+// Imported by: Main layout or request/response editors
+// Role: Renders a help menu panel with shortcuts and documentation links.
+// Located at: src/components/HelpMenu.tsx
 import React from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 

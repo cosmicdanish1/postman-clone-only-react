@@ -1,3 +1,9 @@
+// File: ImportCurlModal.tsx
+// Type: Component (modal dialog for importing cURL)
+// Imports: React, utility functions
+// Imported by: Main request/response editors or layout components
+// Role: Renders a modal dialog for importing requests from cURL commands.
+// Located at: src/components/ImportCurlModal.tsx
 import React from 'react';
 
 interface ImportCurlModalProps {

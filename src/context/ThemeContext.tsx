@@ -1,3 +1,9 @@
+// File: context/ThemeContext.tsx
+// Type: React Context
+// Imports: React, createContext, useState, useEffect
+// Imported by: Components that use theme context
+// Role: Provides theme context for managing and accessing theme state across the app.
+// Located at: src/context/ThemeContext.tsx
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
 type Theme = 'system' | 'light' | 'dark';

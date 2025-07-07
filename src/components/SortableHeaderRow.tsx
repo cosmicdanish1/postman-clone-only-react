@@ -1,3 +1,9 @@
+// File: SortableHeaderRow.tsx
+// Type: Component (sortable table row for headers)
+// Imports: React, utility functions, and possibly drag-and-drop libraries
+// Imported by: TabContentArea/HeadersTabContent.tsx, GraphQLTabContentArea.tsx
+// Role: Renders a sortable row for HTTP headers in request editors.
+// Located at: src/components/SortableHeaderRow.tsx
 import React, { useState } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';

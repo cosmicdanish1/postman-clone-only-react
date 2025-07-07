@@ -1,3 +1,9 @@
+// File: PreRequestTabContent.tsx
+// Type: Component (pre-request tab content)
+// Imports: React, MonacoEditor, utility functions
+// Imported by: TabContentArea.tsx
+// Role: Renders the UI for editing and running pre-request scripts in the request editor.
+// Located at: src/components/TabContentArea/PreRequestTabContent.tsx
 import React from 'react';
 import MonacoEditor from '@monaco-editor/react';
 

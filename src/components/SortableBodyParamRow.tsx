@@ -1,3 +1,9 @@
+// File: SortableBodyParamRow.tsx
+// Type: Component (sortable table row for body parameters)
+// Imports: React, useSortable (dnd-kit), CSS utilities
+// Imported by: BodyTabContent.tsx
+// Role: Renders a sortable row for body parameters in the body tab, supporting drag-and-drop reordering.
+// Located at: src/components/SortableBodyParamRow.tsx
 import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';

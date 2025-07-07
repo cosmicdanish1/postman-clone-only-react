@@ -1,3 +1,9 @@
+// File: SortableParamRow.tsx
+// Type: Component (sortable table row for query parameters)
+// Imports: React, useSortable (dnd-kit), CSS utilities
+// Imported by: ParametersTabContent.tsx
+// Role: Renders a sortable row for query parameters in the parameters tab, supporting drag-and-drop reordering.
+// Located at: src/components/SortableParamRow.tsx
 import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';

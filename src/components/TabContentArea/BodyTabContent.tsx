@@ -1,3 +1,9 @@
+// File: BodyTabContent.tsx
+// Type: Component (body tab content)
+// Imports: React, utility functions, and possibly code editor components
+// Imported by: TabContentArea.tsx
+// Role: Renders the UI for editing the HTTP request body in the request editor.
+// Located at: src/components/TabContentArea/BodyTabContent.tsx
 import React, { useState } from 'react';
 import MonacoEditor from '@monaco-editor/react';
 import { DndContext, closestCenter } from '@dnd-kit/core';

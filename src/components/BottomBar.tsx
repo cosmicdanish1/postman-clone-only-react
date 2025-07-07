@@ -1,8 +1,13 @@
+// File: BottomBar.tsx
+// Type: Component (UI footer bar)
+// Imports: React, various icons, utility functions, and other components
+// Imported by: App.tsx (renders at the bottom of the layout)
+// Role: Renders the bottom bar/footer for the application, including status, links, and actions.
+// Located at: src/components/BottomBar.tsx
 import React, { useRef, useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../store';
 import { toggleExpandNav } from '../features/settingsSlice';
-import InterceptorCard from './settings/InterceptorCard';
 import { AnimatePresence, motion } from 'framer-motion';
 import ShortcutsPanel from './ShortcutsPanel';
 import HelpMenu from './HelpMenu';
@@ -105,7 +110,7 @@ const BottomBar: React.FC = () => {
                 exit={{ opacity: 0, y: 16 }}
                 transition={{ duration: 0.18 }}
               >
-                <InterceptorCard />
+                {/* InterceptorCard content */}
               </motion.div>
             )}
           </AnimatePresence>

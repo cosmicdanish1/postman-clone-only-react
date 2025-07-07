@@ -1,3 +1,9 @@
+// File: HeadersTabContent.tsx
+// Type: Component (headers tab content)
+// Imports: React, utility functions, and possibly drag-and-drop helpers
+// Imported by: TabContentArea.tsx
+// Role: Renders the UI for editing HTTP headers in the request editor.
+// Located at: src/components/TabContentArea/HeadersTabContent.tsx
 import React from 'react';
 import { DndContext, closestCenter } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';

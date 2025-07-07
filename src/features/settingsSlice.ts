@@ -1,3 +1,9 @@
+// File: features/settingsSlice.ts
+// Type: Redux Slice
+// Imports: createSlice (from @reduxjs/toolkit)
+// Imported by: store.ts, components/Layout.tsx
+// Role: Manages settings state for the application using Redux Toolkit.
+// Located at: src/features/settingsSlice.ts
 import { createSlice } from '@reduxjs/toolkit';
 
 interface SettingsState {

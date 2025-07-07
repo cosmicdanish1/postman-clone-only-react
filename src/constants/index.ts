@@ -1,3 +1,10 @@
+// File: constants/index.ts
+// Type: Constants Index
+// Imports: (none)
+// Imported by: Various files across the project
+// Role: Exports shared constants used throughout the project.
+// Located at: src/constants/index.ts
+
 // Content type options for Body tab
 export const contentTypeOptions = [
   { label: 'None', value: 'none' },

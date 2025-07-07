@@ -1,3 +1,9 @@
+// File: VariablesTabContent.tsx
+// Type: Component (variables tab content)
+// Imports: React, utility functions, and possibly drag-and-drop helpers
+// Imported by: TabContentArea.tsx
+// Role: Renders the UI for editing environment or request variables in the request editor.
+// Located at: src/components/TabContentArea/VariablesTabContent.tsx
 import React from 'react';
 import { DndContext, closestCenter } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';

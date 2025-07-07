@@ -1,3 +1,9 @@
+// File: PostRequestTabContent.tsx
+// Type: Component (post-request tab content)
+// Imports: React, MonacoEditor, utility functions
+// Imported by: TabContentArea.tsx
+// Role: Renders the UI for editing and running post-request scripts in the request editor.
+// Located at: src/components/TabContentArea/PostRequestTabContent.tsx
 import React from 'react';
 import MonacoEditor from '@monaco-editor/react';
 

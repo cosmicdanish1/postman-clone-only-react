@@ -1,3 +1,9 @@
+// File: Sidebar.tsx
+// Type: Component (sidebar navigation)
+// Imports: React, utility functions, and possibly navigation helpers
+// Imported by: Layout.tsx
+// Role: Renders the main sidebar navigation for the app.
+// Located at: src/components/Sidebar.tsx
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { FaCog } from 'react-icons/fa';

@@ -1,3 +1,9 @@
+// File: ParametersTabContent.tsx
+// Type: Component (parameters tab content)
+// Imports: React, utility functions, and possibly drag-and-drop helpers
+// Imported by: TabContentArea.tsx
+// Role: Renders the UI for editing request query parameters in the request editor.
+// Located at: src/components/TabContentArea/ParametersTabContent.tsx
 import React, { useState } from 'react';
 import { DndContext, closestCenter } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';

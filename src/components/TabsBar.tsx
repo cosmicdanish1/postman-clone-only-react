@@ -1,3 +1,9 @@
+// File: TabsBar.tsx
+// Type: Component (main tabs bar)
+// Imports: React, utility functions, and possibly drag-and-drop helpers
+// Imported by: Main layout or request/response editors
+// Role: Renders the main tabs bar for switching between open requests or features.
+// Located at: src/components/TabsBar.tsx
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import EditEnvironmentModal from './EditEnvironmentModal';

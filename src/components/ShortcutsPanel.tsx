@@ -1,3 +1,9 @@
+// File: ShortcutsPanel.tsx
+// Type: Component (shortcuts panel)
+// Imports: React, utility functions
+// Imported by: Main layout or request/response editors
+// Role: Renders a panel displaying keyboard shortcuts for the app.
+// Located at: src/components/ShortcutsPanel.tsx
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 

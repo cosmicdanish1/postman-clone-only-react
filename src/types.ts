@@ -1,3 +1,10 @@
+// File: types.ts
+// Type: Type Definitions
+// Imports: (none)
+// Imported by: Various files across the project
+// Role: Contains shared TypeScript types and interfaces used throughout the project.
+// Located at: src/types.ts
+
 // Types for HoppscotchClone and related components
 
 export interface Parameter {

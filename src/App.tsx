@@ -1,18 +1,23 @@
-import React from 'react';
+// File: App.tsx
+// Type: Root App Component
+// Imports: BrowserRouter, Routes, Route (react-router-dom), Layout, HoppscotchClone, Settings, Collections, History, Share, NavBar, BottomBar, Environments, Realtime, GraphQL
+// Imported by: main.tsx
+// Role: Main entry point for the React app, sets up routing and layout.
+// Located at: src/App.tsx
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
-import HoppscotchClone from './pages/HoppscotchClone';
+import HoppscotchClone from './pages/Rest/RestPage';
 import Settings from './pages/Settings';
-import Collections from './pages/Collections';
-import History from './pages/History';
-import Share from './pages/Share';
+import Collections from './pages/Collections/Collections';
+import History from './pages/History/History';
+import Share from './pages/Share/Share';
 import NavBar from './components/NavBar';
 import BottomBar from './components/BottomBar';
-import Environments from './pages/Environments';
-import Request from './pages/Request';
-import GenerateCode from './pages/GenerateCode';
-import Realtime from './pages/Realtime';
-import GraphQL from './pages/GraphQL';
+import Environments from './pages/Environments/Environments';
+
+import Realtime from './pages/Realtime/Realtime';
+import GraphQL from './pages/GraphQL/GraphQL';
+// import GraphQL from './pages/GraphQL/GraphQLTabContentArea';
 
 function App() {
   return (
@@ -27,8 +32,7 @@ function App() {
           <Route path="/history" element={<History />} />
           <Route path="/share" element={<Share />} />
             <Route path="/environments" element={<Environments />} />
-            <Route path="/request" element={<Request />} />
-            <Route path="/generate-code" element={<GenerateCode />} />
+        
             <Route path="/realtime" element={<Realtime />} />
             <Route path="/graphql" element={<GraphQL />} />
         </Routes>

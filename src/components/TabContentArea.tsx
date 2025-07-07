@@ -1,3 +1,10 @@
+// File: TabContentArea.tsx
+// Type: Component (main tab content area)
+// Imports: React, various tab content components, utility functions
+// Imported by: Main request/response editors and layout components
+// Role: Renders the main content area for request/response tabs, switching between different tab types.
+// Located at: src/components/TabContentArea.tsx
+
 import React from 'react';
 import { DndContext, closestCenter } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';

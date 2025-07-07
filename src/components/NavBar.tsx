@@ -1,4 +1,9 @@
-
+// File: NavBar.tsx
+// Type: Component (navigation bar)
+// Imports: React, various icons, and utility functions
+// Imported by: App.tsx (renders at the top of the layout)
+// Role: Renders the top navigation bar for the application, including logo, search, and actions.
+// Located at: src/components/NavBar.tsx
 
 const NavBar: React.FC = () => {
 

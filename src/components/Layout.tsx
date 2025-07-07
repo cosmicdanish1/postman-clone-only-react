@@ -1,9 +1,15 @@
+// File: Layout.tsx
+// Type: Layout Component
+// Imports: React, Sidebar, useLocation (react-router-dom), RestSubSidebar, CollectionsSubSidebar, useSelector (redux)
+// Imported by: App.tsx
+// Role: Provides the main layout structure for the app, including sidebar and main content area.
+// Located at: src/components/Layout.tsx
 import React from 'react';
 import Sidebar from './Sidebar';
 import { useLocation } from 'react-router-dom';
-import RestSubSidebar from './RestSubSidebar';
-import CollectionsSubSidebar from './CollectionsSubSidebar';
-import GraphQLSubSidebar from './GraphQLSubSidebar';
+import RestSubSidebar from '../pages/Rest/RestSubSidebar';
+import CollectionsSubSidebar from '../pages/Collections/CollectionsSubSidebar';
+// import GraphQLSubSidebar from '../pages/GraphQL/GraphQLSubSidebar';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../store';
 
@@ -15,7 +21,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       <Sidebar />
       {sidebarLeft && location.pathname === '/' && <RestSubSidebar />}
       {sidebarLeft && location.pathname === '/collections' && <CollectionsSubSidebar />}
-      {sidebarLeft && location.pathname.startsWith('/graphql') && <GraphQLSubSidebar />}
+      {/* {sidebarLeft && location.pathname.startsWith('/graphql') && <GraphQLSubSidebar />} */}
       <main className="flex flex-1 h-screen">
         {children}
       </main>

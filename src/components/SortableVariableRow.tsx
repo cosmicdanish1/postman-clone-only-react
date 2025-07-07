@@ -1,3 +1,9 @@
+// File: SortableVariableRow.tsx
+// Type: Component (sortable table row for variables)
+// Imports: React, useSortable (dnd-kit), CSS utilities
+// Imported by: VariablesTabContent.tsx
+// Role: Renders a sortable row for variables in the variables tab, supporting drag-and-drop reordering.
+// Located at: src/components/SortableVariableRow.tsx
 import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';

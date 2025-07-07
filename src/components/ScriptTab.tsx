@@ -1,3 +1,9 @@
+// File: ScriptTab.tsx
+// Type: Component (script tab)
+// Imports: React
+// Imported by: Main request/response editors or layout components
+// Role: Renders a tab for editing scripts (pre-request or post-request).
+// Located at: src/components/ScriptTab.tsx
 import React from 'react';
 
 const ScriptTab: React.FC<{ label: string }> = ({ label }) => (

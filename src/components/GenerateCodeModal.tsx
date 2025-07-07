@@ -1,3 +1,9 @@
+// File: GenerateCodeModal.tsx
+// Type: Component (modal dialog for code generation)
+// Imports: React, utility functions, and possibly code generation helpers
+// Imported by: Main request/response editors or layout components
+// Role: Renders a modal dialog for generating code snippets for requests.
+// Located at: src/components/GenerateCodeModal.tsx
 import React from 'react';
 
 interface GenerateCodeModalProps {
