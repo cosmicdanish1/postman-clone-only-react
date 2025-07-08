@@ -1,6 +1,6 @@
 // File: App.tsx
 // Type: Root App Component
-// Imports: BrowserRouter, Routes, Route (react-router-dom), Layout, HoppscotchClone, Settings, Collections, History, Share, NavBar, BottomBar, Environments, Realtime, GraphQL
+// Imports: BrowserRouter, Routes, Route (react-router-dom), Layout, HoppscotchClone, Settings, Collections, History, NavBar, BottomBar, Realtime, GraphQL
 // Imported by: main.tsx
 // Role: Main entry point for the React app, sets up routing and layout.
 // Located at: src/App.tsx
@@ -9,11 +9,9 @@ import Layout from './components/Layout';
 import HoppscotchClone from './pages/Rest/RestPage';
 import Settings from './pages/Settings';
 import Collections from './pages/Collections/Collections';
-import History from './pages/History/History';
-import Share from './pages/Share/Share';
+
 import NavBar from './components/NavBar';
 import BottomBar from './components/BottomBar';
-import Environments from './pages/Environments/Environments';
 
 import Realtime from './pages/Realtime/Realtime';
 import GraphQL from './pages/GraphQL/GraphQL';
@@ -29,9 +27,7 @@ function App() {
           <Route path="/" element={<HoppscotchClone />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/collections" element={<Collections />} />
-          <Route path="/history" element={<History />} />
-          <Route path="/share" element={<Share />} />
-            <Route path="/environments" element={<Environments />} />
+          
         
             <Route path="/realtime" element={<Realtime />} />
             <Route path="/graphql" element={<GraphQL />} />

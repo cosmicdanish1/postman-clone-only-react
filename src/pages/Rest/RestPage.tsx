@@ -59,7 +59,7 @@ const HoppscotchClone: React.FC = () => {
   const [envDropdownOpen, setEnvDropdownOpen] = useState(false);
   const [envTab, setEnvTab] = useState<'personal' | 'workspace'>('personal');
   const [showVarsPopover, setShowVarsPopover] = useState(false);
-  const [editModal, setEditModal] = useState<null | 'global' | 'environment'>('global');
+  const [editModal, setEditModal] = useState<null | 'global' | 'environment'>(null);
   const eyeRef = React.useRef<HTMLSpanElement | null>(null);
   const [methodDropdownOpen, setMethodDropdownOpen] = useState(false);
   const methodDropdownRef = React.useRef<HTMLDivElement>(null);
