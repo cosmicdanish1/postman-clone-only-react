@@ -6,12 +6,14 @@
 // Located at: src/store.ts
 import { configureStore } from '@reduxjs/toolkit';
 import settingsReducer from './features/settingsSlice';
+import themeReducer from './features/themeSlice';
 
 // Import reducers here (will add settings slice soon)
 
 export const store = configureStore({
   reducer: {
     settings: settingsReducer,
+    theme: themeReducer,
   },
 });
 

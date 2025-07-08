@@ -67,4 +67,6 @@ div.custom-scroll::-webkit-scrollbar {
   display: none !important;
 }
 
+
+
 /* Removed .hide-scrollbar custom CSS, now using tailwind-scrollbar-hide plugin */

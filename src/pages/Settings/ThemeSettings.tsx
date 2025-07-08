@@ -5,24 +5,18 @@
 // Role: Renders the theme customization options in the Settings feature.
 // Located at: src/pages/Settings/ThemeSettings.tsx
 import React, { useState } from 'react';
-import { FaDesktop, FaSun, FaCloud, FaMoon, FaSync } from 'react-icons/fa';
-import { useTheme } from '../../context/ThemeContext';
-
-// ThemeSettings is responsible for the Theme card in the settings page.
-// It allows users to select:
-// - App background (System, Light, Cloud, Dark) with icons
-// - Accent color (row of colored radio buttons with tooltips)
-// Uses ThemeContext for theme state and updates.
+import { useSelector, useDispatch } from 'react-redux';
+import { setTheme, setAccentColor } from '../../features/themeSlice';
+import { FaDesktop, FaSun, FaCloud, FaMoon } from 'react-icons/fa';
 
 const backgrounds = [
   { key: 'system', label: 'System (Dark)', icon: <FaDesktop /> },
   { key: 'light', label: 'Light', icon: <FaSun /> },
-  { key: 'cloud', label: 'Cloud', icon: <FaCloud /> },
-  { key: 'dark', label: 'Dark', icon: <FaMoon /> },
-  
+  { key: 'dark', label: 'Dark', icon: <FaCloud /> },
+  { key: 'black', label: 'Black', icon: <FaMoon /> },
 ];
 
-const colors = [
+const accentColors = [
   { key: 'green', label: 'Green', color: '#22c55e' },
   { key: 'blue', label: 'Blue', color: '#2563eb' },
   { key: 'cyan', label: 'Cyan', color: '#06b6d4' },
@@ -34,18 +28,17 @@ const colors = [
 ];
 
 const ThemeSettings: React.FC = () => {
-  const { theme, setTheme, accent, setAccent } = useTheme();
+  const dispatch = useDispatch();
+  const theme = useSelector((state: any) => state.theme.theme);
+  const accentColor = useSelector((state: any) => state.theme.accentColor);
   const [hoveredColor, setHoveredColor] = useState<string | null>(null);
 
   return (
-    <div className="flex flex-row gap-12 items-start">
-      {/* Left: Title and description */}
-    
-      {/* Right: Controls */}
+    <div className={`flex flex-col gap-12 items-start bg-bg text-text ${theme === 'dark' ? 'theme-dark' : theme === 'black' ? 'theme-black' : ''}`}>
       <div className="flex-1 space-y-8">
         {/* Background */}
         <div>
-          <div className="font-semibold text-zinc-200 mb-1">Background</div>
+          <div className="font-semibold text-text mb-1">Background</div>
           <div className="text-zinc-400 text-sm mb-6">
             {backgrounds.find(bg => bg.key === theme)?.label}
           </div>
@@ -53,8 +46,8 @@ const ThemeSettings: React.FC = () => {
             {backgrounds.map(bg => (
               <button
                 key={bg.key}
-                className={`w-8 h-8  flex  items-center justify-center rounded-lg text-sm  transition ${theme === bg.key ? 'bg-neutral-900 border-[var(--accent)] text-[var(--accent)]' : 'bg-neutral-900 border-zinc-700 text-zinc-400 hover:border-zinc-500'}`}
-                onClick={() => setTheme(bg.key as 'system' | 'light' | 'dark')}
+                className={`w-8 h-8 flex items-center justify-center rounded-lg text-sm transition border ${theme === bg.key ? 'bg-bg border-blue-500 text-blue-500' : 'bg-bg border-zinc-700 text-zinc-400 hover:border-zinc-500'}`}
+                onClick={() => dispatch(setTheme(bg.key))}
                 aria-label={bg.label}
               >
                 {bg.icon}
@@ -64,29 +57,29 @@ const ThemeSettings: React.FC = () => {
         </div>
         {/* Accent color */}
         <div>
-          <div className="font-semibold text-zinc-200 mb-1">Accent color</div>
+          <div className="font-semibold mb-1 text-text">Accent color</div>
           <div className="text-zinc-400 text-sm mb-6">
-            {colors.find(c => c.key === accent)?.label}
+            {accentColors.find(c => c.key === accentColor)?.label}
           </div>
           <div className="flex gap-4 items-center">
-            {colors.map(c => (
+            {accentColors.map(c => (
               <div key={c.key} className="relative flex flex-col items-center">
                 <button
                   type="button"
-                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition focus:outline-none group`}
+                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition focus:outline-none group ${accentColor === c.key ? 'ring-2 ring-offset-2 ring-blue-500' : ''}`}
                   style={{ borderColor: c.color, background: 'transparent' }}
-                  onClick={() => setAccent(c.key as typeof accent)}
+                  onClick={() => dispatch(setAccentColor(c.key))}
                   aria-label={c.label}
                   onMouseEnter={() => setHoveredColor(c.key)}
                   onMouseLeave={() => setHoveredColor(null)}
                 >
-                  {accent === c.key && (
+                  {accentColor === c.key && (
                     <span className="w-1.5 h-1.5 rounded-full block" style={{ background: c.color }} />
                   )}
                 </button>
                 {/* Tooltip for color name on hover */}
                 {hoveredColor === c.key && (
-                  <div className="absolute -top-7 left-1/2 -translate-x-1/2 px-2 py-1 rounded bg-neutral-800 text-xs text-zinc-200 shadow z-10 whitespace-nowrap pointer-events-none animate-fade-in">
+                  <div className="absolute -top-7 left-1/2 -translate-x-1/2 px-2 py-1 rounded bg-bg text-text text-xs shadow z-10 whitespace-nowrap pointer-events-none animate-fade-in">
                     {c.label}
                   </div>
                 )}

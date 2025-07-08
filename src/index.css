@@ -2,3 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --color-bg: #fff;
+  --color-text: #18181A;
+}
+.theme-dark {
+  --color-bg: #181818;
+  --color-text: #fff;
+}
+.theme-black {
+  --color-bg: #0F0F0F;
+  --color-text: #fff;
+}

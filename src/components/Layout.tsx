@@ -8,7 +8,7 @@ import React from 'react';
 import Sidebar from './Sidebar';
 import { useLocation } from 'react-router-dom';
 import RestSubSidebar from '../pages/Rest/RestSubSidebar';
-import CollectionsSubSidebar from '../pages/Collections/CollectionsSubSidebar';
+
 // import GraphQLSubSidebar from '../pages/GraphQL/GraphQLSubSidebar';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../store';

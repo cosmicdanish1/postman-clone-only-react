@@ -8,7 +8,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import HoppscotchClone from './pages/Rest/RestPage';
 import Settings from './pages/Settings';
-import Collections from './pages/Collections/Collections';
+
 
 import NavBar from './components/NavBar';
 import BottomBar from './components/BottomBar';
@@ -26,7 +26,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HoppscotchClone />} />
           <Route path="/settings" element={<Settings />} />
-          <Route path="/collections" element={<Collections />} />
+          
           
         
             <Route path="/realtime" element={<Realtime />} />
