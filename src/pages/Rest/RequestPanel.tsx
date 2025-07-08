@@ -12,6 +12,7 @@ import ScriptTab from './ScriptTab';
 import ResponsePanel from './ResponsePanel';
 import DraggableHeaders from './DraggableHeaders';
 import type { DraggableHeader } from './DraggableHeaders';
+import { useSelector } from 'react-redux';
 
 const methods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'];
 const tabs = [
@@ -27,6 +28,12 @@ const RequestPanel: React.FC = () => {
   const [selectedMethod, setSelectedMethod] = React.useState('GET');
   const [activeTab, setActiveTab] = React.useState('Parameters');
   const [headers, setHeaders] = React.useState<DraggableHeader[]>([{ key: '', value: '' }]);
+
+  const theme = useSelector((state: any) => state.theme.theme);
+  let themeClass = '';
+  if (theme === 'dark') themeClass = 'theme-dark';
+  else if (theme === 'black') themeClass = 'theme-black';
+  // No class for light (default)
 
   let tabContent: React.ReactNode = null;
   if (activeTab === 'Parameters') tabContent = <ParametersTab />;
@@ -45,13 +52,13 @@ const RequestPanel: React.FC = () => {
 
   return (
     <>
-      <div className="w-full max-w-4xl mx-auto mt-10 bg-zinc-800 rounded-lg shadow-lg">
+      <div className={`w-full max-w-4xl mx-auto mt-10 bg-bg rounded-lg shadow-lg ${themeClass}`}>
         {/* Method, URL, Buttons */}
-        <div className="flex items-center gap-2 px-6 py-4 border-b border-zinc-700">
+        <div className="flex items-center gap-2 px-6 py-4 border-b border-border">
           <select
             value={selectedMethod}
             onChange={e => setSelectedMethod(e.target.value)}
-            className="bg-zinc-700 text-zinc-200 rounded px-2 py-1 text-sm focus:outline-none font-semibold"
+            className="bg-bg border border-border text-text rounded px-2 py-1 text-sm focus:outline-none font-semibold"
           >
             {methods.map(method => (
               <option key={method} value={method}>{method}</option>
@@ -60,21 +67,21 @@ const RequestPanel: React.FC = () => {
           <input
             type="text"
             placeholder="https://echo.hoppscotch.io"
-            className="flex-1 bg-zinc-700 text-zinc-200 rounded px-3 py-1.5 focus:outline-none placeholder-zinc-400 text-sm"
+            className="flex-1 bg-bg border border-border text-text rounded px-3 py-1.5 focus:outline-none placeholder-zinc-400 text-sm"
           />
           <button className="bg-violet-600 hover:bg-violet-700 text-white px-4 py-1.5 rounded text-sm font-semibold ml-2">Send</button>
-          <button className="bg-zinc-700 hover:bg-zinc-600 text-zinc-200 px-3 py-1.5 rounded text-sm font-semibold ml-1">Save</button>
+          <button className="bg-bg hover:bg-bg/80 text-text px-3 py-1.5 rounded text-sm font-semibold ml-1 border border-border">Save</button>
         </div>
         {/* Tabs */}
-        <div className="flex gap-2 px-6 pt-2 border-b border-zinc-700">
+        <div className="flex gap-2 px-6 pt-2 border-b border-border">
           {tabs.map(tab => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`px-3 py-2 text-sm font-medium rounded-t transition-colors duration-150 focus:outline-none ${
                 activeTab === tab
-                  ? 'bg-zinc-900 text-violet-400 border-b-2 border-violet-500'
-                  : 'text-zinc-400 hover:text-violet-400'
+                  ? 'bg-bg text-violet-400 border-b-2 border-violet-500'
+                  : 'text-gray-400 hover:text-violet-400'
               }`}
             >
               {tab}
@@ -82,7 +89,7 @@ const RequestPanel: React.FC = () => {
           ))}
         </div>
         {/* Tab Content */}
-        <div className="px-6 py-8 text-zinc-400">
+        <div className="px-6 py-8 text-text">
           {tabContent}
         </div>
       </div>

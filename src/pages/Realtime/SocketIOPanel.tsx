@@ -8,6 +8,8 @@ import React, { useState } from 'react';
 import CommunicationTab from './CommunicationTab';
 import { FiRss } from 'react-icons/fi';
 import AuthorizationTabContent from '../../components/TabContentArea/AuthorizationTabContent';
+import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
 const SocketIOPanel: React.FC = () => {
   const [clientVersion, setClientVersion] = useState('v2');
@@ -17,47 +19,54 @@ const SocketIOPanel: React.FC = () => {
   const [message, setMessage] = useState('');
   const [eventName, setEventName] = useState('');
 
+  const theme = useSelector((state: any) => state.theme.theme);
+  const { t } = useTranslation();
+  let themeClass = '';
+  if (theme === 'dark') themeClass = 'theme-dark';
+  else if (theme === 'black') themeClass = 'theme-black';
+  // No class for light (default)
+
   return (
-    <div className="flex flex-col flex-1 bg-neutral-900 rounded p-4 mt-2">
+    <div className={`flex flex-col flex-1 bg-bg rounded p-4 mt-2 text-text ${themeClass}`}>
       {/* Top bar */}
       <div className="flex items-center gap-4 mb-4">
         <select
-          className="bg-[#18181b] border-none rounded px-4 py-2 text-white font-semibold"
+          className="bg-bg border border-border rounded px-4 py-2 text-text font-semibold"
           value={clientVersion}
           onChange={e => setClientVersion(e.target.value)}
         >
-          <option value="v2">Client v2</option>
-          <option value="v3">Client v3</option>
-          <option value="v4">Client v4</option>
+          <option value="v2">{t('client_v2')}</option>
+          <option value="v3">{t('client_v3')}</option>
+          <option value="v4">{t('client_v4')}</option>
         </select>
         <input
-          className="flex-1 bg-[#18181b] border-none rounded px-4 py-2 text-white focus:outline-none"
-          placeholder="wss://echo-socketio.hoppscotch.io"
+          className="flex-1 bg-bg border border-border rounded px-4 py-2 text-text focus:outline-none"
+          placeholder={t('socketio_url_placeholder')}
           value={url}
           onChange={e => setUrl(e.target.value)}
           style={{ minWidth: 0 }}
         />
         <input
-          className="w-40 bg-[#18181b] border-none rounded px-4 py-2 text-white focus:outline-none"
-          placeholder="/socket.io"
+          className="w-40 bg-bg border border-border rounded px-4 py-2 text-text focus:outline-none"
+          placeholder={t('namespace_placeholder')}
           value={namespace}
           onChange={e => setNamespace(e.target.value)}
         />
-        <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-2 rounded font-semibold ml-4">Connect</button>
+        <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-2 rounded font-semibold ml-4">{t('connect')}</button>
       </div>
       {/* Tabs */}
-      <div className="flex gap-6 border-b border-gray-800 mb-2">
+      <div className="flex gap-6 border-b border-border mb-2">
         <button
-          className={`px-2 py-1 border-b-2 font-semibold transition-colors ${activeTab === 'communication' ? 'border-blue-500 text-white' : 'border-transparent text-gray-400 hover:text-white'}`}
+          className={`px-2 py-1 border-b-2 font-semibold transition-colors ${activeTab === 'communication' ? 'border-blue-500 text-text' : 'border-transparent text-gray-400 hover:text-text'}`}
           onClick={() => setActiveTab('communication')}
         >
-          Communication
+          {t('communication')}
         </button>
         <button
-          className={`px-2 py-1 border-b-2 font-semibold transition-colors ${activeTab === 'authorization' ? 'border-blue-500 text-white' : 'border-transparent text-gray-400 hover:text-white'}`}
+          className={`px-2 py-1 border-b-2 font-semibold transition-colors ${activeTab === 'authorization' ? 'border-blue-500 text-text' : 'border-transparent text-gray-400 hover:text-text'}`}
           onClick={() => setActiveTab('authorization')}
         >
-          Authorization
+          {t('authorization')}
         </button>
       </div>
       {/* Tab Content */}
@@ -66,8 +75,8 @@ const SocketIOPanel: React.FC = () => {
           <div className="flex items-center gap-2 mb-2">
             <FiRss className="text-blue-400 text-xl ml-1" />
             <input
-              className="flex-1 bg-[#18181b] border-none rounded px-4 py-2 text-gray-400 focus:outline-none"
-              placeholder="Event/Topic Name"
+              className="flex-1 bg-bg border border-border rounded px-4 py-2 text-gray-400 focus:outline-none"
+              placeholder={t('event_topic_name')}
               value={eventName}
               onChange={e => setEventName(e.target.value)}
             />

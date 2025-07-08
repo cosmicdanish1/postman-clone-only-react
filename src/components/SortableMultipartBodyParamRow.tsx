@@ -7,6 +7,8 @@
 import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
 export type SortableMultipartBodyParamRowProps = {
   param: {
@@ -26,6 +28,12 @@ export type SortableMultipartBodyParamRowProps = {
 
 const SortableMultipartBodyParamRow: React.FC<SortableMultipartBodyParamRowProps> = React.memo(function SortableMultipartBodyParamRow({ param, handleMultipartBodyParamChange, handleDeleteMultipartBodyParam, handleMultipartFileChange, handleMultipartContentTypeChange, isOdd, showContentType }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: param.id });
+  const theme = useSelector((state: any) => state.theme.theme);
+  const { t } = useTranslation();
+  let themeClass = '';
+  if (theme === 'dark') themeClass = 'theme-dark';
+  else if (theme === 'black') themeClass = 'theme-black';
+  // No class for light (default)
   return (
     <div
       ref={setNodeRef}
@@ -33,16 +41,16 @@ const SortableMultipartBodyParamRow: React.FC<SortableMultipartBodyParamRowProps
         transform: CSS.Transform.toString(transform),
         transition,
         opacity: isDragging ? 0.5 : 1,
-        background: isOdd ? '#19191b' : undefined,
+        background: isOdd ? 'var(--bg-secondary, #19191b)' : undefined,
         minHeight: '38px',
         display: 'grid',
         gridTemplateColumns: showContentType ? '32px 1fr 1fr 1fr auto' : '32px 1fr 1fr auto',
-        borderBottom: '1px solid #27272a',
+        borderBottom: '1px solid var(--border, #27272a)',
         paddingLeft: 0,
         paddingRight: 8,
         alignItems: 'center',
       }}
-      className="px-2 group"
+      className={`px-2 group text-text ${themeClass}`}
     >
       {/* Drag handle */}
       <button
@@ -51,7 +59,7 @@ const SortableMultipartBodyParamRow: React.FC<SortableMultipartBodyParamRowProps
         className="flex items-center justify-center cursor-grab focus:outline-none h-full"
         style={{ background: 'none', border: 'none', padding: 0 }}
         tabIndex={-1}
-        title="Drag to reorder"
+        title={t('drag_to_reorder')}
       >
         <span className="inline-block opacity-0 group-hover:opacity-70 transition-opacity duration-150">
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -65,22 +73,22 @@ const SortableMultipartBodyParamRow: React.FC<SortableMultipartBodyParamRowProps
         </span>
       </button>
       <input
-        className="bg-transparent text-white px-2 py-1 outline-none w-full border-r border-neutral-800"
+        className="bg-transparent text-text px-2 py-1 outline-none w-full border-r border-border"
         value={param.key}
-        placeholder="Key"
+        placeholder={t('key')}
         onChange={e => handleMultipartBodyParamChange(param.id, 'key', e.target.value)}
       />
       <input
-        className="bg-transparent text-white px-2 py-1 outline-none w-full border-r border-neutral-800"
+        className="bg-transparent text-text px-2 py-1 outline-none w-full border-r border-border"
         value={param.value}
-        placeholder="Value"
+        placeholder={t('value')}
         onChange={e => handleMultipartBodyParamChange(param.id, 'value', e.target.value)}
       />
       {showContentType && (
         <input
-          className="bg-transparent text-white px-2 py-1 outline-none w-full border-r border-neutral-800"
+          className="bg-transparent text-text px-2 py-1 outline-none w-full border-r border-border"
           value={param.contentType}
-          placeholder="Content-Type"
+          placeholder={t('content_type')}
           onChange={e => handleMultipartContentTypeChange(param.id, e.target.value)}
         />
       )}
@@ -92,7 +100,7 @@ const SortableMultipartBodyParamRow: React.FC<SortableMultipartBodyParamRowProps
           onChange={e => handleMultipartFileChange(param.id, e.target.files ? e.target.files[0] : null)}
         />
         <label htmlFor={`file-input-${param.id}`} className="text-blue-400 hover:underline cursor-pointer">
-          {param.file ? param.file.name : 'Attach file'}
+          {param.file ? param.file.name : t('attach_file')}
         </label>
         <button className="text-green-500 hover:text-green-400" tabIndex={-1}>
           <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg>

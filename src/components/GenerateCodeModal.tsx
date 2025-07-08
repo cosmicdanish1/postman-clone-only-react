@@ -5,6 +5,8 @@
 // Role: Renders a modal dialog for generating code snippets for requests.
 // Located at: src/components/GenerateCodeModal.tsx
 import React from 'react';
+import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
 interface GenerateCodeModalProps {
   open: boolean;
@@ -15,28 +17,34 @@ interface GenerateCodeModalProps {
 }
 
 const GenerateCodeModal: React.FC<GenerateCodeModalProps> = ({ open, onClose, selectedLanguage, setSelectedLanguage, generatedCode }) => {
+  const theme = useSelector((state: any) => state.theme.theme);
+  const { t } = useTranslation();
+  let themeClass = '';
+  if (theme === 'dark') themeClass = 'theme-dark';
+  else if (theme === 'black') themeClass = 'theme-black';
+  // No class for light (default)
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
-      <div className="bg-[#18181A] rounded-2xl shadow-2xl border border-zinc-800 w-[600px] max-w-full p-0 relative">
+    <div className={`fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 ${themeClass}`}>
+      <div className="bg-bg rounded-2xl shadow-2xl border border-border w-[600px] max-w-full p-0 relative text-text">
         <div className="flex items-center justify-between px-8 pt-8 pb-4">
-          <div className="text-2xl font-bold text-center w-full">Generate code</div>
+          <div className="text-2xl font-bold text-center w-full">{t('generate_code')}</div>
           <button className="absolute right-8 top-8 text-gray-400 hover:text-white text-2xl" onClick={onClose}>&times;</button>
         </div>
         <div className="px-8 pb-4">
-          <label className="block text-xs text-gray-400 mb-1">Choose language</label>
+          <label className="block text-xs text-gray-400 mb-1">{t('choose_language')}</label>
           <select
             className="w-full bg-zinc-900 border border-zinc-800 rounded px-3 py-2 text-white text-base mb-4"
             value={selectedLanguage}
             onChange={e => setSelectedLanguage(e.target.value)}
           >
-            <option>Shell - cURL</option>
-            <option>Node.js - fetch</option>
-            <option>Python - requests</option>
-            <option>Go - http</option>
-            <option>JavaScript - XMLHttpRequest</option>
+            <option>{t('shell_curl')}</option>
+            <option>{t('node_fetch')}</option>
+            <option>{t('python_requests')}</option>
+            <option>{t('go_http')}</option>
+            <option>{t('js_xhr')}</option>
           </select>
-          <label className="block text-xs text-gray-400 mb-1">Generated code</label>
+          <label className="block text-xs text-gray-400 mb-1">{t('generated_code')}</label>
           <div className="relative bg-zinc-900 rounded-lg border border-zinc-800 p-4">
             {/* Toolbar icons */}
             <div className="absolute right-2 top-2 flex gap-2 z-10">
@@ -50,8 +58,8 @@ const GenerateCodeModal: React.FC<GenerateCodeModalProps> = ({ open, onClose, se
           </div>
         </div>
         <div className="flex items-center justify-between px-8 pb-8 pt-4">
-          <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded font-semibold">Copy</button>
-          <button className="bg-zinc-800 hover:bg-zinc-700 text-white px-6 py-2 rounded font-semibold" onClick={onClose}>Dismiss</button>
+          <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded font-semibold">{t('copy')}</button>
+          <button className="bg-zinc-800 hover:bg-zinc-700 text-white px-6 py-2 rounded font-semibold" onClick={onClose}>{t('dismiss')}</button>
         </div>
       </div>
     </div>

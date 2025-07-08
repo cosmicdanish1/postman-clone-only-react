@@ -7,6 +7,7 @@
 import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { useSelector } from 'react-redux';
 
 export interface SortableVariableRowProps {
   variable: { id: string; key: string; value: string };
@@ -17,6 +18,11 @@ export interface SortableVariableRowProps {
 
 const SortableVariableRow: React.FC<SortableVariableRowProps> = React.memo(function SortableVariableRow({ variable, handleVariableChange, handleDeleteVariable, isOdd }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: variable.id });
+  const theme = useSelector((state: any) => state.theme.theme);
+  let themeClass = '';
+  if (theme === 'dark') themeClass = 'theme-dark';
+  else if (theme === 'black') themeClass = 'theme-black';
+  // No class for light (default)
   return (
     <div
       ref={setNodeRef}
@@ -24,16 +30,16 @@ const SortableVariableRow: React.FC<SortableVariableRowProps> = React.memo(funct
         transform: CSS.Transform.toString(transform),
         transition,
         opacity: isDragging ? 0.5 : 1,
-        background: isOdd ? '#19191b' : undefined,
+        background: isOdd ? 'var(--bg-secondary, #19191b)' : undefined,
         minHeight: '38px',
         display: 'grid',
         gridTemplateColumns: '32px 1fr 1fr auto',
-        borderBottom: '1px solid #27272a',
+        borderBottom: '1px solid var(--border, #27272a)',
         paddingLeft: 0,
         paddingRight: 8,
         alignItems: 'center',
       }}
-      className="px-2 group"
+      className={`px-2 group text-text ${themeClass}`}
     >
       {/* Drag handle: 6-dot rectangle, only visible on hover */}
       <button
@@ -56,13 +62,13 @@ const SortableVariableRow: React.FC<SortableVariableRowProps> = React.memo(funct
         </span>
       </button>
       <input
-        className="bg-transparent text-white px-2 py-1 outline-none w-full border-r border-neutral-800"
+        className="bg-transparent text-text px-2 py-1 outline-none w-full border-r border-border"
         value={variable.key}
         placeholder="Variable"
         onChange={e => handleVariableChange(variable.id, 'key', e.target.value)}
       />
       <input
-        className="bg-transparent text-white px-2 py-1 outline-none w-full border-r border-neutral-800"
+        className="bg-transparent text-text px-2 py-1 outline-none w-full border-r border-border"
         value={variable.value}
         placeholder="Value"
         onChange={e => handleVariableChange(variable.id, 'value', e.target.value)}

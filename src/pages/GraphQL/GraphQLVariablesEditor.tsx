@@ -6,6 +6,7 @@
 // Located at: src/pages/GraphQL/GraphQLVariablesEditor.tsx
 import React from 'react';
 import MonacoEditor from '@monaco-editor/react';
+import { useSelector } from 'react-redux';
 
 interface GraphQLVariablesEditorProps {
   variables: string | object;
@@ -14,7 +15,20 @@ interface GraphQLVariablesEditorProps {
 
 const DEFAULT_VARIABLES = '{\n  "id": "1"\n}';
 
+const getMonacoTheme = (theme: string) => {
+  if (theme === 'light') return 'vs-light';
+  if (theme === 'dark' || theme === 'system') return 'vs-dark';
+  if (theme === 'black') return 'vs-dark'; // or a custom theme if registered
+  return 'vs-dark';
+};
+
 const GraphQLVariablesEditor: React.FC<GraphQLVariablesEditorProps> = ({ variables, onChange }) => {
+  const theme = useSelector((state: any) => state.theme.theme);
+  let themeClass = '';
+  if (theme === 'dark') themeClass = 'theme-dark';
+  else if (theme === 'black') themeClass = 'theme-black';
+  // No class for light (default)
+
   let value: string;
   if (typeof variables === 'string') {
     value = variables.trim() === '' ? DEFAULT_VARIABLES : variables;
@@ -25,9 +39,9 @@ const GraphQLVariablesEditor: React.FC<GraphQLVariablesEditorProps> = ({ variabl
   }
 
   return (
-    <div className="flex flex-col flex-1 bg-neutral-900 min-h-0">
+    <div className={`flex flex-col flex-1 bg-bg min-h-0 text-text ${themeClass}`}>
       {/* Variables Bar */}
-      <div className="flex items-center justify-between px-4 h-10 bg-[#18181A] w-full border-b border-neutral-800">
+      <div className="flex items-center justify-between px-4 h-10 bg-bg w-full border-b border-border">
         <span className="text-gray-400 text-base">Variables</span>
         <div className="flex items-center gap-3">
           {/* Help icon */}
@@ -53,12 +67,12 @@ const GraphQLVariablesEditor: React.FC<GraphQLVariablesEditorProps> = ({ variabl
         </div>
       </div>
       {/* MonacoEditor for Variables */}
-      <div className="flex-1 flex min-h-0 px-4 pb-4">
+      <div className="flex-1 flex min-h-0 px-4 pb-4 bg-bg">
         <MonacoEditor
           height="100%"
           defaultLanguage="json"
           language="json"
-          theme="vs-dark"
+          theme={getMonacoTheme(theme)}
           value={value}
           options={{
             fontSize: 15,

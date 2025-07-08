@@ -9,6 +9,7 @@ import { FaSync, FaLock, FaIdBadge, FaEye, FaEyeSlash, FaChrome, FaFirefox, FaCo
 import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
 import { ToastContainer, toast, Slide } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useSelector } from 'react-redux';
 
 const interceptorOptions = [
   'Browser',
@@ -45,12 +46,12 @@ const DraggableToast = ({ closeToast, children }: DraggableToastProps) => {
 type BrowserExtensionSectionProps = { className?: string };
 const BrowserExtensionSection: React.FC<BrowserExtensionSectionProps> = ({ className }) => (
   <div className={className}>
-    <div className="font-semibold text-zinc-200 mb-1">Browser extension</div>
-    <div className="text-zinc-400 text-sm mb-4">Extension Version: Not Reported</div>
+    <div className="font-semibold text-text mb-1">Browser extension</div>
+    <div className="text-text-secondary text-sm mb-4">Extension Version: Not Reported</div>
     <div className="flex gap-3">
       <button
         type="button"
-        className="flex items-center gap-2 px-4 py-2 rounded border text-gray-200 border-zinc-700 border-opacity-50 bg-neutral-900 hover:border-gray-400 hover:text-white transition font-semibold"
+        className="flex items-center gap-2 px-4 py-2 rounded border text-text border-border bg-bg hover:border-accent hover:text-text-primary transition font-semibold"
         onClick={() => window.open('https://chromewebstore.google.com/detail/hoppscotch-browser-extens/amknoiejhlmhancpahfcfcfhllgkpbld', '_blank')}
       >
         <FaChrome className="w-5 h-5 text-[#4285F4]" />
@@ -58,7 +59,7 @@ const BrowserExtensionSection: React.FC<BrowserExtensionSectionProps> = ({ class
       </button>
       <button
         type="button"
-        className="flex items-center gap-2 px-4 py-2 rounded border text-gray-200 border-zinc-700 border-opacity-50 bg-neutral-900 hover:border-gray-400 hover:text-white transition font-semibold"
+        className="flex items-center gap-2 px-4 py-2 rounded border text-text border-border bg-bg hover:border-accent hover:text-text-primary transition font-semibold"
         onClick={() => window.open('https://addons.mozilla.org/en-US/firefox/addon/hoppscotch/', '_blank')}
       >
         <FaFirefox className="w-5 h-5 text-[#FF7139]" />
@@ -81,6 +82,7 @@ const BrowserExtensionSection: React.FC<BrowserExtensionSectionProps> = ({ class
 // - Toast notifications for agent registration
 // All modals and toasts are managed with local state and framer-motion for animation.
 const InterceptorSettings: React.FC = () => {
+  const theme = useSelector((state: any) => state.theme.theme);
   const [selected, setSelected] = useState('Browser');
   const [verifyHost, setVerifyHost] = useState(false);
   const [verifyPeer, setVerifyPeer] = useState(false);
@@ -102,18 +104,18 @@ const InterceptorSettings: React.FC = () => {
   const [domainInput, setDomainInput] = useState('');
 
   return (
-  <div className="space-y-8">
+    <div className={`space-y-8 theme-${theme} bg-bg text-text border-border`}>
     {/* Interceptor */}
     <div>
-      <label className="block text-sm font-semibold text-zinc-300 mb-2">Interceptor</label>
+      <label className="block text-sm font-semibold text-text mb-2">Interceptor</label>
         <div className="flex flex-col gap-4 mb-2 pt-2">
           {interceptorOptions.map(option => (
             <React.Fragment key={option}>
-              <label className="flex items-center gap-3 text-zinc-200 text-sm cursor-pointer">
+              <label className="flex items-center gap-3 text-text text-sm cursor-pointer">
                 <button
                   type="button"
                   className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition focus:outline-none group ${
-                    selected === option ? 'border-blue-500' : 'border-gray-400/30'
+                    selected === option ? 'border-blue-500' : 'border-border'
                   }`}
                   onClick={() => setSelected(option)}
                   aria-pressed={selected === option}
@@ -133,7 +135,7 @@ const InterceptorSettings: React.FC = () => {
                     exit={{ opacity: 0, y: 12 }}
                     transition={{ duration: 0.2 }}
                     type="button"
-                    className="flex items-center gap-2 ml-7 mt-2 px-4 py-1.5 rounded border border-zinc-700 border-opacity-50 bg-neutral-900 text-gray-200 hover:border-blue-500 hover:text-blue-400 transition font-semibold shadow text-xs"
+                    className="flex items-center gap-2 ml-7 mt-2 px-4 py-1.5 rounded border border-border bg-bg hover:border-blue-500 hover:text-blue-400 transition font-semibold shadow text-xs"
                     onClick={() => {
                       toast(
                         <span className="font-semibold text-red-600">
@@ -171,21 +173,21 @@ const InterceptorSettings: React.FC = () => {
       </div>
       {/* Proxy input */}
       <div className="mt-2">
-          <label className="block text-sm font-semibold text-white mb-1">Proxy</label>
-          <div className="my-1 text-gray-300 opacity-55 font-semibold text-sm">
+          <label className="block text-sm font-semibold text-text mb-1">Proxy</label>
+          <div className="my-1 text-text-secondary opacity-55 font-semibold text-sm">
             Official Proxy is hosted by Hoppscotch. Read the 
             <a aria-label="Link" href="https://docs.hoppscotch.io/support/privacy" role="link" target="_blank" rel="noopener" className="inline-flex items-center justify-center text-blue-800 ml-1 focus:outline-none hover:text-secondaryDark focus-visible: link">
              Proxy privacy policy</a>. </div>
           <div className="relative w-[840px]">
         <input
           type="text"
-              className="bg-neutral-900 text-zinc-200 w-full pr-8 pl-3 py-2 text-sm focus:outline-none border border-zinc-700 border-opacity-55 rounded-sm"
+              className="bg-bg text-text w-full pr-8 pl-3 py-2 text-sm focus:outline-none border border-border rounded-sm"
           value="https://proxy.hoppscotch.io/"
           readOnly
         />
             <button
               type="button"
-              className="absolute right-2 top-1/2 -translate-y-1/2 p-0 m-0 text-zinc-400 hover:text-blue-500 focus:outline-none"
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-0 m-0 text-text-secondary hover:text-blue-500 focus:outline-none"
               aria-label="Reload Proxy"
               onClick={() => { /* reload logic here */ }}
               style={{ background: 'none', boxShadow: 'none' }}
@@ -198,13 +200,13 @@ const InterceptorSettings: React.FC = () => {
     {/* Agent */}
     <div>
         <div className="relative flex items-center mb-2 w-full">
-          <span className="block text-sm font-semibold text-zinc-300">Agent</span>
-          <button type="button" className="absolute right-0 top-1/2 -translate-y-1/2 p-1 text-zinc-400 hover:text-blue-500 focus:outline-none" onClick={() => setShowDomainModal(true)}>
+          <span className="block text-sm font-semibold text-text">Agent</span>
+          <button type="button" className="absolute right-0 top-1/2 -translate-y-1/2 p-1 text-text-secondary hover:text-blue-500 focus:outline-none" onClick={() => setShowDomainModal(true)}>
             <FaCog className="w-5 h-5" />
           </button>
         </div>
         <div className="flex flex-col gap-4 mb-2">
-          <label className="flex items-center justify-start gap-5 text-sm text-neutral-500 font-semibold hover:text-white">
+          <label className="flex items-center justify-start gap-5 text-sm text-neutral-500 font-semibold hover:text-text">
             <button
               type="button"
               className="relative inline-flex items-center cursor-pointer w-8 h-4 focus:outline-none group"
@@ -212,8 +214,8 @@ const InterceptorSettings: React.FC = () => {
               aria-pressed={verifyHost}
             >
               <span
-                className={`absolute inset-0 rounded-full border transition-colors duration-200 border-gray-400/30 group-hover:border-blue-500 ${
-                  verifyHost ? '' : 'bg-neutral-900'
+                className={`absolute inset-0 rounded-full border transition-colors duration-200 border-border ${
+                  verifyHost ? '' : 'bg-bg'
                 }`}
               />
               <span
@@ -234,7 +236,7 @@ const InterceptorSettings: React.FC = () => {
             </button>
             Verify Host
         </label>
-          <label className="flex items-center justify-start gap-5 text-sm text-neutral-500 font-semibold hover:text-white">
+          <label className="flex items-center justify-start gap-5 text-sm text-neutral-500 font-semibold hover:text-text">
             <button
               type="button"
               className="relative inline-flex items-center cursor-pointer w-8 h-4 focus:outline-none group"
@@ -242,8 +244,8 @@ const InterceptorSettings: React.FC = () => {
               aria-pressed={verifyPeer}
             >
               <span
-                className={`absolute inset-0 rounded-full border transition-colors duration-200 border-gray-400/30 group-hover:border-blue-500 ${
-                  verifyPeer ? '' : 'bg-neutral-900'
+                className={`absolute inset-0 rounded-full border transition-colors duration-200 border-border ${
+                  verifyPeer ? '' : 'bg-bg'
                 }`}
               />
               <span
@@ -267,7 +269,7 @@ const InterceptorSettings: React.FC = () => {
           <div className="flex gap-3 mt-2">
             <button
               type="button"
-              className="flex items-center gap-2 px-2 py-1 text-xs rounded border text-gray-600 border-zinc-700 border-opacity-50 bg-neutral-900 hover:border-gray-400 hover:text-gray-200 transition font-semibold"
+              className="flex items-center gap-2 px-2 py-1 text-xs rounded border text-gray-600 border-border bg-bg hover:border-gray-400 hover:text-gray-200 transition font-semibold"
               onClick={() => setShowCAModal(true)}
             >
               <FaLock className="w-4 h-4" />
@@ -275,14 +277,14 @@ const InterceptorSettings: React.FC = () => {
             </button>
             <button
               type="button"
-              className="flex items-center gap-2 px-2 py-1 text-xs rounded border text-gray-600 border-zinc-700 border-opacity-50 bg-neutral-900 hover:border-gray-400 hover:text-gray-200 transition font-semibold"
+              className="flex items-center gap-2 px-2 py-1 text-xs rounded border text-gray-600 border-border bg-bg hover:border-gray-400 hover:text-gray-200 transition font-semibold"
               onClick={() => setShowClientModal(true)}
             >
               <FaIdBadge className="w-4 h-4" />
               Client Certificates
             </button>
           </div>
-          <label className="flex items-center justify-start gap-5 mt-4 text-sm text-neutral-500 font-semibold hover:text-white">
+          <label className="flex items-center justify-start gap-5 mt-4 text-sm text-neutral-500 font-semibold hover:text-text">
             <button
               type="button"
               className="relative inline-flex items-center cursor-pointer w-8 h-4 focus:outline-none group"
@@ -290,8 +292,8 @@ const InterceptorSettings: React.FC = () => {
               aria-pressed={proxyToggle}
             >
               <span
-                className={`absolute inset-0 rounded-full border transition-colors duration-200 border-gray-400/30 group-hover:border-blue-500 ${
-                  proxyToggle ? '' : 'bg-neutral-900'
+                className={`absolute inset-0 rounded-full border transition-colors duration-200 border-border ${
+                  proxyToggle ? '' : 'bg-bg'
                 }`}
               />
               <span
@@ -313,7 +315,7 @@ const InterceptorSettings: React.FC = () => {
             Proxy
         </label>
       </div>
-        <div className="text-xs font-semibold text-zinc-400 mt-2">Hoppscotch Agent and Desktop App supports HTTP/HTTPS/SOCKS proxies with NTLM and Basic Auth support.</div>
+        <div className="text-xs font-semibold text-text-secondary mt-2">Hoppscotch Agent and Desktop App supports HTTP/HTTPS/SOCKS proxies with NTLM and Basic Auth support.</div>
       </div>
       {proxyToggle && (
         <div className="mt-6">
@@ -325,7 +327,7 @@ const InterceptorSettings: React.FC = () => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.18 }}
-                className="font-semibold text-zinc-200 mb-1 cursor-pointer select-none"
+                className="font-semibold text-text mb-1 cursor-pointer select-none"
                 onClick={() => setShowProxyUrlInput(true)}
               >
                 Proxy URL
@@ -335,7 +337,7 @@ const InterceptorSettings: React.FC = () => {
               <motion.input
                 key="input"
                 type="text"
-                className="bg-neutral-900 text-zinc-200 w-full px-3 py-2 text-sm focus:outline-none border border-zinc-700 border-opacity-55 rounded-sm mb-4"
+                className="bg-bg text-text w-full px-3 py-2 text-sm focus:outline-none border border-border rounded-sm mb-4"
                 placeholder="Enter proxy URL"
                 value={proxyUrl}
                 autoFocus
@@ -350,28 +352,28 @@ const InterceptorSettings: React.FC = () => {
               />
             )}
           </AnimatePresence>
-          <div className="text-zinc-400 text-sm mb-6">You can also include username and password in the URL.</div>
+          <div className="text-text-secondary text-sm mb-6">You can also include username and password in the URL.</div>
           <div className="flex gap-8 items-end">
             <div className="flex-1">
-              <label className="block text-sm text-zinc-400 mb-1 ">Username</label>
+              <label className="block text-sm text-text-secondary mb-1 ">Username</label>
               <input
                 type="text"
-                className="bg-neutral-900 text-zinc-200 w-full px-3 py-2 text-sm  focus:outline-none border border-zinc-700 border-opacity-30 rounded-sm"
+                className="bg-bg text-text w-full px-3 py-2 text-sm  focus:outline-none border border-border rounded-sm"
                 value={proxyUsername}
                 onChange={e => setProxyUsername(e.target.value)}
               />
             </div>
             <div className="flex-1 relative">
-              <label className="block text-sm text-zinc-400 mb-1">Password</label>
+              <label className="block text-sm text-text-secondary mb-1">Password</label>
               <input
                 type={showPassword ? 'text' : 'password'}
-                className="bg-neutral-900 text-zinc-200 w-full px-3 py-2 text-sm focus:outline-none border border-zinc-700 border-opacity-30 rounded-sm pr-8"
+                className="bg-bg text-text w-full px-3 py-2 text-sm focus:outline-none border border-border rounded-sm pr-8"
                 value={proxyPassword}
                 onChange={e => setProxyPassword(e.target.value)}
               />
               <button
                 type="button"
-                className="absolute right-2 top-7 -translate-y-1/2 p-0 m-0 text-zinc-400 hover:text-blue-500 focus:outline-none"
+                className="absolute right-2 top-7 -translate-y-1/2 p-0 m-0 text-text-secondary hover:text-blue-500 focus:outline-none"
                 onClick={() => setShowPassword(v => !v)}
                 tabIndex={-1}
               >
@@ -409,17 +411,17 @@ const InterceptorSettings: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -40 }}
               transition={{ duration: 0.25, ease: 'easeOut' }}
-              className="bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-md mx-4 p-6 relative border border-zinc-700 mt-10"
+              className="bg-bg-secondary rounded-2xl shadow-2xl w-full max-w-md mx-4 p-6 relative border border-border mt-10"
             >
               <button
-                className="absolute top-4 right-4 text-zinc-400 hover:text-white text-xl focus:outline-none"
+                className="absolute top-4 right-4 text-text-secondary hover:text-text text-xl focus:outline-none"
                 onClick={() => setShowCAModal(false)}
                 aria-label="Close"
               >
                 ×
               </button>
-              <div className="text-2xl font-bold text-center text-white mb-6">CA Certificates</div>
-              <hr className="border-zinc-700 mb-6" />
+              <div className="text-2xl font-bold text-center text-text mb-6">CA Certificates</div>
+              <hr className="border-border mb-6" />
               <input
                 ref={fileInputRef}
                 type="file"
@@ -427,15 +429,15 @@ const InterceptorSettings: React.FC = () => {
                 className="hidden"
               />
               <button
-                className="w-full flex items-center justify-center gap-2 py-3 rounded border border-zinc-700 bg-zinc-800 text-zinc-200 hover:border-blue-500 hover:text-blue-400 transition font-semibold text-base mb-4"
+                className="w-full flex items-center justify-center gap-2 py-3 rounded border border-border bg-bg-secondary text-text hover:border-blue-500 hover:text-blue-400 transition font-semibold text-base mb-4"
                 onClick={() => fileInputRef.current?.click()}
               >
                 <span className="text-xl">+</span> Add Certificate File
               </button>
-              <div className="text-zinc-400 text-sm text-center mb-8">Hoppscotch supports .crt, .cer or .pem files containing one or more certificates.</div>
+              <div className="text-text-secondary text-sm text-center mb-8">Hoppscotch supports .crt, .cer or .pem files containing one or more certificates.</div>
               <div className="flex justify-start">
                 <button
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded font-semibold text-base shadow"
+                  className="bg-accent hover:bg-accent-dark text-text px-6 py-2 rounded font-semibold text-base shadow"
                   onClick={() => setShowCAModal(false)}
                 >
                   Done
@@ -454,25 +456,25 @@ const InterceptorSettings: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -40 }}
               transition={{ duration: 0.25, ease: 'easeOut' }}
-              className="bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-lg mx-4 p-6 relative border border-zinc-700 mt-10"
+              className="bg-bg-secondary rounded-2xl shadow-2xl w-full max-w-lg mx-4 p-6 relative border border-border mt-10"
             >
               <button
-                className="absolute top-4 right-4 text-zinc-400 hover:text-white text-xl focus:outline-none"
+                className="absolute top-4 right-4 text-text-secondary hover:text-text text-xl focus:outline-none"
                 onClick={() => setShowClientModal(false)}
                 aria-label="Close"
               >
                 ×
               </button>
-              <div className="text-2xl font-bold text-center text-white mb-6">Client Certificates</div>
-              <div className="flex gap-8 border-b border-zinc-700 mb-6">
+              <div className="text-2xl font-bold text-center text-text mb-6">Client Certificates</div>
+              <div className="flex gap-8 border-b border-border mb-6">
                 <button
-                  className={`pb-2 px-2 text-base font-semibold focus:outline-none transition border-b-2 ${clientTab === 'PEM' ? 'border-blue-500 text-white' : 'border-transparent text-zinc-400 hover:text-white'}`}
+                  className={`pb-2 px-2 text-base font-semibold focus:outline-none transition border-b-2 ${clientTab === 'PEM' ? 'border-blue-500 text-text' : 'border-transparent text-text-secondary hover:text-text'}`}
                   onClick={() => setClientTab('PEM')}
                 >
                   PEM
                 </button>
                 <button
-                  className={`pb-2 px-2 text-base font-semibold focus:outline-none transition border-b-2 ${clientTab === 'PFX' ? 'border-blue-500 text-white' : 'border-transparent text-zinc-400 hover:text-white'}`}
+                  className={`pb-2 px-2 text-base font-semibold focus:outline-none transition border-b-2 ${clientTab === 'PFX' ? 'border-blue-500 text-text' : 'border-transparent text-text-secondary hover:text-text'}`}
                   onClick={() => setClientTab('PFX')}
                 >
                   PFX
@@ -481,7 +483,7 @@ const InterceptorSettings: React.FC = () => {
               {clientTab === 'PEM' && (
                 <>
                   <div className="mb-4">
-                    <div className="text-zinc-300 font-semibold mb-2">Certificate</div>
+                    <div className="text-text-secondary font-semibold mb-2">Certificate</div>
                     <input
                       ref={pemCertInputRef}
                       type="file"
@@ -489,14 +491,14 @@ const InterceptorSettings: React.FC = () => {
                       className="hidden"
                     />
                     <button
-                      className="w-full flex items-center justify-center gap-2 py-3 rounded border border-zinc-700 bg-zinc-800 text-zinc-200 hover:border-blue-500 hover:text-blue-400 transition font-semibold text-base"
+                      className="w-full flex items-center justify-center gap-2 py-3 rounded border border-border bg-bg-secondary text-text hover:border-blue-500 hover:text-blue-400 transition font-semibold text-base"
                       onClick={() => pemCertInputRef.current?.click()}
                     >
                       <span className="text-xl">+</span> Select File
                     </button>
                   </div>
                   <div className="mb-8">
-                    <div className="text-zinc-300 font-semibold mb-2">Private Key</div>
+                    <div className="text-text-secondary font-semibold mb-2">Private Key</div>
                     <input
                       ref={pemKeyInputRef}
                       type="file"
@@ -504,7 +506,7 @@ const InterceptorSettings: React.FC = () => {
                       className="hidden"
                     />
                     <button
-                      className="w-full flex items-center justify-center gap-2 py-3 rounded border border-zinc-700 bg-zinc-800 text-zinc-200 hover:border-blue-500 hover:text-blue-400 transition font-semibold text-base"
+                      className="w-full flex items-center justify-center gap-2 py-3 rounded border border-border bg-bg-secondary text-text hover:border-blue-500 hover:text-blue-400 transition font-semibold text-base"
                       onClick={() => pemKeyInputRef.current?.click()}
                     >
                       <span className="text-xl">+</span> Select File
@@ -514,7 +516,7 @@ const InterceptorSettings: React.FC = () => {
               )}
               {clientTab === 'PFX' && (
                 <div className="mb-8">
-                  <div className="text-zinc-300 font-semibold mb-2">PFX File</div>
+                  <div className="text-text-secondary font-semibold mb-2">PFX File</div>
                   <input
                     ref={pfxInputRef}
                     type="file"
@@ -522,30 +524,30 @@ const InterceptorSettings: React.FC = () => {
                     className="hidden"
                   />
                   <button
-                    className="w-full flex items-center justify-center gap-2 py-3 rounded border border-zinc-700 bg-zinc-800 text-zinc-200 hover:border-blue-500 hover:text-blue-400 transition font-semibold text-base mb-4"
+                    className="w-full flex items-center justify-center gap-2 py-3 rounded border border-border bg-bg-secondary text-text hover:border-blue-500 hover:text-blue-400 transition font-semibold text-base mb-4"
                     onClick={() => pfxInputRef.current?.click()}
                   >
                     <span className="text-xl">+</span> Select File
                   </button>
-                  <div className="text-zinc-300 font-semibold mb-2">Password</div>
+                  <div className="text-text-secondary font-semibold mb-2">Password</div>
                   <input
                     type="password"
                     value={pfxPassword}
                     onChange={e => setPfxPassword(e.target.value)}
-                    className="w-full px-3 py-2 rounded border border-zinc-700 bg-zinc-800 text-zinc-200 focus:outline-none focus:border-blue-500 text-base"
+                    className="w-full px-3 py-2 rounded border border-border bg-bg-secondary text-text focus:outline-none focus:border-blue-500 text-base"
                     placeholder="Enter password (if any)"
                   />
                 </div>
               )}
               <div className="flex gap-4 mt-2">
                 <button
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded font-semibold text-base shadow"
+                  className="bg-accent hover:bg-accent-dark text-text px-6 py-2 rounded font-semibold text-base shadow"
                   onClick={() => setShowClientModal(false)}
                 >
                   Done
                 </button>
                 <button
-                  className="bg-zinc-700 hover:bg-zinc-600 text-zinc-200 px-6 py-2 rounded font-semibold text-base shadow"
+                  className="bg-border hover:bg-border-dark text-text-secondary px-6 py-2 rounded font-semibold text-base shadow"
                   onClick={() => {
                     // Clear logic can be added here
                   }}
@@ -566,32 +568,32 @@ const InterceptorSettings: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -40 }}
               transition={{ duration: 0.25, ease: 'easeOut' }}
-              className="bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-lg mx-4 p-6 relative border border-zinc-700 mt-10"
+              className="bg-bg-secondary rounded-2xl shadow-2xl w-full max-w-lg mx-4 p-6 relative border border-border mt-10"
             >
               <button
-                className="absolute top-4 right-4 text-zinc-400 hover:text-white text-xl focus:outline-none"
+                className="absolute top-4 right-4 text-text-secondary hover:text-text text-xl focus:outline-none"
                 onClick={() => setShowDomainModal(false)}
                 aria-label="Close"
               >
                 ×
               </button>
-              <div className="text-2xl font-bold text-center text-white mb-6">Manage Domains Overrides</div>
+              <div className="text-2xl font-bold text-center text-text mb-6">Manage Domains Overrides</div>
               <div className="flex items-center gap-2 mb-6">
                 <input
                   type="text"
                   value={domainInput}
                   onChange={e => setDomainInput(e.target.value)}
                   placeholder="example.com"
-                  className="flex-1 px-3 py-2 rounded border border-zinc-700 bg-zinc-800 text-zinc-200 focus:outline-none focus:border-blue-500 text-base"
+                  className="flex-1 px-3 py-2 rounded border border-border bg-bg-secondary text-text focus:outline-none focus:border-blue-500 text-base"
                 />
                 <button
-                  className="w-10 h-10 flex items-center justify-center rounded bg-zinc-800 border border-zinc-700 text-zinc-300 hover:border-blue-500 hover:text-blue-400 transition text-xl"
+                  className="w-10 h-10 flex items-center justify-center rounded bg-border bg-opacity-20 text-text-secondary hover:border-blue-500 hover:text-blue-400 transition text-xl"
                   // onClick={...} // Add logic to handle domain add if needed
                 >
                   +
                 </button>
               </div>
-              <div className="bg-zinc-800 rounded p-4 text-zinc-500 text-base opacity-60 select-none cursor-not-allowed">Global Defaults</div>
+              <div className="bg-border rounded p-4 text-text-secondary text-base opacity-60 select-none cursor-not-allowed">Global Defaults</div>
             </motion.div>
     </div>
         </AnimatePresence>

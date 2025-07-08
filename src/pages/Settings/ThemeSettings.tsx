@@ -34,19 +34,19 @@ const ThemeSettings: React.FC = () => {
   const [hoveredColor, setHoveredColor] = useState<string | null>(null);
 
   return (
-    <div className={`flex flex-col gap-12 items-start bg-bg text-text ${theme === 'dark' ? 'theme-dark' : theme === 'black' ? 'theme-black' : ''}`}>
+    <div className={`flex flex-col gap-12 items-start bg-bg text-text theme-${theme}`}>
       <div className="flex-1 space-y-8">
         {/* Background */}
         <div>
           <div className="font-semibold text-text mb-1">Background</div>
-          <div className="text-zinc-400 text-sm mb-6">
+          <div className="text-text-secondary text-sm mb-6">
             {backgrounds.find(bg => bg.key === theme)?.label}
           </div>
           <div className="flex gap-2">
             {backgrounds.map(bg => (
               <button
                 key={bg.key}
-                className={`w-8 h-8 flex items-center justify-center rounded-lg text-sm transition border ${theme === bg.key ? 'bg-bg border-blue-500 text-blue-500' : 'bg-bg border-zinc-700 text-zinc-400 hover:border-zinc-500'}`}
+                className={`w-8 h-8 flex items-center justify-center rounded-lg text-sm transition border ${theme === bg.key ? 'bg-bg border-accent text-accent' : 'bg-bg border-border text-text-secondary hover:border-accent'}`}
                 onClick={() => dispatch(setTheme(bg.key))}
                 aria-label={bg.label}
               >
@@ -58,7 +58,7 @@ const ThemeSettings: React.FC = () => {
         {/* Accent color */}
         <div>
           <div className="font-semibold mb-1 text-text">Accent color</div>
-          <div className="text-zinc-400 text-sm mb-6">
+          <div className="text-text-secondary text-sm mb-6">
             {accentColors.find(c => c.key === accentColor)?.label}
           </div>
           <div className="flex gap-4 items-center">
@@ -66,7 +66,7 @@ const ThemeSettings: React.FC = () => {
               <div key={c.key} className="relative flex flex-col items-center">
                 <button
                   type="button"
-                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition focus:outline-none group ${accentColor === c.key ? 'ring-2 ring-offset-2 ring-blue-500' : ''}`}
+                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition focus:outline-none group ${accentColor === c.key ? 'ring-2 ring-offset-2 ring-accent' : ''}`}
                   style={{ borderColor: c.color, background: 'transparent' }}
                   onClick={() => dispatch(setAccentColor(c.key))}
                   aria-label={c.label}

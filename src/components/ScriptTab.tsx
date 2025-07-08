@@ -5,16 +5,26 @@
 // Role: Renders a tab for editing scripts (pre-request or post-request).
 // Located at: src/components/ScriptTab.tsx
 import React from 'react';
+import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
-const ScriptTab: React.FC<{ label: string }> = ({ label }) => (
-  <div className="space-y-2">
-    <label className="block text-zinc-300 text-sm font-semibold mb-1">{label}</label>
-    <textarea
-      className="w-full min-h-[100px] bg-zinc-700 text-zinc-200 rounded px-2 py-1 text-sm focus:outline-none resize-y"
-      placeholder={`// Write your ${label.toLowerCase()} here...`}
-    />
-    <div className="text-xs text-zinc-400 mt-2">Scripting is not yet implemented.</div>
-  </div>
-);
+const ScriptTab: React.FC<{ label: string }> = ({ label }) => {
+  const theme = useSelector((state: any) => state.theme.theme);
+  const { t } = useTranslation();
+  let themeClass = '';
+  if (theme === 'dark') themeClass = 'theme-dark';
+  else if (theme === 'black') themeClass = 'theme-black';
+  // No class for light (default)
+  return (
+    <div className={`space-y-2 bg-bg text-text ${themeClass}`}>
+      <label className="block text-text text-sm font-semibold mb-1">{label}</label>
+      <textarea
+        className="w-full min-h-[100px] bg-bg text-text rounded px-2 py-1 text-sm focus:outline-none resize-y border border-border"
+        placeholder={t('script_placeholder', { label: label.toLowerCase() })}
+      />
+      <div className="text-xs text-text/70 mt-2">{t('scripting_not_implemented')}</div>
+    </div>
+  );
+};
 
 export default ScriptTab; 

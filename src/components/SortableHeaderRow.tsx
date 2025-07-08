@@ -7,6 +7,8 @@
 import React, { useState } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
 export interface SortableHeaderRowProps {
   header: { id: string; key: string; value: string; description: string; locked?: boolean };
@@ -28,6 +30,12 @@ const SortableHeaderRow: React.FC<SortableHeaderRowProps> = React.memo(function 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: header.id });
   const [showDropdown, setShowDropdown] = useState(false);
   const [filter, setFilter] = useState('');
+  const theme = useSelector((state: any) => state.theme.theme);
+  const { t } = useTranslation();
+  let themeClass = '';
+  if (theme === 'dark') themeClass = 'theme-dark';
+  else if (theme === 'black') themeClass = 'theme-black';
+  // No class for light (default)
   const filteredHeaders = COMMON_HEADERS.filter(h => h.toLowerCase().includes((filter || header.key).toLowerCase()) && h !== header.key);
   
   const handleHeaderSelect = (selectedHeader: string) => {
@@ -47,16 +55,16 @@ const SortableHeaderRow: React.FC<SortableHeaderRowProps> = React.memo(function 
         transform: CSS.Transform.toString(transform),
         transition,
         opacity: isDragging ? 0.5 : 1,
-        background: isOdd ? '#19191b' : undefined,
+        background: isOdd ? 'var(--bg-secondary, #19191b)' : undefined,
         minHeight: '38px',
         display: 'grid',
         gridTemplateColumns: '32px 1fr 1fr 1fr auto',
-        borderBottom: '1px solid #27272a',
+        borderBottom: '1px solid var(--border, #27272a)',
         paddingLeft: 0,
         paddingRight: 8,
         alignItems: 'center',
       }}
-      className="px-2 group"
+      className={`px-2 group text-text ${themeClass}`}
     >
       {/* Drag handle: 6-dot rectangle, only visible on hover */}
       <button
@@ -65,7 +73,7 @@ const SortableHeaderRow: React.FC<SortableHeaderRowProps> = React.memo(function 
         className="flex items-center justify-center cursor-grab focus:outline-none h-full"
         style={{ background: 'none', border: 'none', padding: 0 }}
         tabIndex={-1}
-        title="Drag to reorder"
+        title={t('drag_to_reorder')}
       >
         <span className="inline-block opacity-0 group-hover:opacity-70 transition-opacity duration-150">
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -80,9 +88,9 @@ const SortableHeaderRow: React.FC<SortableHeaderRowProps> = React.memo(function 
       </button>
       <div className="relative">
         <input
-          className="bg-transparent text-white px-2 py-1 outline-none w-full border-r border-neutral-800"
+          className="bg-transparent text-text px-2 py-1 outline-none w-full border-r border-border"
           value={header.key}
-          placeholder="Key"
+          placeholder={t('key')}
           onChange={e => {
             handleHeaderChange(header.id, 'key', e.target.value);
             setFilter(e.target.value);
@@ -94,11 +102,11 @@ const SortableHeaderRow: React.FC<SortableHeaderRowProps> = React.memo(function 
           autoComplete="off"
         />
         {showDropdown && filteredHeaders.length > 0 && (
-          <div className="absolute left-0 top-full z-50 w-full bg-[#232329] border border-neutral-800 rounded shadow-lg max-h-48 overflow-y-auto mt-1">
+          <div className="absolute left-0 top-full z-50 w-full bg-bg border border-border rounded shadow-lg max-h-48 overflow-y-auto mt-1">
             {filteredHeaders.map(h => (
               <div
                 key={h}
-                className="px-3 py-2 text-sm text-gray-200 hover:bg-blue-600 hover:text-white cursor-pointer select-none"
+                className="px-3 py-2 text-sm text-text hover:bg-accent/20 hover:text-accent cursor-pointer select-none"
                 onMouseDown={() => handleHeaderSelect(h)}
               >
                 {h}
@@ -108,16 +116,16 @@ const SortableHeaderRow: React.FC<SortableHeaderRowProps> = React.memo(function 
         )}
       </div>
       <input
-        className="bg-transparent text-white px-2 py-1 outline-none w-full border-r border-neutral-800"
+        className="bg-transparent text-text px-2 py-1 outline-none w-full border-r border-border"
         value={header.value}
-        placeholder="Value"
+        placeholder={t('value')}
         onChange={e => handleHeaderChange(header.id, 'value', e.target.value)}
         disabled={header.locked}
       />
       <input
-        className="bg-transparent text-white px-2 py-1 outline-none w-full border-r border-neutral-800"
+        className="bg-transparent text-text px-2 py-1 outline-none w-full border-r border-border"
         value={header.description}
-        placeholder="Description"
+        placeholder={t('description')}
         onChange={e => handleHeaderChange(header.id, 'description', e.target.value)}
         disabled={header.locked}
       />

@@ -6,6 +6,7 @@
 // Located at: src/pages/GraphQL/GraphQLTabBar.tsx
 import React, { useRef, useLayoutEffect, useState } from 'react';
 import { FiPlus } from 'react-icons/fi';
+import { useSelector } from 'react-redux';
 
 interface Tab {
   id: string;
@@ -43,6 +44,13 @@ const GraphQLTabBar: React.FC<GraphQLTabBarProps> = ({
   const [hoveredTabId, setHoveredTabId] = useState<string | null>(null);
   const [hoveredCloseId, setHoveredCloseId] = useState<string | null>(null);
 
+  // Theming logic
+  const theme = useSelector((state: any) => state.theme.theme);
+  let themeClass = '';
+  if (theme === 'dark') themeClass = 'theme-dark';
+  else if (theme === 'black') themeClass = 'theme-black';
+  // No class for light (default)
+
   useLayoutEffect(() => {
     const el = tabRefs.current[activeTabId];
     if (el) {
@@ -53,7 +61,7 @@ const GraphQLTabBar: React.FC<GraphQLTabBarProps> = ({
   }, [activeTabId, tabs.length]);
 
   return (
-    <div className="w-full bg-[#1C1C1E] border-b h-10 border-zinc-800 relative flex items-center overflow-x-auto">
+    <div className={`w-full bg-bg border-b h-10 border-border relative flex items-center overflow-x-auto ${themeClass}`}>
       <div className="flex items-center flex-1 min-w-0 relative" style={{ position: 'relative' }}>
         {/* Animated blue bar on top */}
         <div
@@ -77,7 +85,7 @@ const GraphQLTabBar: React.FC<GraphQLTabBarProps> = ({
             <div
               key={tab.id}
               ref={el => (tabRefs.current[tab.id] = el)}
-              className={`flex items-center h-10 cursor-pointer select-none border-b-2 transition relative group ${isActive ? 'bg-[#18181b] text-white font-bold' : 'border-transparent text-gray-400 hover:text-white'}`}
+              className={`flex items-center h-10 cursor-pointer select-none border-b-2 transition relative group ${isActive ? 'bg-bg text-text font-bold border-blue-500' : 'border-transparent text-gray-400 hover:text-text'}`}
               style={{ minWidth: 160, maxWidth: 240, width: 200, paddingLeft: 24, paddingRight: 24 }}
               onClick={() => onSwitchTab(tab.id)}
               onDoubleClick={() => onOpenModal(tab.id)}
@@ -105,7 +113,7 @@ const GraphQLTabBar: React.FC<GraphQLTabBarProps> = ({
               {/* Rename modal */}
               {tab.showModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-                  <div className="bg-[#18181b] rounded-2xl shadow-2xl border border-zinc-800 w-[400px] max-w-full p-0 relative">
+                  <div className={`bg-bg rounded-2xl shadow-2xl border border-border w-[400px] max-w-full p-0 relative ${themeClass}`}>
                     {/* Title and close */}
                     <div className="flex items-center justify-center pt-6 pb-2 px-6 relative">
                       <div className="text-xl font-bold text-center flex-1">Edit Request</div>
@@ -116,7 +124,7 @@ const GraphQLTabBar: React.FC<GraphQLTabBarProps> = ({
                       <label className="block text-xs text-gray-400 mb-1">Label</label>
                       <div className="relative">
                         <input
-                          className="w-full bg-zinc-900 border border-zinc-800 rounded px-3 py-3 text-white text-base pr-10 focus:outline-none"
+                          className="w-full bg-bg border border-border rounded px-3 py-3 text-text text-base pr-10 focus:outline-none"
                           value={tab.modalValue}
                           onChange={e => onSetModalValue(tab.id, e.target.value)}
                           autoFocus
@@ -130,7 +138,7 @@ const GraphQLTabBar: React.FC<GraphQLTabBarProps> = ({
                     {/* Buttons */}
                     <div className="flex gap-3 justify-start px-6 pb-6 pt-4">
                       <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded font-semibold text-base" onClick={() => onSaveModal(tab.id)}>Save</button>
-                      <button className="bg-zinc-800 hover:bg-zinc-700 text-white px-6 py-2 rounded font-semibold text-base" onClick={() => onCloseModal(tab.id)}>Cancel</button>
+                      <button className="bg-bg hover:bg-bg/80 text-text px-6 py-2 rounded font-semibold text-base border border-border" onClick={() => onCloseModal(tab.id)}>Cancel</button>
                     </div>
                   </div>
                 </div>

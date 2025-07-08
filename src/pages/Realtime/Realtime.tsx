@@ -11,6 +11,7 @@ import SSEPanel from './SSEPanel';
 import SocketIOPanel from './SocketIOPanel';
 import MQTTPanel from './MQTTPanel';
 import RealtimeHelpPanel from './RealtimeHelpPanel';
+import { useSelector } from 'react-redux';
 
 const MIN_LEFT_WIDTH = 300;
 const MAX_LEFT_WIDTH = 900;
@@ -27,6 +28,12 @@ const Realtime: React.FC = () => {
   const [dragging, setDragging] = useState(false);
   const [selectedProtocol, setSelectedProtocol] = useState('websocket');
   const dividerRef = useRef<HTMLDivElement>(null);
+
+  const theme = useSelector((state: any) => state.theme.theme);
+  let themeClass = '';
+  if (theme === 'dark') themeClass = 'theme-dark';
+  else if (theme === 'black') themeClass = 'theme-black';
+  // No class for light (default)
 
   const handleMouseDown = (e: React.MouseEvent) => {
     setDragging(true);
@@ -73,24 +80,24 @@ const Realtime: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full w-full bg-[#18181b] text-white">
+    <div className={`flex flex-col h-full w-full bg-bg text-text ${themeClass}`}>
       {/* Protocol tab bar at the top */}
       <RealtimeProtocolTabBar selectedProtocol={selectedProtocol} onSelectProtocol={setSelectedProtocol} />
       {/* Main area: protocol panel and help panel side by side */}
       <div className="flex flex-1 min-h-0 w-full">
         {/* Left: Protocol panel (resizable width) */}
-        <div style={{ width: leftWidth }} className="flex flex-col h-full min-w-[300px] max-w-[900px] bg-[#18181b]">
+        <div style={{ width: leftWidth }} className="flex flex-col h-full min-w-[300px] max-w-[900px] bg-bg">
           {renderProtocolUI()}
         </div>
         {/* Vertical divider for resizing */}
         <div
           ref={dividerRef}
-          className="w-2 h-full cursor-col-resize bg-[#232329] hover:bg-blue-600 transition"
+          className="w-2 h-full cursor-col-resize bg-border hover:bg-blue-600 transition"
           onMouseDown={handleMouseDown}
           style={{ zIndex: 10 }}
         />
         {/* Right: Help panel */}
-        <div className="flex-1 h-full bg-[#18181b]">
+        <div className="flex-1 h-full bg-bg">
           <RealtimeHelpPanel />
         </div>
       </div>

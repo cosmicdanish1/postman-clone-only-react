@@ -9,6 +9,8 @@ import { DndContext, closestCenter } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { AnimatePresence, motion } from 'framer-motion';
 import MonacoEditor from '@monaco-editor/react';
+import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
 interface ParametersTabContentProps {
   queryParams: any[];
@@ -19,6 +21,13 @@ interface ParametersTabContentProps {
   SortableParamRow: any;
 }
 
+const getMonacoTheme = (theme: string) => {
+  if (theme === 'light') return 'vs-light';
+  if (theme === 'dark' || theme === 'system') return 'vs-dark';
+  if (theme === 'black') return 'vs-dark'; // or a custom theme if registered
+  return 'vs-dark';
+};
+
 const ParametersTabContent: React.FC<ParametersTabContentProps> = ({
   queryParams,
   handleParamChange,
@@ -27,22 +36,28 @@ const ParametersTabContent: React.FC<ParametersTabContentProps> = ({
   handleDragEnd,
   SortableParamRow,
 }) => {
+  const theme = useSelector((state: any) => state.theme.theme);
+  const { t } = useTranslation();
+  let themeClass = '';
+  if (theme === 'dark') themeClass = 'theme-dark';
+  else if (theme === 'black') themeClass = 'theme-black';
+  // No class for light (default)
   const [editActive, setEditActive] = useState(false);
   const [editorValue, setEditorValue] = useState<string>(
     '# Entries are separated by newline\n# Keys and values are separated by :\n# Prepend # to any row you want to add but keep disabled\nkey1:value1\nkey2:value2'
   );
   return (
-    <div className="flex-1 flex flex-col bg-neutral-900 rounded p-0 mt-2">
+    <div className={`flex-1 flex flex-col bg-bg text-text rounded p-0 mt-2 ${themeClass}`}>
       {/* Query Parameters Bar */}
       <div className="flex items-center justify-between px-4 h-10 bg-[#18181A] w-full border-b border-neutral-800">
-        <span className="text-gray-400 text-base">Query Parameters</span>
+        <span className="text-gray-400 text-base">{t('query_parameters')}</span>
         <div className="flex items-center gap-3">
           {/* Help icon */}
-          <button className="text-gray-400 hover:text-white" title="Help">
+          <button className="text-gray-400 hover:text-white" title={t('help')}>
             <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
           </button>
           {/* Delete icon */}
-          <button className="text-gray-400 hover:text-white" title="Delete">
+          <button className="text-gray-400 hover:text-white" title={t('delete')}>
             <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6v14a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M5 6V4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2"/></svg>
           </button>
           {/* Animated icon when editActive is true */}
@@ -60,11 +75,11 @@ const ParametersTabContent: React.FC<ParametersTabContentProps> = ({
             )}
           </AnimatePresence>
           {/* Edit icon */}
-          <button className={`text-gray-400 hover:text-white ${editActive ? 'text-blue-500' : ''}`} title="Edit" onClick={() => setEditActive(v => !v)}>
+          <button className={`text-gray-400 hover:text-white ${editActive ? 'text-blue-500' : ''}`} title={t('edit')} onClick={() => setEditActive(v => !v)}>
             <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"></path></g></svg>
           </button>
           {/* Add icon */}
-          <button className="text-gray-400 hover:text-white" title="Add">
+          <button className="text-gray-400 hover:text-white" title={t('add')}>
             <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
           </button>
         </div>
@@ -81,7 +96,7 @@ const ParametersTabContent: React.FC<ParametersTabContentProps> = ({
             height="100%"
             defaultLanguage="http"
             language="http"
-            theme="vs-dark"
+            theme={getMonacoTheme(theme)}
             value={editorValue}
             options={{
               fontSize: 15,
@@ -105,9 +120,9 @@ const ParametersTabContent: React.FC<ParametersTabContentProps> = ({
             <div className="w-full">
               <div className="grid grid-cols-5 border-b border-neutral-800 px-2" style={{minHeight: '38px', gridTemplateColumns: '32px 1fr 1fr 1fr auto'}}>
                 <div></div>
-                <div className="text-gray-500 text-sm flex items-center border-r border-neutral-800 py-2">Key</div>
-                <div className="text-gray-500 text-sm flex items-center border-r border-neutral-800 py-2">Value</div>
-                <div className="text-gray-500 text-sm flex items-center border-r border-neutral-800 py-2">Description</div>
+                <div className="text-gray-500 text-sm flex items-center border-r border-neutral-800 py-2">{t('key')}</div>
+                <div className="text-gray-500 text-sm flex items-center border-r border-neutral-800 py-2">{t('value')}</div>
+                <div className="text-gray-500 text-sm flex items-center border-r border-neutral-800 py-2">{t('description')}</div>
                 <div></div>
               </div>
               {queryParams.map((param, idx) => (

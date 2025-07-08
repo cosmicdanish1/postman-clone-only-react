@@ -9,6 +9,8 @@ import MonacoEditor from '@monaco-editor/react';
 import { DndContext, closestCenter } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
 interface BodyTabContentProps {
   contentType: string;
@@ -33,6 +35,13 @@ const BodyTabContent: React.FC<BodyTabContentProps> = ({
   rawBody,
   setRawBody,
 }) => {
+  const theme = useSelector((state: any) => state.theme.theme);
+  const { t } = useTranslation();
+  let themeClass = '';
+  if (theme === 'dark') themeClass = 'theme-dark';
+  else if (theme === 'black') themeClass = 'theme-black';
+  // No class for light (default)
+
   const [formRows, setFormRows] = useState([
     { id: Date.now(), key: '', value: '', description: '', enabled: true }
   ]);
@@ -68,17 +77,24 @@ const BodyTabContent: React.FC<BodyTabContentProps> = ({
   const updateRow = (id: number, field: 'key' | 'value' | 'description', value: string) => setFormRows(formRows.map(row => row.id === id ? { ...row, [field]: value } : row));
   const toggleRow = (id: number) => setFormRows(formRows.map(row => row.id === id ? { ...row, enabled: !row.enabled } : row));
 
+  const getMonacoTheme = (theme: string) => {
+    if (theme === 'light') return 'vs-light';
+    if (theme === 'dark' || theme === 'system') return 'vs-dark';
+    if (theme === 'black') return 'vs-dark'; // or a custom theme if registered
+    return 'vs-dark';
+  };
+
   return (
-    <div className="flex-1 flex flex-col bg-neutral-900 rounded p-0 mt-2">
+    <div className={`flex-1 flex flex-col bg-bg text-text rounded p-0 mt-2 ${themeClass}`}>
       {/* Body Bar: Content Type */}
       <div className="flex items-center gap-3 px-4 h-10 border-b border-neutral-800 relative">
-        <span className="text-gray-400 text-sm">Content Type</span>
+        <span className="text-gray-400 text-sm">{t('content_type')}</span>
         <div className="relative">
           <button
             className="flex items-center gap-1 bg-zinc-800 text-gray-200 text-sm px-3 py-1 rounded border border-zinc-700 focus:outline-none min-w-[90px]"
             onClick={() => setDropdownOpen(!dropdownOpen)}
           >
-            {contentTypeOptions.find(opt => opt.value === contentType)?.label || 'None'}
+            {contentTypeOptions.find(opt => opt.value === contentType)?.label || t('none')}
             <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
           </button>
           {dropdownOpen && (
@@ -112,7 +128,7 @@ const BodyTabContent: React.FC<BodyTabContentProps> = ({
           onClick={() => setActiveTab('headers')}
         >
           <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M2 12h20"/><path d="M12 2v20"/></svg>
-          Override
+          {t('override')}
         </button>
       </div>
       {/* Raw Request Body Bar for JSON, XML, HTML, and Plain Text content types */}
@@ -128,18 +144,18 @@ const BodyTabContent: React.FC<BodyTabContentProps> = ({
       ].includes(contentType) && (
         <>
           <div className="flex items-center justify-between px-4 h-10 bg-[#18181A] w-full border-b border-neutral-800">
-            <span className="text-gray-400 text-base">Raw Request Body</span>
+            <span className="text-gray-400 text-base">{t('raw_request_body')}</span>
             <div className="flex items-center gap-4">
               {/* Help icon */}
-              <button className="text-gray-400 hover:text-white" title="Help">
+              <button className="text-gray-400 hover:text-white" title={t('help')}>
                 <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 1 1 5.82 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12" y2="17"/></svg>
               </button>
               {/* Delete icon */}
-              <button className="text-gray-400 hover:text-white" title="Delete">
+              <button className="text-gray-400 hover:text-white" title={t('delete')}>
                 <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m5 0V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg>
               </button>
               {/* Format icon */}
-              <button className="text-gray-400 hover:text-white" title="Format">
+              <button className="text-gray-400 hover:text-white" title={t('format')}>
                 <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/></svg>
               </button>
               {/* Other icons as needed (add more here to match screenshot) */}
@@ -165,7 +181,7 @@ const BodyTabContent: React.FC<BodyTabContentProps> = ({
                 contentType === 'text/plain' ? 'plaintext' :
                 'json'
               }
-              theme="vs-dark"
+              theme={getMonacoTheme(theme)}
               value={rawBody || (
                 ['application/xml', 'text/xml'].includes(contentType) ? '<root>\n  <!-- Your XML here -->\n</root>' :
                 contentType === 'text/html' ? '<!DOCTYPE html>\n<html>\n  <head>\n    <title>Title</title>\n  </head>\n  <body>\n    <!-- Your HTML here -->\n  </body>\n</html>' :

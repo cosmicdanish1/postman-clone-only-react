@@ -7,6 +7,8 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import EditEnvironmentModal from './EditEnvironmentModal';
+import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
 interface Tab {
   id: string;
@@ -59,6 +61,15 @@ const TabsBar: React.FC<TabsBarProps> = ({
   const [envPopoverTop, setEnvPopoverTop] = useState<number | null>(null);
   const envPopoverRef = useRef<HTMLDivElement>(null);
   const [envSearch, setEnvSearch] = useState('');
+
+  // Theming logic (must be at the top level)
+  const theme = useSelector((state: any) => state.theme.theme);
+  let themeClass = '';
+  if (theme === 'dark') themeClass = 'theme-dark';
+  else if (theme === 'black') themeClass = 'theme-black';
+  // No class for light (default)
+
+  const { t } = useTranslation();
 
   // Click-away handler for popover
   useEffect(() => {
@@ -139,11 +150,11 @@ const TabsBar: React.FC<TabsBarProps> = ({
       <EditEnvironmentModal
         open={editModal !== null}
         onClose={() => setEditModal(null)}
-        modalValue={editModal === 'global' ? 'Global' : 'Environment'}
+        modalValue={editModal === 'global' ? t('global') : t('environment')}
         setModalValue={setModalValue}
         onSave={() => setEditModal(null)}
       />
-      <div className="w-full bg-[#1C1C1E] border-b h-10 border-zinc-800 relative">
+      <div className={`w-full bg-bg border-b h-10 border-border relative text-text ${themeClass}`}>
         <div className="flex items-center h-full w-full">
           <div className="flex items-center flex-1 min-w-0">
             {tabs.map((tab) => (
@@ -174,7 +185,7 @@ const TabsBar: React.FC<TabsBarProps> = ({
                       style={{ pointerEvents: 'auto' }}
                       onClick={e => { e.stopPropagation(); onCloseTab(tab.id); }}
                       tabIndex={-1}
-                      title="Close tab"
+                      title={t('close_tab')}
                     >
                       <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M2 2l6 6m0-6l-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>

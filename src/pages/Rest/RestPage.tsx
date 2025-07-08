@@ -24,6 +24,7 @@ import type { TabData, Parameter, Variable } from '../types';
 import SortableHeaderRow from '../../components/SortableHeaderRow';
 import SortableVariableRow from '../../components/SortableVariableRow';
 import { METHODS, contentTypeOptions } from '../../constants';
+import { useSelector } from 'react-redux';
 
 const defaultTabData = (): TabData => ({
   id: uuidv4(),
@@ -54,6 +55,7 @@ const defaultTabData = (): TabData => ({
 });
 
 const HoppscotchClone: React.FC = () => {
+  const theme = useSelector((state: any) => state.theme.theme);
   const [tabs, setTabs] = useState<TabData[]>([defaultTabData()]);
   const [activeTabId, setActiveTabId] = useState(tabs[0].id);
   const [envDropdownOpen, setEnvDropdownOpen] = useState(false);
@@ -687,7 +689,7 @@ const HoppscotchClone: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full w-full bg-neutral-900 text-white">
+    <div className={`flex flex-col h-full w-full theme-${theme} bg-bg text-text border-border`}>
       {/* Edit Environment Modal */}
       <EditEnvironmentModal
         open={editModal !== null}

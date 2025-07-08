@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-type Theme = 'system' | 'light' | 'dark';
+type Theme = 'system' | 'light' | 'dark' | 'black' | 'light-custom';
 
 type AccentColor = 'green' | 'blue' | 'cyan' | 'purple' | 'yellow' | 'orange' | 'red' | 'pink';
 

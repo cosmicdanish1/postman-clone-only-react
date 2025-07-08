@@ -11,6 +11,7 @@ import { toggleExpandNav } from '../features/settingsSlice';
 import { AnimatePresence, motion } from 'framer-motion';
 import ShortcutsPanel from './ShortcutsPanel';
 import HelpMenu from './HelpMenu';
+import { useTranslation } from 'react-i18next';
 
 /**
  * BottomBar – a slim footer bar that stays pinned to the bottom of the viewport.
@@ -20,6 +21,11 @@ import HelpMenu from './HelpMenu';
 const BottomBar: React.FC = () => {
   const dispatch = useDispatch();
   const expandNav = useSelector((state: RootState) => state.settings.expandNav);
+  const theme = useSelector((state: any) => state.theme.theme);
+  let themeClass = '';
+  if (theme === 'dark') themeClass = 'theme-dark';
+  else if (theme === 'black') themeClass = 'theme-black';
+  // No class for light (default)
   const [showInterceptor, setShowInterceptor] = useState(false);
   const iconRef = useRef<HTMLButtonElement>(null);
   const popupRef = useRef<HTMLDivElement>(null);
@@ -29,6 +35,7 @@ const BottomBar: React.FC = () => {
   const [shortcutsPanelOpen, setShortcutsPanelOpen] = useState(false);
   const [helpMenuOpen, setHelpMenuOpen] = useState(false);
   const helpRef = useRef<HTMLAnchorElement>(null);
+  const { t } = useTranslation();
 
   // Close popup on outside click
   useEffect(() => {
@@ -64,12 +71,12 @@ const BottomBar: React.FC = () => {
 
   // Positioning: popup appears just above the icon, always fully visible
   return (
-  <footer className="fixed bottom-0 left-0 right-0 h-8 bg-neutral-900 border-t border-zinc-800 text-gray-300 flex items-center justify-between px-3 select-none z-40">
+    <footer className={`fixed bottom-0 left-0 right-0 h-8 bg-bg border-t border-border text-text flex items-center justify-between px-3 select-none z-40 ${themeClass}`}>
     {/* Left side icons */}
       <div className="flex items-center space-x-4 text-gray-400 relative">
         <button 
           className="hover:text-gray-100" 
-          title={expandNav ? "Collapse sidebar" : "Expand sidebar"}
+          title={expandNav ? t('collapse_sidebar') : t('expand_sidebar')}
           onClick={() => dispatch(toggleExpandNav())}
         >
           {/* simple vertical bar icon with rotation */}
@@ -91,7 +98,7 @@ const BottomBar: React.FC = () => {
         <button
           ref={iconRef}
           className="hover:text-gray-100 relative"
-          title="Status OK"
+          title={t('status_ok')}
           onClick={() => setShowInterceptor((v) => !v)}
         >
           {/* shield check icon */}
@@ -134,12 +141,12 @@ const BottomBar: React.FC = () => {
               <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
               <path d="M12 17h.01"/>
             </svg>
-            Help &amp; feedback
+            {t('help_feedback')}
           </a>
           <HelpMenu open={helpMenuOpen} onClose={() => setHelpMenuOpen(false)} anchorRef={helpRef} />
         </div>
         <button
-          title="Shortcuts"
+          title={t('shortcuts')}
           className="hover:text-yellow-400 transition-colors"
           onClick={() => {
             setShortcutsRotating(true);
@@ -162,7 +169,7 @@ const BottomBar: React.FC = () => {
             <path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/>
           </svg>
         </button>
-        <button title="Share" className="hover:text-blue-400 transition-colors"
+        <button title={t('share')} className="hover:text-blue-400 transition-colors"
           onClick={() => {
             const shareData = {
               title: document.title,
@@ -172,7 +179,7 @@ const BottomBar: React.FC = () => {
               navigator.share(shareData);
             } else {
               navigator.clipboard.writeText(window.location.href);
-              alert('Link copied to clipboard!');
+              alert(t('link_copied'));
             }
           }}
         >
@@ -184,7 +191,7 @@ const BottomBar: React.FC = () => {
             <line x1="15.41" x2="8.59" y1="6.51" y2="10.49" />
           </svg>
         </button>
-        <button title="Vertical layout" className="hover:text-green-400 transition-colors"
+        <button title={t('vertical_layout')} className="hover:text-green-400 transition-colors"
           onClick={() => {
             setVerticalRotating(true);
             // You can add your layout toggle logic here if needed
@@ -209,7 +216,7 @@ const BottomBar: React.FC = () => {
           </svg>
         </button>
         <button
-          title="Open right panel"
+          title={t('open_right_panel')}
           className="hover:text-cyan-400 transition-colors"
           onClick={() => {
             setPanelAnimating(true);
@@ -236,8 +243,8 @@ const BottomBar: React.FC = () => {
         </button>
       </div>
       <ShortcutsPanel open={shortcutsPanelOpen} onClose={() => setShortcutsPanelOpen(false)} />
-  </footer>
-);
+    </footer>
+  );
 };
 
 export default BottomBar;

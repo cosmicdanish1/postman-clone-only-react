@@ -7,6 +7,7 @@
 import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { useTranslation } from 'react-i18next';
 
 export interface SortableVariableRowProps {
   variable: { id: string; key: string; value: string };
@@ -17,6 +18,7 @@ export interface SortableVariableRowProps {
 
 const SortableVariableRow: React.FC<SortableVariableRowProps> = React.memo(function SortableVariableRow({ variable, handleVariableChange, handleDeleteVariable, isOdd }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: variable.id });
+  const { t } = useTranslation();
   return (
     <div
       ref={setNodeRef}
@@ -42,7 +44,7 @@ const SortableVariableRow: React.FC<SortableVariableRowProps> = React.memo(funct
         className="flex items-center justify-center cursor-grab focus:outline-none h-full"
         style={{ background: 'none', border: 'none', padding: 0 }}
         tabIndex={-1}
-        title="Drag to reorder"
+        title={t('drag_to_reorder')}
       >
         <span className="inline-block opacity-0 group-hover:opacity-70 transition-opacity duration-150">
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -58,13 +60,13 @@ const SortableVariableRow: React.FC<SortableVariableRowProps> = React.memo(funct
       <input
         className="bg-transparent text-white px-2 py-1 outline-none w-full border-r border-neutral-800"
         value={variable.key}
-        placeholder="Variable"
+        placeholder={t('variable')}
         onChange={e => handleVariableChange(variable.id, 'key', e.target.value)}
       />
       <input
         className="bg-transparent text-white px-2 py-1 outline-none w-full border-r border-neutral-800"
         value={variable.value}
-        placeholder="Value"
+        placeholder={t('value')}
         onChange={e => handleVariableChange(variable.id, 'value', e.target.value)}
       />
       <div className="flex items-center gap-2 justify-end px-2">

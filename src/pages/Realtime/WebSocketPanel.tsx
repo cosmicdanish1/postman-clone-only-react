@@ -10,6 +10,7 @@ import { DndContext, closestCenter } from '@dnd-kit/core';
 import { SortableContext, useSortable, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import CommunicationTab from './CommunicationTab';
+import { useSelector } from 'react-redux';
 
 const initialProtocols = [
   { id: 1, name: 'Protocol 1' },
@@ -25,9 +26,9 @@ function SortableProtocolRow({ protocol, onNameChange, onDelete }: any) {
         transform: CSS.Transform.toString(transform),
         transition,
         opacity: isDragging ? 0.5 : 1,
-        background: isDragging ? '#232329' : undefined,
+        background: isDragging ? 'var(--bg)' : undefined,
       }}
-      className="flex items-center  justify-between px-2 py-2 hover:bg-[#232329]"
+      className="flex items-center  justify-between px-2 py-2 hover:bg-bg"
     >
       {/* Drag handle */}
       <button
@@ -50,7 +51,7 @@ function SortableProtocolRow({ protocol, onNameChange, onDelete }: any) {
         </span>
       </button>
       <input
-        className="bg-transparent text-gray-400 flex-1 outline-none border-none px-0 py-0"
+        className="bg-transparent text-text flex-1 outline-none border-none px-0 py-0"
         value={protocol.name}
         onChange={e => onNameChange(protocol.id, e.target.value)}
         placeholder="Protocol name"
@@ -72,6 +73,11 @@ const WebSocketPanel: React.FC = () => {
 }`);
   const [protocols, setProtocols] = useState(initialProtocols);
   const [nextId, setNextId] = useState(3);
+  const theme = useSelector((state: any) => state.theme.theme);
+  let themeClass = '';
+  if (theme === 'dark') themeClass = 'theme-dark';
+  else if (theme === 'black') themeClass = 'theme-black';
+  // No class for light (default)
 
   const handleDelete = (id: number) => {
     setProtocols(protocols.filter(p => p.id !== id));
@@ -100,11 +106,11 @@ const WebSocketPanel: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col flex-1 bg-neutral-900 rounded p-4 mt-2">
+    <div className={`flex flex-col flex-1 bg-bg rounded p-4 mt-2 text-text ${themeClass}`}>
       {/* Top bar */}
       <div className="flex items-center gap-4 mb-4">
         <input
-          className="flex-1 bg-gray-800  border-none rounded px-4 py-2 text-white focus:outline-none"
+          className="flex-1 bg-bg border border-border rounded px-4 py-2 text-text focus:outline-none"
           placeholder="wss://echo-websocket.hoppscotch.io"
           defaultValue="wss://echo-websocket.hoppscotch.io"
           style={{ minWidth: 0 }}
@@ -112,15 +118,15 @@ const WebSocketPanel: React.FC = () => {
         <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-2 rounded font-semibold">Connect</button>
       </div>
       {/* Tabs */}
-      <div className="flex gap-6 border-b border-gray-800 mb-2">
+      <div className="flex gap-6 border-b border-border mb-2">
         <button
-          className={`px-2 py-1 border-b-2 font-semibold transition-colors ${activeTab === 'communication' ? 'border-blue-500 text-white' : 'border-transparent text-gray-400 hover:text-white'}`}
+          className={`px-2 py-1 border-b-2 font-semibold transition-colors ${activeTab === 'communication' ? 'border-blue-500 text-text' : 'border-transparent text-gray-400 hover:text-text'}`}
           onClick={() => setActiveTab('communication')}
         >
           Communication
         </button>
         <button
-          className={`px-2 py-1 border-b-2 font-semibold transition-colors ${activeTab === 'protocols' ? 'border-blue-500 text-white' : 'border-transparent text-gray-400 hover:text-white'}`}
+          className={`px-2 py-1 border-b-2 font-semibold transition-colors ${activeTab === 'protocols' ? 'border-blue-500 text-text' : 'border-transparent text-gray-400 hover:text-text'}`}
           onClick={() => setActiveTab('protocols')}
         >
           Protocols
@@ -132,7 +138,7 @@ const WebSocketPanel: React.FC = () => {
       ) : (
         <div className="flex flex-col flex-1 min-h-0">
           {/* Protocols Bar */}
-          <div className="flex items-center justify-between border-b border-[#232329] px-2 py-1 mb-2">
+          <div className="flex items-center justify-between border-b border-border px-2 py-1 mb-2">
             <span className="text-gray-400 font-medium">Protocols</span>
             <div className="flex items-center gap-4">
               <button className="text-gray-400 hover:text-white" title="Delete All" onClick={handleDeleteAll}>
@@ -146,7 +152,7 @@ const WebSocketPanel: React.FC = () => {
           {/* Protocols List with DnD-kit */}
           <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
             <SortableContext items={protocols.map(p => p.id)} strategy={verticalListSortingStrategy}>
-              <div className="flex flex-col divide-y divide-[#232329]">
+              <div className="flex flex-col divide-y divide-border">
                 {protocols.map(protocol => (
                   <SortableProtocolRow
                     key={protocol.id}

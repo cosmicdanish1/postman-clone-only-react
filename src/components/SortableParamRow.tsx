@@ -7,7 +7,9 @@
 import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { useSelector } from 'react-redux';
 import type { Parameter } from '../types';
+import { useTranslation } from 'react-i18next';
 
 interface SortableParamRowProps {
   param: Parameter;
@@ -19,6 +21,12 @@ interface SortableParamRowProps {
 
 const SortableParamRow: React.FC<SortableParamRowProps> = ({ param, handleParamChange, handleDeleteParam, setFocusedRow, isOdd }) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: param.id });
+  const theme = useSelector((state: any) => state.theme.theme);
+  const { t } = useTranslation();
+  let themeClass = '';
+  if (theme === 'dark') themeClass = 'theme-dark';
+  else if (theme === 'black') themeClass = 'theme-black';
+  // No class for light (default)
   return (
     <div
       ref={setNodeRef}
@@ -26,16 +34,16 @@ const SortableParamRow: React.FC<SortableParamRowProps> = ({ param, handleParamC
         transform: CSS.Transform.toString(transform),
         transition,
         opacity: isDragging ? 0.5 : 1,
-        background: isOdd ? '#19191b' : undefined,
+        background: isOdd ? 'var(--bg-secondary, #19191b)' : undefined,
         minHeight: '38px',
         display: 'grid',
         gridTemplateColumns: '32px 1fr 1fr 1fr auto',
-        borderBottom: '1px solid #27272a',
+        borderBottom: '1px solid var(--border, #27272a)',
         paddingLeft: 0,
         paddingRight: 8,
         alignItems: 'center',
       }}
-      className="px-2 group"
+      className={`px-2 group text-text ${themeClass}`}
     >
       {/* Drag handle: 6-dot rectangle, only visible on hover */}
       <button
@@ -44,7 +52,7 @@ const SortableParamRow: React.FC<SortableParamRowProps> = ({ param, handleParamC
         className="flex items-center justify-center cursor-grab focus:outline-none h-full"
         style={{ background: 'none', border: 'none', padding: 0 }}
         tabIndex={-1}
-        title="Drag to reorder"
+        title={t('drag_to_reorder')}
       >
         <span className="inline-block opacity-0 group-hover:opacity-70 transition-opacity duration-150">
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -58,22 +66,22 @@ const SortableParamRow: React.FC<SortableParamRowProps> = ({ param, handleParamC
         </span>
       </button>
       <input
-        className="bg-transparent text-white px-2 py-1 outline-none w-full border-r border-neutral-800"
+        className="bg-transparent text-text px-2 py-1 outline-none w-full border-r border-border"
         value={param.key}
-        placeholder="Key"
+        placeholder={t('key')}
         onChange={e => handleParamChange(param.id, 'key', e.target.value)}
         onFocus={() => setFocusedRow(param.id)}
       />
       <input
-        className="bg-transparent text-white px-2 py-1 outline-none w-full border-r border-neutral-800"
+        className="bg-transparent text-text px-2 py-1 outline-none w-full border-r border-border"
         value={param.value}
-        placeholder="Value"
+        placeholder={t('value')}
         onChange={e => handleParamChange(param.id, 'value', e.target.value)}
       />
       <input
-        className="bg-transparent text-white px-2 py-1 outline-none w-full border-r border-neutral-800"
+        className="bg-transparent text-text px-2 py-1 outline-none w-full border-r border-border"
         value={param.description}
-        placeholder="Description"
+        placeholder={t('description')}
         onChange={e => handleParamChange(param.id, 'description', e.target.value)}
       />
       <div className="flex items-center gap-2 justify-end px-2">

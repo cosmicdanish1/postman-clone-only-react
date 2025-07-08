@@ -16,6 +16,7 @@ import AuthorizationTabContent from './TabContentArea/AuthorizationTabContent';
 import PreRequestTabContent from './TabContentArea/PreRequestTabContent';
 import PostRequestTabContent from './TabContentArea/PostRequestTabContent';
 import VariablesTabContent from './TabContentArea/VariablesTabContent';
+import { useSelector } from 'react-redux';
 
 // This is a placeholder for the actual implementation.
 // The real implementation will require all props and handlers for each tab's content.
@@ -76,138 +77,108 @@ interface TabContentAreaProps {
 }
 
 const TabContentArea: React.FC<TabContentAreaProps> = (props) => {
-  const {
-    activeTab,
-    queryParams,
-    handleParamChange,
-    handleDeleteParam,
-    setFocusedRow,
-    handleDragEnd,
-    SortableParamRow,
-    contentType,
-    contentTypeOptions,
-    setContentType,
-    dropdownOpen,
-    setDropdownOpen,
-    hideScrollbarStyle,
-    setActiveTab,
-    rawBody,
-    setRawBody,
-    headers,
-    handleHeaderChange,
-    handleDeleteHeader,
-    handleAddHeader,
-    editHeadersActive,
-    setEditHeadersActive,
-    SortableHeaderRow,
-    uuidv4,
-    setTabs,
-    activeTabId,
-    tabs,
-    authorization,
-    setAuthorization,
-    preRequestScript,
-    setPreRequestScript,
-    insertPreRequestSnippet,
-    highlightPreRequestScript,
-    preRequestDivRef,
-    postRequestScript,
-    setPostRequestScript,
-    insertPostRequestSnippet,
-    highlightPostRequestScript,
-    postRequestDivRef,
-    variables,
-    handleVariableChange,
-    handleDeleteVariable,
-    handleVariableDragEnd,
-    SortableVariableRow,
-  } = props;
+  const theme = useSelector((state: any) => state.theme.theme);
+  let themeClass = '';
+  if (theme === 'dark') themeClass = 'theme-dark';
+  else if (theme === 'black') themeClass = 'theme-black';
+  // No class for light (default)
 
-  if (activeTab === 'parameters') {
+  if (props.activeTab === 'parameters') {
+    const { queryParams, handleParamChange, handleDeleteParam, setFocusedRow, handleDragEnd, SortableParamRow } = props;
     return (
-      <ParametersTabContent
-        queryParams={queryParams}
-        handleParamChange={handleParamChange}
-        handleDeleteParam={handleDeleteParam}
-        setFocusedRow={setFocusedRow}
-        handleDragEnd={handleDragEnd}
-        SortableParamRow={SortableParamRow}
-      />
+      <div className={`w-full h-full bg-bg text-text ${themeClass}`}>
+        <ParametersTabContent
+          queryParams={queryParams}
+          handleParamChange={handleParamChange}
+          handleDeleteParam={handleDeleteParam}
+          setFocusedRow={setFocusedRow}
+          handleDragEnd={handleDragEnd}
+          SortableParamRow={SortableParamRow}
+        />
+      </div>
     );
   }
-
-  if (activeTab === 'body') {
+  if (props.activeTab === 'body') {
+    const { contentType, contentTypeOptions, setContentType, dropdownOpen, setDropdownOpen, hideScrollbarStyle, setActiveTab, rawBody, setRawBody } = props;
     return (
-      <BodyTabContent
-        contentType={contentType}
-        contentTypeOptions={contentTypeOptions}
-        setContentType={setContentType}
-        dropdownOpen={dropdownOpen}
-        setDropdownOpen={setDropdownOpen}
-        hideScrollbarStyle={hideScrollbarStyle}
-        setActiveTab={setActiveTab}
-        rawBody={rawBody}
-        setRawBody={setRawBody}
-      />
+      <div className={`w-full h-full bg-bg text-text ${themeClass}`}>
+        <BodyTabContent
+          contentType={contentType}
+          contentTypeOptions={contentTypeOptions}
+          setContentType={setContentType}
+          dropdownOpen={dropdownOpen}
+          setDropdownOpen={setDropdownOpen}
+          hideScrollbarStyle={hideScrollbarStyle}
+          setActiveTab={setActiveTab}
+          rawBody={rawBody}
+          setRawBody={setRawBody}
+        />
+      </div>
     );
   }
-
-  if (activeTab === 'headers') {
+  if (props.activeTab === 'headers') {
+    const { headers, handleHeaderChange, handleDeleteHeader, handleAddHeader, editHeadersActive, setEditHeadersActive, SortableHeaderRow } = props;
     return (
-      <HeadersTabContent
-        headers={headers}
-        handleHeaderChange={handleHeaderChange}
-        handleDeleteHeader={handleDeleteHeader}
-        handleAddHeader={handleAddHeader}
-        editHeadersActive={editHeadersActive}
-        setEditHeadersActive={setEditHeadersActive}
-        SortableHeaderRow={SortableHeaderRow}
-      />
+      <div className={`w-full h-full bg-bg text-text ${themeClass}`}>
+        <HeadersTabContent
+          headers={headers}
+          handleHeaderChange={handleHeaderChange}
+          handleDeleteHeader={handleDeleteHeader}
+          handleAddHeader={handleAddHeader}
+          editHeadersActive={editHeadersActive}
+          setEditHeadersActive={setEditHeadersActive}
+          SortableHeaderRow={SortableHeaderRow}
+        />
+      </div>
     );
   }
-
-  if (activeTab === 'authorization') {
+  if (props.activeTab === 'authorization') {
     return (
-      <AuthorizationTabContent
-        authorization={authorization}
-        setAuthorization={setAuthorization}
-      />
+      <div className={`w-full h-full bg-bg text-text ${themeClass}`}>
+        <AuthorizationTabContent />
+      </div>
     );
   }
-
-  if (activeTab === 'pre-request') {
+  if (props.activeTab === 'pre-request') {
+    const { preRequestScript, setPreRequestScript, insertPreRequestSnippet, highlightPreRequestScript, preRequestDivRef } = props;
     return (
-      <PreRequestTabContent
-        preRequestScript={preRequestScript}
-        setPreRequestScript={setPreRequestScript}
-        insertPreRequestSnippet={insertPreRequestSnippet}
-        highlightPreRequestScript={highlightPreRequestScript}
-        preRequestDivRef={preRequestDivRef}
-      />
+      <div className={`w-full h-full bg-bg text-text ${themeClass}`}>
+        <PreRequestTabContent
+          preRequestScript={preRequestScript}
+          setPreRequestScript={setPreRequestScript}
+          insertPreRequestSnippet={insertPreRequestSnippet}
+          highlightPreRequestScript={highlightPreRequestScript}
+          preRequestDivRef={preRequestDivRef}
+        />
+      </div>
     );
   }
-
-  if (activeTab === 'post-request') {
+  if (props.activeTab === 'post-request') {
+    const { postRequestScript, setPostRequestScript, insertPostRequestSnippet, highlightPostRequestScript, postRequestDivRef } = props;
     return (
-      <PostRequestTabContent
-        postRequestScript={postRequestScript}
-        setPostRequestScript={setPostRequestScript}
-        insertPostRequestSnippet={insertPostRequestSnippet}
-        highlightPostRequestScript={highlightPostRequestScript}
-        postRequestDivRef={postRequestDivRef}
-      />
+      <div className={`w-full h-full bg-bg text-text ${themeClass}`}>
+        <PostRequestTabContent
+          postRequestScript={postRequestScript}
+          setPostRequestScript={setPostRequestScript}
+          insertPostRequestSnippet={insertPostRequestSnippet}
+          highlightPostRequestScript={highlightPostRequestScript}
+          postRequestDivRef={postRequestDivRef}
+        />
+      </div>
     );
   }
-
-  if (activeTab === 'variables') {
+  if (props.activeTab === 'variables') {
+    const { variables, handleVariableChange, handleDeleteVariable, handleVariableDragEnd, SortableVariableRow } = props;
     return (
-      <VariablesTabContent
-        variables={variables}
-        handleVariableChange={handleVariableChange}
-        handleDeleteVariable={handleDeleteVariable}
-        handleVariableDragEnd={handleVariableDragEnd}
-        SortableVariableRow={SortableVariableRow}
-      />
+      <div className={`w-full h-full bg-bg text-text ${themeClass}`}>
+        <VariablesTabContent
+          variables={variables}
+          handleVariableChange={handleVariableChange}
+          handleDeleteVariable={handleDeleteVariable}
+          handleVariableDragEnd={handleVariableDragEnd}
+          SortableVariableRow={SortableVariableRow}
+        />
+      </div>
     );
   }
 

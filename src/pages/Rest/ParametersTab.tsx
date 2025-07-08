@@ -5,6 +5,7 @@
 // Role: Renders the UI for editing request parameters in the REST feature.
 // Located at: src/pages/Rest/ParametersTab.tsx
 import React from 'react';
+import { useSelector } from 'react-redux';
 
 interface Param {
   key: string;
@@ -13,6 +14,11 @@ interface Param {
 
 const ParametersTab: React.FC = () => {
   const [params, setParams] = React.useState<Param[]>([{ key: '', value: '' }]);
+  const theme = useSelector((state: any) => state.theme.theme);
+  let themeClass = '';
+  if (theme === 'dark') themeClass = 'theme-dark';
+  else if (theme === 'black') themeClass = 'theme-black';
+  // No class for light (default)
 
   const handleParamChange = (idx: number, field: 'key' | 'value', value: string) => {
     setParams(params => {
@@ -27,8 +33,8 @@ const ParametersTab: React.FC = () => {
   const removeParam = (idx: number) => setParams(params => params.filter((_, i) => i !== idx));
 
   return (
-    <div className="space-y-2">
-      <div className="flex font-semibold text-zinc-300 text-sm mb-2">
+    <div className={`space-y-2 bg-bg text-text p-4 rounded ${themeClass}`}>
+      <div className="flex font-semibold text-text text-sm mb-2">
         <div className="w-1/3">Key</div>
         <div className="w-1/3">Value</div>
         <div className="w-1/6"></div>
@@ -36,13 +42,13 @@ const ParametersTab: React.FC = () => {
       {params.map((param, idx) => (
         <div className="flex items-center gap-2" key={idx}>
           <input
-            className="w-1/3 bg-zinc-700 text-zinc-200 rounded px-2 py-1 text-sm focus:outline-none"
+            className="w-1/3 bg-bg border border-border text-text rounded px-2 py-1 text-sm focus:outline-none"
             placeholder="Key"
             value={param.key}
             onChange={e => handleParamChange(idx, 'key', e.target.value)}
           />
           <input
-            className="w-1/3 bg-zinc-700 text-zinc-200 rounded px-2 py-1 text-sm focus:outline-none"
+            className="w-1/3 bg-bg border border-border text-text rounded px-2 py-1 text-sm focus:outline-none"
             placeholder="Value"
             value={param.value}
             onChange={e => handleParamChange(idx, 'value', e.target.value)}

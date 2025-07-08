@@ -5,6 +5,8 @@
 // Role: Renders a modal dialog for importing requests from cURL commands.
 // Located at: src/components/ImportCurlModal.tsx
 import React from 'react';
+import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
 interface ImportCurlModalProps {
   open: boolean;
@@ -15,16 +17,22 @@ interface ImportCurlModalProps {
 }
 
 const ImportCurlModal: React.FC<ImportCurlModalProps> = ({ open, onClose, curlInput, setCurlInput, onImport }) => {
+  const theme = useSelector((state: any) => state.theme.theme);
+  const { t } = useTranslation();
+  let themeClass = '';
+  if (theme === 'dark') themeClass = 'theme-dark';
+  else if (theme === 'black') themeClass = 'theme-black';
+  // No class for light (default)
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
-      <div className="bg-[#18181A] rounded-2xl shadow-2xl border border-zinc-800 w-[600px] max-w-full p-0 relative">
+    <div className={`fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 ${themeClass}`}>
+      <div className="bg-bg rounded-2xl shadow-2xl border border-border w-[600px] max-w-full p-0 relative text-text">
         <div className="flex items-center justify-between px-8 pt-8 pb-4">
-          <div className="text-2xl font-bold text-center w-full">Import cURL</div>
+          <div className="text-2xl font-bold text-center w-full">{t('import_curl')}</div>
           <button className="absolute right-8 top-8 text-gray-400 hover:text-white text-2xl" onClick={onClose}>&times;</button>
         </div>
         <div className="px-8 pb-4">
-          <label className="block text-xs text-gray-400 mb-1">cURL</label>
+          <label className="block text-xs text-gray-400 mb-1">{t('curl')}</label>
           <div className="relative bg-zinc-900 rounded-lg border border-zinc-800">
             {/* Toolbar icons */}
             <div className="absolute right-2 top-2 flex gap-2 z-10">
@@ -34,7 +42,7 @@ const ImportCurlModal: React.FC<ImportCurlModalProps> = ({ open, onClose, curlIn
             </div>
             <textarea
               className="w-full h-32 bg-transparent text-white p-4 rounded-lg focus:outline-none resize-none placeholder-zinc-500 mt-6"
-              placeholder="Enter cURL command"
+              placeholder={t('enter_curl_command')}
               value={curlInput}
               onChange={e => setCurlInput(e.target.value)}
               style={{ fontFamily: 'monospace', fontSize: 15 }}
@@ -43,12 +51,12 @@ const ImportCurlModal: React.FC<ImportCurlModalProps> = ({ open, onClose, curlIn
         </div>
         <div className="flex items-center justify-between px-8 pb-8 pt-4">
           <div className="flex gap-4">
-            <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded font-semibold" onClick={onImport}>Import</button>
-            <button className="bg-zinc-800 hover:bg-zinc-700 text-white px-6 py-2 rounded font-semibold" onClick={onClose}>Cancel</button>
+            <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded font-semibold" onClick={onImport}>{t('import')}</button>
+            <button className="bg-zinc-800 hover:bg-zinc-700 text-white px-6 py-2 rounded font-semibold" onClick={onClose}>{t('cancel')}</button>
           </div>
           <button className="bg-zinc-800 hover:bg-zinc-700 text-white px-6 py-2 rounded font-semibold flex items-center gap-2">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
-            Paste
+            {t('paste')}
           </button>
         </div>
       </div>

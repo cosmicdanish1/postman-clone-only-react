@@ -14,3 +14,7 @@
   --color-bg: #0F0F0F;
   --color-text: #fff;
 }
+.theme-light-custom {
+  --color-bg: #fcf9f8;
+  --color-text: #22223b;
+}

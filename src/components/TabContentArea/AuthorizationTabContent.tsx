@@ -6,6 +6,8 @@
 // Located at: src/components/TabContentArea/AuthorizationTabContent.tsx
 import React, { useState, useRef, useEffect } from 'react';
 import MonacoEditor from '@monaco-editor/react';
+import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
 type AuthType =
   | 'inherit'
@@ -65,6 +67,13 @@ interface AuthConfig {
 }
 
 const AuthorizationTabContent: React.FC = () => {
+  const theme = useSelector((state: any) => state.theme.theme);
+  const { t } = useTranslation();
+  let themeClass = '';
+  if (theme === 'dark') themeClass = 'theme-dark';
+  else if (theme === 'black') themeClass = 'theme-black';
+  // No class for light (default)
+
   const [authType, setAuthType] = useState<AuthType>('none');
   const [authConfig, setAuthConfig] = useState<AuthConfig>({
     type: 'none'
@@ -74,16 +83,16 @@ const AuthorizationTabContent: React.FC = () => {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const authTypes = [
-    { value: 'inherit', label: 'Inherit' },
-    { value: 'none', label: 'None' },
-    { value: 'basic', label: 'Basic Auth' },
-    { value: 'digest', label: 'Digest Auth' },
-    { value: 'bearer', label: 'Bearer' },
-    { value: 'oauth2', label: 'OAuth 2.0' },
-    { value: 'apikey', label: 'API Key' },
-    { value: 'aws', label: 'AWS Signature' },
-    { value: 'hawk', label: 'HAWK' },
-    { value: 'jwt', label: 'JWT' },
+    { value: 'inherit', label: t('auth_inherit') },
+    { value: 'none', label: t('auth_none') },
+    { value: 'basic', label: t('auth_basic') },
+    { value: 'digest', label: t('auth_digest') },
+    { value: 'bearer', label: t('auth_bearer') },
+    { value: 'oauth2', label: t('auth_oauth2') },
+    { value: 'apikey', label: t('auth_apikey') },
+    { value: 'aws', label: t('auth_aws') },
+    { value: 'hawk', label: t('auth_hawk') },
+    { value: 'jwt', label: t('auth_jwt') },
   ];
 
   // Close dropdown on outside click
@@ -116,12 +125,12 @@ const AuthorizationTabContent: React.FC = () => {
         <div className="flex flex-row w-full h-64 bg-neutral-900 divide-x divide-neutral-800">
           <div className="flex-1 flex items-start p-8">
             <span className="text-gray-200 text-base">
-              Please save this request in any collection to <b>inherit the authorization</b>
+              {t('auth_save_inherit')}
             </span>
           </div>
           <div className="w-1/3 min-w-[260px] flex flex-col items-start p-8">
             <span className="text-gray-400 text-sm mb-2">
-              The authorization header will be automatically generated when you send the request.
+              {t('auth_header_generated')}
             </span>
             <a
               href="https://learning.postman.com/docs/sending-requests/authorization/#inheriting-auth"
@@ -129,7 +138,7 @@ const AuthorizationTabContent: React.FC = () => {
               rel="noopener noreferrer"
               className="text-blue-500 hover:underline flex items-center gap-1 text-sm mt-2"
             >
-              Learn how
+              {t('learn_how')}
               <span className="material-icons text-base align-middle">open_in_new</span>
             </a>
           </div>
@@ -143,7 +152,7 @@ const AuthorizationTabContent: React.FC = () => {
             <div className="flex-1 flex flex-col justify-start p-8 gap-2">
               <input
                 className="w-full bg-transparent text-gray-200 border-0 border-b border-neutral-800 rounded-none px-0 py-3 focus:outline-none focus:ring-0 placeholder-gray-400"
-                placeholder="Token"
+                placeholder={t('token')}
                 value={authConfig.token || ''}
                 onChange={e => handleAuthConfigChange('token', e.target.value)}
                 autoComplete="off"
@@ -173,7 +182,7 @@ const AuthorizationTabContent: React.FC = () => {
             <div className="flex-1 flex flex-col justify-start p-8 gap-2">
               <input
                 className="w-full bg-transparent text-gray-200 border-0 border-b border-neutral-800 rounded-none px-0 py-3 focus:outline-none focus:ring-0 placeholder-gray-400"
-                placeholder="Username"
+                placeholder={t('username')}
                 value={authConfig.username || ''}
                 onChange={e => handleAuthConfigChange('username', e.target.value)}
                 autoComplete="username"
@@ -181,7 +190,7 @@ const AuthorizationTabContent: React.FC = () => {
               />
               <input
                 className="w-full bg-transparent text-gray-200 border-0 border-b border-neutral-800 rounded-none px-0 py-3 focus:outline-none focus:ring-0 placeholder-gray-400"
-                placeholder="Password"
+                placeholder={t('password')}
                 value={authConfig.password || ''}
                 onChange={e => handleAuthConfigChange('password', e.target.value)}
                 autoComplete="current-password"
@@ -211,27 +220,27 @@ const AuthorizationTabContent: React.FC = () => {
             <div className="flex-1 flex flex-col justify-start p-8 gap-2">
               <input
                 className="w-full bg-transparent text-gray-200 border-0 border-b border-neutral-800 rounded-none px-0 py-3 focus:outline-none focus:ring-0 placeholder-gray-400"
-                placeholder="Key"
+                placeholder={t('key')}
                 value={authConfig.key || ''}
                 onChange={e => handleAuthConfigChange('key', e.target.value)}
                 type="text"
               />
               <input
                 className="w-full bg-transparent text-gray-200 border-0 border-b border-neutral-800 rounded-none px-0 py-3 focus:outline-none focus:ring-0 placeholder-gray-400"
-                placeholder="Value"
+                placeholder={t('value')}
                 value={authConfig.value || ''}
                 onChange={e => handleAuthConfigChange('value', e.target.value)}
                 type="text"
               />
               <div className="flex items-center border-b border-neutral-800 py-3">
-                <span className="text-gray-400 text-sm mr-4">Pass by</span>
+                <span className="text-gray-400 text-sm mr-4">{t('pass_by')}</span>
                 <select
                   className="bg-transparent text-gray-200 font-semibold focus:outline-none"
                   value={authConfig.addTo || 'header'}
                   onChange={e => handleAuthConfigChange('addTo', e.target.value)}
                 >
-                  <option value="header" className="bg-neutral-900 text-gray-200">Headers</option>
-                  <option value="query" className="bg-neutral-900 text-gray-200">Query</option>
+                  <option value="header" className="bg-neutral-900 text-gray-200">{t('headers')}</option>
+                  <option value="query" className="bg-neutral-900 text-gray-200">{t('query')}</option>
                 </select>
               </div>
             </div>
@@ -258,7 +267,7 @@ const AuthorizationTabContent: React.FC = () => {
             <div className="flex-1 flex flex-col justify-start p-8 gap-2">
               <input
                 className="w-full bg-transparent text-gray-200 border-0 border-b border-neutral-800 rounded-none px-0 py-3 focus:outline-none focus:ring-0 placeholder-gray-400"
-                placeholder="Username"
+                placeholder={t('username')}
                 value={authConfig.username || ''}
                 onChange={e => handleAuthConfigChange('username', e.target.value)}
                 autoComplete="username"
@@ -266,31 +275,31 @@ const AuthorizationTabContent: React.FC = () => {
               />
               <input
                 className="w-full bg-transparent text-gray-200 border-0 border-b border-neutral-800 rounded-none px-0 py-3 focus:outline-none focus:ring-0 placeholder-gray-400"
-                placeholder="Password"
+                placeholder={t('password')}
                 value={authConfig.password || ''}
                 onChange={e => handleAuthConfigChange('password', e.target.value)}
                 autoComplete="current-password"
                 type="password"
               />
               <div className="mt-6 mb-2">
-                <div className="font-semibold text-gray-200 text-sm mb-1">Advanced Configuration</div>
-                <div className="text-xs text-gray-400 mb-4">Hoppscotch automatically assigns default values to certain fields if no explicit value is provided</div>
+                <div className="font-semibold text-gray-200 text-sm mb-1">{t('advanced_configuration')}</div>
+                <div className="text-xs text-gray-400 mb-4">{t('auto_assign_defaults')}</div>
                 <input
                   className="w-full bg-transparent text-gray-200 border-0 border-b border-neutral-800 rounded-none px-0 py-3 focus:outline-none focus:ring-0 placeholder-gray-400"
-                  placeholder="Realm (e.g. testrealm@example.com)"
+                  placeholder={t('realm_placeholder')}
                   value={authConfig.realm || ''}
                   onChange={e => handleAuthConfigChange('realm', e.target.value)}
                   type="text"
                 />
                 <input
                   className="w-full bg-transparent text-gray-200 border-0 border-b border-neutral-800 rounded-none px-0 py-3 focus:outline-none focus:ring-0 placeholder-gray-400"
-                  placeholder="Nonce"
+                  placeholder={t('nonce')}
                   value={authConfig.nonce || ''}
                   onChange={e => handleAuthConfigChange('nonce', e.target.value)}
                   type="text"
                 />
                 <div className="flex items-center border-b border-neutral-800 py-3">
-                  <span className="text-gray-400 text-sm mr-4">Algorithm</span>
+                  <span className="text-gray-400 text-sm mr-4">{t('algorithm')}</span>
                   <select
                     className="bg-transparent text-gray-200 font-semibold focus:outline-none"
                     value={authConfig.algorithm || 'sha1'}
@@ -304,28 +313,28 @@ const AuthorizationTabContent: React.FC = () => {
                 </div>
                 <input
                   className="w-full bg-transparent text-gray-200 border-0 border-b border-neutral-800 rounded-none px-0 py-3 focus:outline-none focus:ring-0 placeholder-gray-400"
-                  placeholder="qop (e.g. auth-int)"
+                  placeholder={t('qop_placeholder')}
                   value={authConfig.qop || ''}
                   onChange={e => handleAuthConfigChange('qop', e.target.value)}
                   type="text"
                 />
                 <input
                   className="w-full bg-transparent text-gray-200 border-0 border-b border-neutral-800 rounded-none px-0 py-3 focus:outline-none focus:ring-0 placeholder-gray-400"
-                  placeholder="Nonce Count (e.g. 00000001)"
+                  placeholder={t('nonce_count_placeholder')}
                   value={authConfig.nonceCount || ''}
                   onChange={e => handleAuthConfigChange('nonceCount', e.target.value)}
                   type="text"
                 />
                 <input
                   className="w-full bg-transparent text-gray-200 border-0 border-b border-neutral-800 rounded-none px-0 py-3 focus:outline-none focus:ring-0 placeholder-gray-400"
-                  placeholder="Client Nonce (e.g. Oa4f113b)"
+                  placeholder={t('client_nonce_placeholder')}
                   value={authConfig.clientNonce || ''}
                   onChange={e => handleAuthConfigChange('clientNonce', e.target.value)}
                   type="text"
                 />
                 <input
                   className="w-full bg-transparent text-gray-200 border-0 border-b border-neutral-800 rounded-none px-0 py-3 focus:outline-none focus:ring-0 placeholder-gray-400"
-                  placeholder="Opaque"
+                  placeholder={t('opaque')}
                   value={authConfig.opaque || ''}
                   onChange={e => handleAuthConfigChange('opaque', e.target.value)}
                   type="text"
@@ -355,24 +364,24 @@ const AuthorizationTabContent: React.FC = () => {
             <div className="flex-1 flex flex-col justify-start p-8 gap-2">
               <input
                 className="w-full bg-transparent text-gray-200 border-0 border-b border-neutral-800 rounded-none px-0 py-3 focus:outline-none focus:ring-0 placeholder-gray-400"
-                placeholder="Token"
+                placeholder={t('token')}
                 value={authConfig.token || ''}
                 onChange={e => handleAuthConfigChange('token', e.target.value)}
                 autoComplete="off"
                 type="text"
               />
               <div className="flex items-center border-b border-neutral-800 py-3">
-                <span className="text-gray-400 text-sm mr-4">Grant Type</span>
+                <span className="text-gray-400 text-sm mr-4">{t('grant_type')}</span>
                 <select
                   className="bg-transparent text-gray-200 font-semibold focus:outline-none"
                   value={authConfig.grantType || 'authorization_code'}
                   onChange={e => handleAuthConfigChange('grantType', e.target.value)}
                 >
-                  <option value="authorization_code" className="bg-neutral-900 text-gray-200">Authorization Code</option>
-                  <option value="client_credentials" className="bg-neutral-900 text-gray-200">Client Credentials</option>
-                  <option value="password" className="bg-neutral-900 text-gray-200">Password</option>
-                  <option value="implicit" className="bg-neutral-900 text-gray-200">Implicit</option>
-                  <option value="refresh_token" className="bg-neutral-900 text-gray-200">Refresh Token</option>
+                  <option value="authorization_code" className="bg-neutral-900 text-gray-200">{t('authorization_code')}</option>
+                  <option value="client_credentials" className="bg-neutral-900 text-gray-200">{t('client_credentials')}</option>
+                  <option value="password" className="bg-neutral-900 text-gray-200">{t('password_grant')}</option>
+                  <option value="implicit" className="bg-neutral-900 text-gray-200">{t('implicit')}</option>
+                  <option value="refresh_token" className="bg-neutral-900 text-gray-200">{t('refresh_token')}</option>
                 </select>
               </div>
               <label className="flex items-center gap-2 text-gray-400 text-sm py-3 border-b border-neutral-800 cursor-pointer">
@@ -382,57 +391,57 @@ const AuthorizationTabContent: React.FC = () => {
                   onChange={e => handleAuthConfigChange('usePkce', e.target.checked ? 'true' : '')}
                   className="accent-blue-500"
                 />
-                Use PKCE
+                {t('use_pkce')}
               </label>
               <input
                 className="w-full bg-transparent text-gray-200 border-0 border-b border-neutral-800 rounded-none px-0 py-3 focus:outline-none focus:ring-0 placeholder-gray-400"
-                placeholder="Authorization Endpoint"
+                placeholder={t('authorization_endpoint')}
                 value={authConfig.authorizationEndpoint || ''}
                 onChange={e => handleAuthConfigChange('authorizationEndpoint', e.target.value)}
                 type="text"
               />
               <input
                 className="w-full bg-transparent text-gray-200 border-0 border-b border-neutral-800 rounded-none px-0 py-3 focus:outline-none focus:ring-0 placeholder-gray-400"
-                placeholder="Token Endpoint"
+                placeholder={t('token_endpoint')}
                 value={authConfig.tokenEndpoint || ''}
                 onChange={e => handleAuthConfigChange('tokenEndpoint', e.target.value)}
                 type="text"
               />
               <input
                 className="w-full bg-transparent text-gray-200 border-0 border-b border-neutral-800 rounded-none px-0 py-3 focus:outline-none focus:ring-0 placeholder-gray-400"
-                placeholder="Client ID"
+                placeholder={t('client_id')}
                 value={authConfig.clientId || ''}
                 onChange={e => handleAuthConfigChange('clientId', e.target.value)}
                 type="text"
               />
               <input
                 className="w-full bg-transparent text-gray-200 border-0 border-b border-neutral-800 rounded-none px-0 py-3 focus:outline-none focus:ring-0 placeholder-gray-400"
-                placeholder="Client Secret"
+                placeholder={t('client_secret')}
                 value={authConfig.clientSecret || ''}
                 onChange={e => handleAuthConfigChange('clientSecret', e.target.value)}
                 type="password"
               />
               <input
                 className="w-full bg-transparent text-gray-200 border-0 border-b border-neutral-800 rounded-none px-0 py-3 focus:outline-none focus:ring-0 placeholder-gray-400"
-                placeholder="Scopes"
+                placeholder={t('scopes')}
                 value={authConfig.scopes || ''}
                 onChange={e => handleAuthConfigChange('scopes', e.target.value)}
                 type="text"
               />
               <div className="flex items-center border-b border-neutral-800 py-3">
-                <span className="text-gray-400 text-sm mr-4">Pass by</span>
+                <span className="text-gray-400 text-sm mr-4">{t('pass_by')}</span>
                 <select
                   className="bg-transparent text-gray-200 font-semibold focus:outline-none"
                   value={authConfig.passBy || 'header'}
                   onChange={e => handleAuthConfigChange('passBy', e.target.value)}
                 >
-                  <option value="header" className="bg-neutral-900 text-gray-200">Headers</option>
-                  <option value="query" className="bg-neutral-900 text-gray-200">Query</option>
+                  <option value="header" className="bg-neutral-900 text-gray-200">{t('headers')}</option>
+                  <option value="query" className="bg-neutral-900 text-gray-200">{t('query')}</option>
                 </select>
               </div>
               <div className="flex gap-4 mt-4">
-                <button className="bg-neutral-800 text-gray-200 px-4 py-2 rounded hover:bg-neutral-700 transition-colors" type="button">Generate Token</button>
-                <button className="bg-neutral-800 text-gray-200 px-4 py-2 rounded hover:bg-neutral-700 transition-colors" type="button">Refresh Token</button>
+                <button className="bg-neutral-800 text-gray-200 px-4 py-2 rounded hover:bg-neutral-700 transition-colors" type="button">{t('generate_token')}</button>
+                <button className="bg-neutral-800 text-gray-200 px-4 py-2 rounded hover:bg-neutral-700 transition-colors" type="button">{t('refresh_token_btn')}</button>
               </div>
             </div>
             <div className="w-1/3 min-w-[260px] flex flex-col items-start p-8">
@@ -458,52 +467,52 @@ const AuthorizationTabContent: React.FC = () => {
             <div className="flex-1 flex flex-col justify-start p-8 gap-2">
               <input
                 className="w-full bg-transparent text-gray-200 border-0 border-b border-neutral-800 rounded-none px-0 py-3 focus:outline-none focus:ring-0 placeholder-gray-400"
-                placeholder="Access Key"
+                placeholder={t('access_key')}
                 value={authConfig.accessKey || ''}
                 onChange={e => handleAuthConfigChange('accessKey', e.target.value)}
                 type="text"
               />
               <input
                 className="w-full bg-transparent text-gray-200 border-0 border-b border-neutral-800 rounded-none px-0 py-3 focus:outline-none focus:ring-0 placeholder-gray-400"
-                placeholder="Secret Key"
+                placeholder={t('secret_key')}
                 value={authConfig.secretKey || ''}
                 onChange={e => handleAuthConfigChange('secretKey', e.target.value)}
                 type="password"
               />
               <div className="mt-6 mb-2">
-                <div className="font-semibold text-gray-200 text-sm mb-1">Advanced Configuration</div>
-                <div className="text-xs text-gray-400 mb-4">Hoppscotch automatically assigns default values to certain fields if no explicit value is provided</div>
+                <div className="font-semibold text-gray-200 text-sm mb-1">{t('advanced_configuration')}</div>
+                <div className="text-xs text-gray-400 mb-4">{t('auto_assign_defaults')}</div>
                 <input
                   className="w-full bg-transparent text-gray-200 border-0 border-b border-neutral-800 rounded-none px-0 py-3 focus:outline-none focus:ring-0 placeholder-gray-400"
-                  placeholder="AWS Region (default: us-east-1)"
+                  placeholder={t('aws_region')}
                   value={authConfig.awsRegion || ''}
                   onChange={e => handleAuthConfigChange('awsRegion', e.target.value)}
                   type="text"
                 />
                 <input
                   className="w-full bg-transparent text-gray-200 border-0 border-b border-neutral-800 rounded-none px-0 py-3 focus:outline-none focus:ring-0 placeholder-gray-400"
-                  placeholder="Service Name"
+                  placeholder={t('service_name')}
                   value={authConfig.serviceName || ''}
                   onChange={e => handleAuthConfigChange('serviceName', e.target.value)}
                   type="text"
                 />
                 <input
                   className="w-full bg-transparent text-gray-200 border-0 border-b border-neutral-800 rounded-none px-0 py-3 focus:outline-none focus:ring-0 placeholder-gray-400"
-                  placeholder="Service Token"
+                  placeholder={t('service_token')}
                   value={authConfig.serviceToken || ''}
                   onChange={e => handleAuthConfigChange('serviceToken', e.target.value)}
                   type="text"
                 />
               </div>
               <div className="flex items-center border-b border-neutral-800 py-3">
-                <span className="text-gray-400 text-sm mr-4">Pass by</span>
+                <span className="text-gray-400 text-sm mr-4">{t('pass_by')}</span>
                 <select
                   className="bg-transparent text-gray-200 font-semibold focus:outline-none"
                   value={authConfig.addTo || 'header'}
                   onChange={e => handleAuthConfigChange('addTo', e.target.value)}
                 >
-                  <option value="header" className="bg-neutral-900 text-gray-200">Headers</option>
-                  <option value="query" className="bg-neutral-900 text-gray-200">Query</option>
+                  <option value="header" className="bg-neutral-900 text-gray-200">{t('headers')}</option>
+                  <option value="query" className="bg-neutral-900 text-gray-200">{t('query')}</option>
                 </select>
               </div>
             </div>
@@ -530,20 +539,20 @@ const AuthorizationTabContent: React.FC = () => {
             <div className="flex-1 flex flex-col justify-start p-8 gap-2">
               <input
                 className="w-full bg-transparent text-gray-200 border-0 border-b border-neutral-800 rounded-none px-0 py-3 focus:outline-none focus:ring-0 placeholder-gray-400"
-                placeholder="HAWK Auth ID"
+                placeholder={t('hawk_auth_id')}
                 value={authConfig.hawkId || ''}
                 onChange={e => handleAuthConfigChange('hawkId', e.target.value)}
                 type="text"
               />
               <input
                 className="w-full bg-transparent text-gray-200 border-0 border-b border-neutral-800 rounded-none px-0 py-3 focus:outline-none focus:ring-0 placeholder-gray-400"
-                placeholder="HAWK Auth Key"
+                placeholder={t('hawk_auth_key')}
                 value={authConfig.hawkKey || ''}
                 onChange={e => handleAuthConfigChange('hawkKey', e.target.value)}
                 type="password"
               />
               <div className="flex items-center border-b border-neutral-800 py-3">
-                <span className="text-gray-400 text-sm mr-4">Algorithm</span>
+                <span className="text-gray-400 text-sm mr-4">{t('algorithm')}</span>
                 <select
                   className="bg-transparent text-gray-200 font-semibold focus:outline-none"
                   value={authConfig.hawkAlgorithm || 'md5'}
@@ -556,46 +565,46 @@ const AuthorizationTabContent: React.FC = () => {
                 </select>
               </div>
               <div className="mt-6 mb-2">
-                <div className="font-semibold text-gray-200 text-sm mb-1">Advanced Configuration</div>
-                <div className="text-xs text-gray-400 mb-4">Hoppscotch automatically assigns default values to certain fields if no explicit value is provided</div>
+                <div className="font-semibold text-gray-200 text-sm mb-1">{t('advanced_configuration')}</div>
+                <div className="text-xs text-gray-400 mb-4">{t('auto_assign_defaults')}</div>
                 <input
                   className="w-full bg-transparent text-gray-200 border-0 border-b border-neutral-800 rounded-none px-0 py-3 focus:outline-none focus:ring-0 placeholder-gray-400"
-                  placeholder="Username"
+                  placeholder={t('username')}
                   value={authConfig.hawkUsername || ''}
                   onChange={e => handleAuthConfigChange('hawkUsername', e.target.value)}
                   type="text"
                 />
                 <input
                   className="w-full bg-transparent text-gray-200 border-0 border-b border-neutral-800 rounded-none px-0 py-3 focus:outline-none focus:ring-0 placeholder-gray-400"
-                  placeholder="Nonce"
+                  placeholder={t('nonce')}
                   value={authConfig.hawkNonce || ''}
                   onChange={e => handleAuthConfigChange('hawkNonce', e.target.value)}
                   type="text"
                 />
                 <input
                   className="w-full bg-transparent text-gray-200 border-0 border-b border-neutral-800 rounded-none px-0 py-3 focus:outline-none focus:ring-0 placeholder-gray-400"
-                  placeholder="ext"
+                  placeholder={t('ext')}
                   value={authConfig.hawkExt || ''}
                   onChange={e => handleAuthConfigChange('hawkExt', e.target.value)}
                   type="text"
                 />
                 <input
                   className="w-full bg-transparent text-gray-200 border-0 border-b border-neutral-800 rounded-none px-0 py-3 focus:outline-none focus:ring-0 placeholder-gray-400"
-                  placeholder="app"
+                  placeholder={t('app')}
                   value={authConfig.hawkApp || ''}
                   onChange={e => handleAuthConfigChange('hawkApp', e.target.value)}
                   type="text"
                 />
                 <input
                   className="w-full bg-transparent text-gray-200 border-0 border-b border-neutral-800 rounded-none px-0 py-3 focus:outline-none focus:ring-0 placeholder-gray-400"
-                  placeholder="dlg"
+                  placeholder={t('dlg')}
                   value={authConfig.hawkDlg || ''}
                   onChange={e => handleAuthConfigChange('hawkDlg', e.target.value)}
                   type="text"
                 />
                 <input
                   className="w-full bg-transparent text-gray-200 border-0 border-b border-neutral-800 rounded-none px-0 py-3 focus:outline-none focus:ring-0 placeholder-gray-400"
-                  placeholder="Timestamp"
+                  placeholder={t('timestamp')}
                   value={authConfig.hawkTimestamp || ''}
                   onChange={e => handleAuthConfigChange('hawkTimestamp', e.target.value)}
                   type="text"
@@ -607,7 +616,7 @@ const AuthorizationTabContent: React.FC = () => {
                     onChange={e => handleAuthConfigChange('hawkIncludePayloadHash', e.target.checked ? 'true' : '')}
                     className="accent-blue-500"
                   />
-                  Include Payload Hash
+                  {t('include_payload_hash')}
                 </label>
               </div>
             </div>
@@ -633,30 +642,30 @@ const AuthorizationTabContent: React.FC = () => {
           <div className="flex flex-row w-full bg-neutral-900 divide-x divide-neutral-800">
             <div className="flex-1 flex flex-col justify-start p-8 gap-2">
               <div className="flex items-center border-b border-neutral-800 py-3">
-                <span className="text-gray-400 text-sm mr-4">Algorithm</span>
+                <span className="text-gray-400 text-sm mr-4">{t('algorithm')}</span>
                 <select
                   className="bg-transparent text-gray-200 font-semibold focus:outline-none"
                   value={authConfig.jwtAlgorithm || 'HS256'}
                   onChange={e => handleAuthConfigChange('jwtAlgorithm', e.target.value)}
                 >
-                  <option value="HS256" className="bg-neutral-900 text-gray-200">HS256</option>
-                  <option value="HS384" className="bg-neutral-900 text-gray-200">HS384</option>
-                  <option value="HS512" className="bg-neutral-900 text-gray-200">HS512</option>
-                  <option value="RS256" className="bg-neutral-900 text-gray-200">RS256</option>
-                  <option value="RS384" className="bg-neutral-900 text-gray-200">RS384</option>
-                  <option value="RS512" className="bg-neutral-900 text-gray-200">RS512</option>
-                  <option value="ES256" className="bg-neutral-900 text-gray-200">ES256</option>
-                  <option value="ES384" className="bg-neutral-900 text-gray-200">ES384</option>
-                  <option value="ES512" className="bg-neutral-900 text-gray-200">ES512</option>
-                  <option value="PS256" className="bg-neutral-900 text-gray-200">PS256</option>
-                  <option value="PS384" className="bg-neutral-900 text-gray-200">PS384</option>
-                  <option value="PS512" className="bg-neutral-900 text-gray-200">PS512</option>
-                  <option value="none" className="bg-neutral-900 text-gray-200">none</option>
+                  <option value="HS256" className="bg-neutral-900 text-gray-200">{t('HS256')}</option>
+                  <option value="HS384" className="bg-neutral-900 text-gray-200">{t('HS384')}</option>
+                  <option value="HS512" className="bg-neutral-900 text-gray-200">{t('HS512')}</option>
+                  <option value="RS256" className="bg-neutral-900 text-gray-200">{t('RS256')}</option>
+                  <option value="RS384" className="bg-neutral-900 text-gray-200">{t('RS384')}</option>
+                  <option value="RS512" className="bg-neutral-900 text-gray-200">{t('RS512')}</option>
+                  <option value="ES256" className="bg-neutral-900 text-gray-200">{t('ES256')}</option>
+                  <option value="ES384" className="bg-neutral-900 text-gray-200">{t('ES384')}</option>
+                  <option value="ES512" className="bg-neutral-900 text-gray-200">{t('ES512')}</option>
+                  <option value="PS256" className="bg-neutral-900 text-gray-200">{t('PS256')}</option>
+                  <option value="PS384" className="bg-neutral-900 text-gray-200">{t('PS384')}</option>
+                  <option value="PS512" className="bg-neutral-900 text-gray-200">{t('PS512')}</option>
+                  <option value="none" className="bg-neutral-900 text-gray-200">{t('none_alg')}</option>
                 </select>
               </div>
               <input
                 className="w-full bg-transparent text-gray-200 border-0 border-b border-neutral-800 rounded-none px-0 py-3 focus:outline-none focus:ring-0 placeholder-gray-400"
-                placeholder="Secret"
+                placeholder={t('secret')}
                 value={authConfig.jwtSecret || ''}
                 onChange={e => handleAuthConfigChange('jwtSecret', e.target.value)}
                 type="password"
@@ -668,10 +677,10 @@ const AuthorizationTabContent: React.FC = () => {
                   onChange={e => handleAuthConfigChange('jwtSecretBase64', e.target.checked ? 'true' : '')}
                   className="accent-blue-500"
                 />
-                Secret Base64 Encoded
+                {t('secret_base64_encoded')}
               </label>
               <div className="mt-2 mb-2">
-                <div className="text-gray-400 text-sm mb-1">Payload</div>
+                <div className="text-gray-400 text-sm mb-1">{t('payload')}</div>
                 <div className="border border-neutral-800 rounded bg-neutral-900 overflow-hidden">
                   <MonacoEditor
                     height="100px"
@@ -684,23 +693,8 @@ const AuthorizationTabContent: React.FC = () => {
                 </div>
               </div>
               <div className="mt-6 mb-2">
-                <div className="font-semibold text-gray-200 text-sm mb-1">Advanced Configuration</div>
-                <div className="text-xs text-gray-400 mb-4">Hoppscotch automatically assigns default values to certain fields if no explicit value is provided</div>
-                <div className="flex items-center border-b border-neutral-800 py-3">
-                  <span className="text-gray-400 text-sm mr-4">Pass by</span>
-                  <select
-                    className="bg-transparent text-gray-200 font-semibold focus:outline-none"
-                    value={authConfig.addTo || 'header'}
-                    onChange={e => handleAuthConfigChange('addTo', e.target.value)}
-                  >
-                    <option value="header" className="bg-neutral-900 text-gray-200">Headers</option>
-                    <option value="query" className="bg-neutral-900 text-gray-200">Query</option>
-                  </select>
-                </div>
-              </div>
-              <div className="mt-6 mb-2">
-                <div className="font-semibold text-gray-200 text-sm mb-1">Bearer</div>
-                <div className="text-gray-400 text-sm mb-1">JWT Headers</div>
+                <div className="font-semibold text-gray-200 text-sm mb-1">{t('bearer')}</div>
+                <div className="text-gray-400 text-sm mb-1">{t('jwt_headers')}</div>
                 <div className="border border-neutral-800 rounded bg-neutral-900 overflow-hidden">
                   <MonacoEditor
                     height="100px"
@@ -736,10 +730,9 @@ const AuthorizationTabContent: React.FC = () => {
             <div className="w-16 h-16 bg-neutral-800 rounded-full flex items-center justify-center mb-4">
               <span className="material-icons text-gray-400 text-2xl">lock_open</span>
             </div>
-            <h3 className="text-gray-300 text-lg font-medium mb-2">No Authorization</h3>
+            <h3 className="text-gray-300 text-lg font-medium mb-2">{t('no_authorization')}</h3>
             <p className="text-gray-500 text-sm max-w-md">
-              This request will be sent without any authorization headers. 
-              Select an authorization type above to configure authentication.
+              {t('no_authorization_info')}
             </p>
           </div>
         );
@@ -747,11 +740,11 @@ const AuthorizationTabContent: React.FC = () => {
   };
 
   return (
-    <div className="flex-1 flex flex-col bg-neutral-900 rounded p-0 mt-2">
+    <div className={`w-full h-full bg-bg text-text ${themeClass}`}>
       {/* Top bar */}
       <div className="flex items-center justify-between px-4 h-10 border-b border-neutral-800 bg-neutral-900">
         <div className="flex items-center gap-4">
-          <span className="text-gray-400 text-sm">Authorization Type</span>
+          <span className="text-gray-400 text-sm">{t('authorization_type')}</span>
           <div className="relative" ref={dropdownRef}>
             <button
               className="flex items-center gap-2 bg-neutral-900 text-white font-semibold px-2 py-1 rounded border border-neutral-800 focus:outline-none min-w-[110px]"
@@ -795,12 +788,12 @@ const AuthorizationTabContent: React.FC = () => {
               onChange={e => setEnabled(e.target.checked)}
               className="accent-blue-500"
             />
-            <span className="font-semibold text-gray-200 text-sm">Enabled</span>
+            <span className="font-semibold text-gray-200 text-sm">{t('enabled')}</span>
           </label>
-          <button className="text-gray-400 hover:text-gray-200" title="Help">
+          <button className="text-gray-400 hover:text-gray-200" title={t('help')}>
             <span className="material-icons text-base">help_outline</span>
           </button>
-          <button className="text-gray-400 hover:text-red-500" title="Delete">
+          <button className="text-gray-400 hover:text-red-500" title={t('delete')}>
             <span className="material-icons text-base">delete</span>
           </button>
         </div>

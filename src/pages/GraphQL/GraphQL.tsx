@@ -10,6 +10,7 @@ import GraphQLTabBar from './GraphQLTabBar';
 import GraphQLTabContentArea from './GraphQLTabContentArea';
 import GraphQLSecondaryTabBar from './GraphQLSecondaryTabBar';
 import GraphQLHelpPanel from './GraphQLHelpPanel';
+import { useSelector } from 'react-redux';
 
 const createNewTab = () => ({
   id: Math.random().toString(36).substr(2, 9),
@@ -25,6 +26,13 @@ const createNewTab = () => ({
 const GraphQL: React.FC = () => {
   const [tabs, setTabs] = useState([createNewTab()]);
   const [activeTabId, setActiveTabId] = useState(tabs[0].id);
+
+  // Theming logic
+  const theme = useSelector((state: any) => state.theme.theme);
+  let themeClass = '';
+  if (theme === 'dark') themeClass = 'theme-dark';
+  else if (theme === 'black') themeClass = 'theme-black';
+  // No class for light (default)
 
   const switchTab = (id: string) => setActiveTabId(id);
   const addTab = () => {
@@ -59,7 +67,7 @@ const GraphQL: React.FC = () => {
   const activeTabObj = tabs.find(tab => tab.id === activeTabId) || tabs[0];
 
   return (
-   <div className="flex h-full w-full bg-[#18181b] text-white">
+   <div className={`flex h-full w-full bg-bg text-text ${themeClass}`}>
       <div className="flex flex-col flex-1">
         {/* Top bar */}
         <GraphQLTopBar />
