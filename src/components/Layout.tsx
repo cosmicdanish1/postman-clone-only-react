@@ -7,11 +7,12 @@
 import React from 'react';
 import Sidebar from './Sidebar';
 import { useLocation } from 'react-router-dom';
-import RestSubSidebar from '../pages/Rest/RestSubSidebar';
+// import RestSubSidebar from '../pages/Rest/RestSubSidebar';
 
 // import GraphQLSubSidebar from '../pages/GraphQL/GraphQLSubSidebar';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../store';
+import RestRightPanel from './RestRightPanel';
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
@@ -24,14 +25,15 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <div className={`flex h-screen bg-bg text-text font-sans ${themeClass}`}>
       <Sidebar />
-      {sidebarLeft && location.pathname === '/' && <RestSubSidebar />}
-      
+      {/* Remove RestSubSidebar from the left side */}
+      {/* {sidebarLeft && location.pathname === '/' && <RestSubSidebar />} */}
       {/* {sidebarLeft && location.pathname.startsWith('/graphql') && <GraphQLSubSidebar />} */}
       <main className="flex flex-1 h-screen">
         {children}
       </main>
+     
     </div>
   );
-};
+}; 
 
 export default Layout; 

@@ -70,7 +70,8 @@ const Sidebar: React.FC = () => {
 
   return (
     <div
-      className={`flex flex-col h-full bg-bg text-text transition-all duration-300 ${expandNav ? 'w-20' : 'w-16'} ${themeClass}`}
+      className={`flex flex-col h-full bg-bg text-text transition-all duration-300 ${expandNav ? 'w-20' : 'w-16'} ${themeClass} z-[50]`}
+      style={{ zIndex: 50 }}
     >
       {/* Sidebar options */}
       <nav className="flex-1 flex flex-col gap-2">

@@ -8,6 +8,9 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import HoppscotchClone from './pages/Rest/RestPage';
 import Settings from './pages/Settings';
+import Collections from './pages/Collections';
+import History from './pages/History';
+import GenerateCode from './pages/GenerateCode';
 
 
 import NavBar from './components/NavBar';
@@ -25,6 +28,9 @@ function App() {
       <Layout>
         <Routes>
           <Route path="/" element={<HoppscotchClone />} />
+          <Route path="/collections" element={<Collections />} />
+          <Route path="/history" element={<History />} />
+          <Route path="/generate-code" element={<GenerateCode />} />
           <Route path="/settings" element={<Settings />} />
           
           

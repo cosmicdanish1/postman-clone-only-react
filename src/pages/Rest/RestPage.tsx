@@ -25,6 +25,9 @@ import SortableHeaderRow from '../../components/SortableHeaderRow';
 import SortableVariableRow from '../../components/SortableVariableRow';
 import { METHODS, contentTypeOptions } from '../../constants';
 import { useSelector } from 'react-redux';
+import HelpShortcutPanel from '../../components/HelpShortcutPanel';
+import ResizableBottomPanel from '../../components/ResizableBottomPanel';
+import RestRightPanel from '../../components/RestRightPanel';
 
 const defaultTabData = (): TabData => ({
   id: uuidv4(),
@@ -54,6 +57,10 @@ const defaultTabData = (): TabData => ({
   responseError: null,
 });
 
+const MIN_RIGHT_WIDTH = 260;
+const MAX_RIGHT_WIDTH = 900;
+const DEFAULT_RIGHT_WIDTH = 340;
+
 const HoppscotchClone: React.FC = () => {
   const theme = useSelector((state: any) => state.theme.theme);
   const [tabs, setTabs] = useState<TabData[]>([defaultTabData()]);
@@ -77,6 +84,9 @@ const HoppscotchClone: React.FC = () => {
   const generatedCode = `curl --request GET \\n  --url https://echo.hoppscotch.io/`;
   const [showSaveDropdown, setShowSaveDropdown] = useState(false);
   const saveDropdownRef = React.useRef<HTMLDivElement>(null);
+  const [rightWidth, setRightWidth] = useState(DEFAULT_RIGHT_WIDTH);
+  const [dragging, setDragging] = useState(false);
+  const dividerRef = useRef<HTMLDivElement>(null);
 
   // Query Parameters state and handlers
   const [queryParams, setQueryParams] = React.useState<Parameter[]>([
@@ -688,6 +698,31 @@ const HoppscotchClone: React.FC = () => {
     }
   };
 
+  React.useEffect(() => {
+    if (!dragging) return;
+    const handleMouseMove = (e: MouseEvent) => {
+      const container = dividerRef.current?.parentElement;
+      if (!container) return;
+      const rect = container.getBoundingClientRect();
+      let newWidth = rect.right - e.clientX;
+      if (newWidth < MIN_RIGHT_WIDTH) newWidth = MIN_RIGHT_WIDTH;
+      if (newWidth > MAX_RIGHT_WIDTH) newWidth = MAX_RIGHT_WIDTH;
+      setRightWidth(newWidth);
+    };
+    const handleMouseUp = () => {
+      setDragging(false);
+      document.body.style.cursor = '';
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+    document.body.style.cursor = 'col-resize';
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = '';
+    };
+  }, [dragging]);
+
   return (
     <div className={`flex flex-col h-full w-full theme-${theme} bg-bg text-text border-border`}>
       {/* Edit Environment Modal */}
@@ -805,9 +840,9 @@ const HoppscotchClone: React.FC = () => {
       />
 
       {/* Main layout below top bar */}
-      <div className="flex flex-1">
+      <div className="flex flex-1 w-full min-h-0">
         {/* Left Content (hide when editActive) */}
-        <div className="flex flex-col flex-1 p-4">
+        <div className="flex flex-col flex-1 p-4 min-w-0 min-h-0">
           {/* URL bar */}
           <RequestEditor
             METHODS={METHODS}
@@ -834,7 +869,6 @@ const HoppscotchClone: React.FC = () => {
             saveDropdownRef={saveDropdownRef}
             saveRequestName={saveRequestName}
           />
-
           {/* Tabs */}
           <div className="flex items-center gap-1 text-[12px] border-b border-gray-800 mb-2">
             {['parameters', 'body', 'headers', 'authorization', 'pre-request', 'post-request', 'variables'].map(tab => (
@@ -851,7 +885,6 @@ const HoppscotchClone: React.FC = () => {
               </button>
             ))}
           </div>
-
           {/* Tab content area (example: Parameters) */}
           {['parameters', 'body', 'headers', 'authorization', 'pre-request', 'post-request', 'variables'].includes(activeTabObj.activeTab) && (
             <TabContentArea
@@ -904,37 +937,22 @@ const HoppscotchClone: React.FC = () => {
             />
           )}
         </div>
-
-        {/* Right Panel: Show InterceptorCard after Send */}
-        <div className="w-1/3 flex flex-col items-center justify-center border-l border-gray-800 p-8">
-          <div className="flex flex-col gap-4 items-start">
-            <div className="flex items-center gap-2">
-              <span className="text-gray-400">Send Request</span>
-              <span className="bg-gray-800 px-2 py-1 rounded text-xs">Ctrl ↵</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-gray-400">Keyboard shortcuts</span>
-              <span className="bg-gray-800 px-2 py-1 rounded text-xs">Ctrl /</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-gray-400">Search & command menu</span>
-              <span className="bg-gray-800 px-2 py-1 rounded text-xs">Ctrl K</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-gray-400">Help menu</span>
-              <span className="bg-gray-800 px-2 py-1 rounded text-xs">?</span>
-            </div>
-            <a
-              href="#"
-              className="mt-4 bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded font-semibold text-center"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Documentation
-            </a>
-          </div>
+        {/* Vertical divider for resizing */}
+        <div
+          ref={dividerRef}
+          className="w-2 h-full cursor-col-resize bg-border hover:bg-blue-600 transition"
+          onMouseDown={() => setDragging(true)}
+          style={{ zIndex: 10 }}
+        />
+        {/* Right sub sidebar for REST page */}
+        <div className="flex-none" style={{ width: rightWidth, minWidth: MIN_RIGHT_WIDTH, maxWidth: MAX_RIGHT_WIDTH }}>
+          <RestRightPanel />
         </div>
       </div>
+      {/* Add the resizable bottom panel here */}
+      <ResizableBottomPanel>
+        <HelpShortcutPanel documentationUrl="https://your-docs-link.com" />
+      </ResizableBottomPanel>
     </div>
   );
 };

@@ -71,7 +71,7 @@ const BottomBar: React.FC = () => {
 
   // Positioning: popup appears just above the icon, always fully visible
   return (
-    <footer className={`fixed bottom-0 left-0 right-0 h-8 bg-bg border-t border-border text-text flex items-center justify-between px-3 select-none z-40 ${themeClass}`}>
+    <footer className={`fixed bottom-0 left-0 right-0 h-8 bg-bg border-t border-border text-text flex items-center justify-between px-3 select-none z-[50] ${themeClass}`} style={{ zIndex: 50 }}>
     {/* Left side icons */}
       <div className="flex items-center space-x-4 text-gray-400 relative">
         <button 

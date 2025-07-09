@@ -20,7 +20,7 @@ const NavBar: React.FC = () => {
 
   return (
     <>
-      <header className={`grid grid-cols-5 grid-rows-1 gap-2 overflow-x-auto overflow-y-hidden pb- pt-1 bg-bg text-text ${themeClass}`}>
+      <header className={`grid grid-cols-5 grid-rows-1 gap-2 overflow-x-auto overflow-y-hidden pb- pt-1 bg-bg text-text ${themeClass} z-[50]`} style={{ zIndex: 50 }}>
     
     {/* <!-- Logo Section --> */}
     <div className="col-span-2 flex items-center justify-between space-x-2">
