@@ -32,6 +32,13 @@ const ThemeSettings: React.FC = () => {
   const theme = useSelector((state: any) => state.theme.theme);
   const accentColor = useSelector((state: any) => state.theme.accentColor);
   const [hoveredColor, setHoveredColor] = useState<string | null>(null);
+  const accentHex = accentColors.find(c => c.key === accentColor)?.color;
+  console.log('accentColor:', accentColor, 'accentHex:', accentHex);
+
+  const handleAccentColorClick = (colorKey: string) => {
+    console.log('Clicking accent color:', colorKey);
+    dispatch(setAccentColor(colorKey));
+  };
 
   return (
     <div className={`flex flex-col gap-12 items-start bg-bg text-text theme-${theme}`}>
@@ -43,14 +50,16 @@ const ThemeSettings: React.FC = () => {
             {backgrounds.find(bg => bg.key === theme)?.label}
           </div>
           <div className="flex gap-2">
-            {backgrounds.map(bg => (
+            {backgrounds.map((bg) => (
               <button
                 key={bg.key}
-                className={`w-8 h-8 flex items-center justify-center rounded-lg text-sm transition border ${theme === bg.key ? 'bg-bg border-accent text-accent' : 'bg-bg border-border text-text-secondary hover:border-accent'}`}
+                className={`w-8 h-8 flex items-center justify-center rounded-lg text-sm transition border ${theme === bg.key ? 'bg-bg border-accent' : 'bg-bg border-border'}`}
                 onClick={() => dispatch(setTheme(bg.key))}
                 aria-label={bg.label}
               >
-                {bg.icon}
+                {theme === bg.key
+                  ? <span style={{ color: accentHex }}>{bg.icon}</span> // Use actual accent color
+                  : bg.icon}
               </button>
             ))}
           </div>
@@ -67,14 +76,17 @@ const ThemeSettings: React.FC = () => {
                 <button
                   type="button"
                   className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition focus:outline-none group ${accentColor === c.key ? 'ring-2 ring-offset-2 ring-accent' : ''}`}
-                  style={{ borderColor: c.color, background: 'transparent' }}
-                  onClick={() => dispatch(setAccentColor(c.key))}
+                  style={{ 
+                    borderColor: c.color, 
+                    background: accentColor === c.key ? 'red' : 'transparent' // TEMP: use red for debugging
+                  }}
+                  onClick={() => handleAccentColorClick(c.key)}
                   aria-label={c.label}
                   onMouseEnter={() => setHoveredColor(c.key)}
                   onMouseLeave={() => setHoveredColor(null)}
                 >
                   {accentColor === c.key && (
-                    <span className="w-1.5 h-1.5 rounded-full block" style={{ background: c.color }} />
+                    <span className="w-1.5 h-1.5 rounded-full block" style={{ background: 'red' }} /> // TEMP: use red for debugging
                   )}
                 </button>
                 {/* Tooltip for color name on hover */}

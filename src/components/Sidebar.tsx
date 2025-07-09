@@ -17,7 +17,23 @@ const Sidebar: React.FC = () => {
   const location = useLocation();
   const expandNav = useSelector((state: RootState) => state.settings.expandNav);
   const theme = useSelector((state: any) => state.theme.theme);
+  const accentColor = useSelector((state: any) => state.theme.accentColor);
   const { t } = useTranslation();
+  
+  // Define accent colors (same as in ThemeSettings)
+  const accentColors = [
+    { key: 'green', color: '#22c55e' },
+    { key: 'blue', color: '#2563eb' },
+    { key: 'cyan', color: '#06b6d4' },
+    { key: 'purple', color: '#7c3aed' },
+    { key: 'yellow', color: '#eab308' },
+    { key: 'orange', color: '#f59e42' },
+    { key: 'red', color: '#ef4444' },
+    { key: 'pink', color: '#ec4899' },
+  ];
+  
+  const accentHex = accentColors.find(c => c.key === accentColor)?.color;
+  
   let themeClass = '';
   if (theme === 'dark') themeClass = 'theme-dark';
   else if (theme === 'black') themeClass = 'theme-black';
@@ -70,8 +86,8 @@ const Sidebar: React.FC = () => {
 
   return (
     <div
-      className={`flex flex-col h-full bg-bg text-text transition-all duration-300 ${expandNav ? 'w-20' : 'w-16'} ${themeClass} z-[50]`}
-      style={{ zIndex: 50 }}
+      className={`flex flex-col h-full bg-bg text-text transition-all duration-300 ${expandNav ? 'w-20' : 'w-16'} ${themeClass} z-[60]`}
+      style={{ zIndex: 60, position: 'relative' }}
     >
       {/* Sidebar options */}
       <nav className="flex-1 flex flex-col gap-2">
@@ -94,7 +110,10 @@ const Sidebar: React.FC = () => {
                   </span>
                 )}
                 {isActive && (
-                  <span className="absolute left-0 top-0 h-full w-1 bg-blue-500 rounded-l" />
+                  <span 
+                    className="absolute left-0 top-0 h-full w-1 rounded-l" 
+                    style={{ backgroundColor: accentHex }}
+                  />
                 )}
               </span>
             </Link>

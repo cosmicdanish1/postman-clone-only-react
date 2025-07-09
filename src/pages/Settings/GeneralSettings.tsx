@@ -252,15 +252,13 @@ const GeneralSettings: React.FC = () => {
       aria-pressed={telemetry}
     >
       <span
-        className={`absolute inset-0 rounded-full border transition-colors duration-200 border-border group-hover:border-accent ${
+        className={`absolute inset-0 rounded-full border transition-colors duration-200 border-border group-hover:border-accent z-0 ${
           telemetry ? '' : 'bg-bg'
         }`}
       />
       <span
         className={`absolute left-1 top-1 w-2 h-2 rounded-full transition-all duration-200 ${
-          telemetry
-            ? "translate-x-4 bg-accent shadow-lg"
-            : "bg-text-secondary"
+          telemetry ? "translate-x-4 bg-accent shadow-lg" : "bg-gray-500"
         }`}
       />
       <input
@@ -340,15 +338,13 @@ const GeneralSettings: React.FC = () => {
       aria-pressed={expandNav}
     >
       <span
-        className={`absolute inset-0 rounded-full border transition-colors duration-200 border-border group-hover:border-accent ${
+        className={`absolute inset-0 rounded-full border transition-colors duration-200 border-border group-hover:border-accent z-0 ${
           expandNav ? '' : 'bg-bg'
         }`}
       />
       <span
         className={`absolute left-1 top-1 w-2 h-2 rounded-full transition-all duration-200 ${
-          expandNav
-            ? "translate-x-4 bg-accent shadow-lg"
-            : "bg-text-secondary"
+          expandNav ? "translate-x-4 bg-accent shadow-lg" : "bg-gray-500"
         }`}
       />
       <input
@@ -372,15 +368,13 @@ const GeneralSettings: React.FC = () => {
       aria-pressed={sidebarLeft}
     >
       <span
-        className={`absolute inset-0 rounded-full border transition-colors duration-200 border-border group-hover:border-accent ${
+        className={`absolute inset-0 rounded-full border transition-colors duration-200 border-border group-hover:border-accent z-0 ${
           sidebarLeft ? '' : 'bg-bg'
         }`}
       />
       <span
         className={`absolute left-1 top-1 w-2 h-2 rounded-full transition-all duration-200 ${
-          sidebarLeft
-            ? "translate-x-4 bg-accent shadow-lg"
-            : "bg-text-secondary"
+          sidebarLeft ? "translate-x-4 bg-accent shadow-lg" : "bg-gray-500"
         }`}
       />
       <input
@@ -404,15 +398,13 @@ const GeneralSettings: React.FC = () => {
       aria-pressed={allExperiments}
     >
       <span
-        className={`absolute inset-0 rounded-full border transition-colors duration-200 border-border group-hover:border-accent ${
+        className={`absolute inset-0 rounded-full border transition-colors duration-200 border-border group-hover:border-accent z-0 ${
           allExperiments ? '' : 'bg-bg'
         }`}
       />
       <span
         className={`absolute left-1 top-1 w-2 h-2 rounded-full transition-all duration-200 ${
-          allExperiments
-            ? "translate-x-4 bg-accent shadow-lg"
-            : "bg-text-secondary"
+          allExperiments ? "translate-x-4 bg-accent shadow-lg" : "bg-gray-500"
         }`}
       />
       <input
@@ -478,7 +470,7 @@ const GeneralSettings: React.FC = () => {
   )}
 
   {/* Experimental scripting sandbox */} 
-  <label className="flex items-center justify-start gap-5  text-sm text-text-secondary font-semibold hover:text-text-primary">
+  <label className="flex items-center justify-start gap-5  text-sm  text-text-secondary font-semibold hover:text-text-primary">
     <button
       type="button"
       className="relative inline-flex items-center cursor-pointer w-8 h-4 focus:outline-none group"
@@ -486,15 +478,13 @@ const GeneralSettings: React.FC = () => {
       aria-pressed={experimentalSandbox}
     >
       <span
-        className={`absolute inset-0 rounded-full border transition-colors duration-200 border-border group-hover:border-accent ${
+        className={`absolute inset-0 rounded-full border transition-colors duration-200 border-border group-hover:border-accent z-0 ${
           experimentalSandbox ? '' : 'bg-bg'
         }`}
       />
       <span
         className={`absolute left-1 top-1 w-2 h-2 rounded-full transition-all duration-200 ${
-          experimentalSandbox
-            ? 'translate-x-4 bg-accent shadow-lg'
-            : 'bg-text-secondary'
+          experimentalSandbox ? "translate-x-4 bg-accent shadow-lg" : "bg-gray-500"
         }`}
       />
       <input
