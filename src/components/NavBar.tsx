@@ -72,7 +72,7 @@ if (theme === 'black') {
     {/* <!-- Logo Section --> */}
 <div className="col-span-2 flex items-center justify-between space-x-2">
   <div className="flex">
-    <a href="/" className="inline-flex items-center justify-center font-bold uppercase tracking-wide px-4 py-2 hover:bg-[#262626]">
+    <a href="/" className="inline-flex items-center justify-center font-bold uppercase tracking-wide px-4 py-2">
       <span className={`truncate max-w-[16rem] text-[16px] ml-3 ${appNameClass}`}>
         {t('app_name')}
       </span>

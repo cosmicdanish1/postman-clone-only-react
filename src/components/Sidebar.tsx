@@ -39,6 +39,14 @@ const Sidebar: React.FC = () => {
   else if (theme === 'black') themeClass = 'theme-black';
   // No class for light (default)
 
+ let borderClass = 'border-r border-neutral-700'; // default for dark
+if (theme === 'black') {
+  borderClass = 'border-r border-neutral-800';
+} else if (theme === 'light') {
+  borderClass = 'border-r border-gray-200';
+}
+
+
   // Tabs with i18n
   const tabs = [
     {
@@ -86,8 +94,8 @@ const Sidebar: React.FC = () => {
 
   return (
     <div
-      className={`flex flex-col h-full bg-bg text-text transition-all duration-300 ${expandNav ? 'w-20' : 'w-16'} ${themeClass} z-[60]`}
-      style={{ zIndex: 60, position: 'relative' }}
+      className={`flex flex-col h-full bg-bg text-text transition-all duration-300 ${expandNav ? 'w-20' : 'w-16'} ${themeClass} ${borderClass} z-[1]`}
+      style={{ position: 'relative' }}
     >
       {/* Sidebar options */}
       <nav className="flex-1 flex flex-col gap-2">
@@ -111,7 +119,7 @@ const Sidebar: React.FC = () => {
                 )}
                 {isActive && (
                   <span 
-                    className="absolute left-0 top-0 h-full w-1 rounded-l" 
+                    className="absolute left-0 top-0 h-full w-1" 
                     style={{ backgroundColor: accentHex }}
                   />
                 )}
