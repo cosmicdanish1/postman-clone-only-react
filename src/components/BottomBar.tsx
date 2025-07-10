@@ -243,8 +243,8 @@ const BottomBar: React.FC = () => {
         </button>
       </div>
       <ShortcutsPanel open={shortcutsPanelOpen} onClose={() => setShortcutsPanelOpen(false)} />
-    </footer>
-  );
+  </footer>
+);
 };
 
 export default BottomBar;

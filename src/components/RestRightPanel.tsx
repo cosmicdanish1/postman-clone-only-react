@@ -71,7 +71,6 @@ const RestRightPanel: React.FC = () => {
     }
     newWidth = Math.max(MIN_WIDTH, Math.min(maxWidth, newWidth));
     setWidth(newWidth);
-    console.log('Right panel width:', newWidth);
   };
 
   const onMouseUp = () => {

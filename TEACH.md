@@ -21,12 +21,7 @@ const MyComponent = () => {
   const accentColor = useSelector((state: any) => state.theme.accentColor);
   
   // Optional: Get the hex color value
-  const accentColors = [
-    { key: 'green', color: '#22c55e' },
-    { key: 'blue', color: '#2563eb' },
-    { key: 'cyan', color: '#06b6d4' },
-    // ... more colors
-  ];
+
   
   const accentHex = accentColors.find(c => c.key === accentColor)?.color;
   

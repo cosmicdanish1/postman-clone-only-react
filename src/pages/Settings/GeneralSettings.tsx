@@ -100,7 +100,6 @@ const GeneralSettings: React.FC = () => {
 
   const handleLanguageChange = (lang: string) => {
     const langKey = languageMap[lang] || 'en';
-    console.log('Language selected:', lang, '->', langKey);
     i18n.changeLanguage(langKey);
     setSelected(lang);
     setDropdownOpen(false); // Close dropdown after selection

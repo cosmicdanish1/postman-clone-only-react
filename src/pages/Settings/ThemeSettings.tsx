@@ -33,10 +33,8 @@ const ThemeSettings: React.FC = () => {
   const accentColor = useSelector((state: any) => state.theme.accentColor);
   const [hoveredColor, setHoveredColor] = useState<string | null>(null);
   const accentHex = accentColors.find(c => c.key === accentColor)?.color;
-  console.log('accentColor:', accentColor, 'accentHex:', accentHex);
 
   const handleAccentColorClick = (colorKey: string) => {
-    console.log('Clicking accent color:', colorKey);
     dispatch(setAccentColor(colorKey));
   };
 
@@ -78,7 +76,7 @@ const ThemeSettings: React.FC = () => {
                   className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition focus:outline-none group ${accentColor === c.key ? 'ring-2 ring-offset-2 ring-accent' : ''}`}
                   style={{ 
                     borderColor: c.color, 
-                    background: accentColor === c.key ? 'red' : 'transparent' // TEMP: use red for debugging
+                    background: accentColor === c.key ? accentColor : 'transparent',
                   }}
                   onClick={() => handleAccentColorClick(c.key)}
                   aria-label={c.label}
@@ -86,7 +84,7 @@ const ThemeSettings: React.FC = () => {
                   onMouseLeave={() => setHoveredColor(null)}
                 >
                   {accentColor === c.key && (
-                    <span className="w-1.5 h-1.5 rounded-full block" style={{ background: 'red' }} /> // TEMP: use red for debugging
+                    <span className="w-1.5 h-1.5 rounded-full block" style={{ background: accentColor === c.key ? accentColor : 'transparent' }} />
                   )}
                 </button>
                 {/* Tooltip for color name on hover */}
