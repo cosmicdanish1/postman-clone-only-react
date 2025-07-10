@@ -55,7 +55,7 @@ const defaultTabData = (): TabData => ({
 });
 
 const MIN_RIGHT_WIDTH = 260;
-const MAX_RIGHT_WIDTH = 900;
+const MAX_RIGHT_WIDTH = 500; // Use fixed limit instead of 50% of window
 const DEFAULT_RIGHT_WIDTH = 340;
 
 const HoppscotchClone: React.FC = () => {
@@ -112,11 +112,7 @@ const HoppscotchClone: React.FC = () => {
   const dividerRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Dynamically calculate maxRightWidth (50% of container or window width)
-  let maxRightWidth = MIN_RIGHT_WIDTH;
-  if (typeof window !== 'undefined') {
-    maxRightWidth = Math.max(MIN_RIGHT_WIDTH, window.innerWidth * 0.5);
-  }
+  // Remove the dynamic maxRightWidth calculation - use fixed MAX_RIGHT_WIDTH instead
 
   // Query Parameters state and handlers
   const [queryParams, setQueryParams] = React.useState<Parameter[]>([
@@ -985,7 +981,7 @@ const HoppscotchClone: React.FC = () => {
           style={{ zIndex: 10 }}
         />
         {/* Right sub sidebar for REST page */}
-        <div className="flex-none" style={{ width: rightWidth, minWidth: MIN_RIGHT_WIDTH, maxWidth: maxRightWidth, overflow: 'hidden' }}>
+        <div className="flex-none" style={{ width: rightWidth, minWidth: MIN_RIGHT_WIDTH, maxWidth: MAX_RIGHT_WIDTH, overflow: 'hidden' }}>
           <RestRightPanel />
         </div>
       </div>

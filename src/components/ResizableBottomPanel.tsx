@@ -92,12 +92,12 @@ const ResizableBottomPanel: React.FC<ResizableBottomPanelProps> = ({
       }}
     >
       {/* Optional top border */}
-      <div className={`border-t ${borderClass}`} style={{ width: '100%', marginBottom: -1 }} />
+      <div className={`border-t ${borderClass}`} style={{ width: '100%' }} />
 
       {/* Top drag handle */}
       <div
         style={{
-          height: 16,
+          height: 10,
           width: '100%',
           cursor: 'ns-resize',
           position: 'relative',
@@ -110,7 +110,7 @@ const ResizableBottomPanel: React.FC<ResizableBottomPanelProps> = ({
       >
         {hovered || dragging ? (
           <div
-            className="w-full"
+            className="w-full "
             style={{
               height: 2,
               background: dragging ? accentHex : accentHex,

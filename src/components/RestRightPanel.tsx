@@ -44,6 +44,7 @@ const panelContent = {
 
 const MIN_WIDTH = 260;
 const DEFAULT_WIDTH = 340;
+const MAX_WIDTH = 500; // Limited maximum width
 
 const RestRightPanel: React.FC = () => {
   const theme = useSelector((state: any) => state.theme.theme);
@@ -51,6 +52,7 @@ const RestRightPanel: React.FC = () => {
   const [activeTab, setActiveTab] = useState('collections');
   const [width, setWidth] = useState(DEFAULT_WIDTH);
   const [dragging, setDragging] = useState<'left' | 'right' | null>(null);
+  const [hovered, setHovered] = useState(false);
   const startX = useRef(0);
   const startWidth = useRef(width);
 
@@ -91,13 +93,13 @@ const RestRightPanel: React.FC = () => {
   const onMouseMove = (e: MouseEvent) => {
     if (!dragging) return;
     let newWidth = startWidth.current;
-    const maxWidth = window.innerWidth * 0.5;
     if (dragging === 'left') {
       newWidth = startWidth.current - (e.clientX - startX.current);
     } else if (dragging === 'right') {
       newWidth = startWidth.current + (e.clientX - startX.current);
     }
-    newWidth = Math.max(MIN_WIDTH, Math.min(maxWidth, newWidth));
+    // Limited drag range - only allow small adjustments
+    newWidth = Math.max(MIN_WIDTH, Math.min(MAX_WIDTH, newWidth));
     setWidth(newWidth);
   };
 
@@ -110,24 +112,47 @@ const RestRightPanel: React.FC = () => {
   return (
     <div
       className={`h-full bg-bg text-text shadow-inner z-30 ${themeClass} ${borderClass}`}
-      style={{ zIndex: 40, width: width, minWidth: MIN_WIDTH, maxWidth: '50vw', transition: dragging ? 'none' : 'width 0.15s', position: 'relative' }}
+      style={{ 
+        zIndex: 40, 
+        width: width, 
+        minWidth: MIN_WIDTH, 
+        maxWidth: MAX_WIDTH, 
+        transition: dragging ? 'none' : 'width 0.15s', 
+        position: 'relative' 
+      }}
     >
-      {/* Left drag handle */}
+      {/* Thin left drag handle */}
       <div
         style={{ 
-          width: 12, 
+          width: 4, // Much thinner drag handle
           height: '100%', 
           cursor: 'ew-resize', 
-          background: dragging === 'left' ? accentHex : 'rgba(136, 136, 136, 0.25)', 
+          background: dragging === 'left' ? accentHex : 'transparent', 
           zIndex: 41, 
           position: 'absolute', 
           left: 0, 
-          top: 0, 
-          borderRight: `2px solid ${accentHex}` 
+          top: 0,
+          transition: 'background 0.15s ease'
         }}
         onMouseDown={e => onMouseDown(e, 'left')}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
         title="Resize panel"
-      />
+      >
+        {/* Thin accent line on hover/drag */}
+        {(hovered || dragging) && (
+          <div
+            style={{
+              width: '100%',
+              height: '100%',
+              background: accentHex,
+              opacity: dragging ? 1 : 0.6,
+              transition: 'opacity 0.15s ease'
+            }}
+          />
+        )}
+      </div>
+      
       <div style={{ display: 'flex', height: '100%' }}>
         {/* Subsidebar */}
         <nav className={`w-14 h-full flex flex-col items-center py-4 gap-2 border-r ${borderClass} bg-bg`}>
