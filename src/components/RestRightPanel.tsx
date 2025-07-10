@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import Collections from '../pages/Collections';
 import History from '../pages/History';
 import GenerateCode from '../pages/GenerateCode';
+import { getThemeStyles } from '../utils/getThemeStyles';
 
 const navItems = [
   {
@@ -46,11 +47,38 @@ const DEFAULT_WIDTH = 340;
 
 const RestRightPanel: React.FC = () => {
   const theme = useSelector((state: any) => state.theme.theme);
+  const accentColor = useSelector((state: any) => state.theme.accentColor);
   const [activeTab, setActiveTab] = useState('collections');
   const [width, setWidth] = useState(DEFAULT_WIDTH);
   const [dragging, setDragging] = useState<'left' | 'right' | null>(null);
   const startX = useRef(0);
   const startWidth = useRef(width);
+
+  // 🟡 Theme and Accent Color Setup
+  const accentColors = [
+    { key: 'green', color: '#22c55e' },
+    { key: 'blue', color: '#2563eb' },
+    { key: 'cyan', color: '#06b6d4' },
+    { key: 'purple', color: '#7c3aed' },
+    { key: 'yellow', color: '#eab308' },
+    { key: 'orange', color: '#f59e42' },
+    { key: 'red', color: '#ef4444' },
+    { key: 'pink', color: '#ec4899' },
+  ];
+
+  const accentHex = accentColors.find(c => c.key === accentColor)?.color;
+
+  // 🟡 Dynamic classes based on theme
+  let themeClass = '';
+  if (theme === 'dark') themeClass = 'theme-dark';
+  else if (theme === 'black') themeClass = 'theme-black';
+
+  let borderClass = 'border-l border-neutral-700';
+  if (theme === 'black') {
+    borderClass = 'border-l border-neutral-800';
+  } else if (theme === 'light') {
+    borderClass = 'border-l border-gray-200';
+  }
 
   const onMouseDown = (e: React.MouseEvent, edge: 'left' | 'right') => {
     setDragging(edge);
@@ -81,24 +109,37 @@ const RestRightPanel: React.FC = () => {
 
   return (
     <div
-      className={"h-full bg-neutral-900 border-l border-neutral-800 shadow-inner theme-" + theme + " z-[40]"}
+      className={`h-full bg-bg text-text shadow-inner z-30 ${themeClass} ${borderClass}`}
       style={{ zIndex: 40, width: width, minWidth: MIN_WIDTH, maxWidth: '50vw', transition: dragging ? 'none' : 'width 0.15s', position: 'relative' }}
     >
       {/* Left drag handle */}
       <div
-        style={{ width: 12, height: '100%', cursor: 'ew-resize', background: dragging === 'left' ? '#3b82f6' : '#8884', zIndex: 41, position: 'absolute', left: 0, top: 0, borderRight: '2px solid #3b82f6' }}
+        style={{ 
+          width: 12, 
+          height: '100%', 
+          cursor: 'ew-resize', 
+          background: dragging === 'left' ? accentHex : 'rgba(136, 136, 136, 0.25)', 
+          zIndex: 41, 
+          position: 'absolute', 
+          left: 0, 
+          top: 0, 
+          borderRight: `2px solid ${accentHex}` 
+        }}
         onMouseDown={e => onMouseDown(e, 'left')}
         title="Resize panel"
       />
       <div style={{ display: 'flex', height: '100%' }}>
         {/* Subsidebar */}
-        <nav className="w-14 h-full flex flex-col items-center py-4 gap-2 border-r border-border bg-bg">
+        <nav className={`w-14 h-full flex flex-col items-center py-4 gap-2 border-r ${borderClass} bg-bg`}>
           {navItems.map(item => (
             <button
               key={item.key}
               aria-label={item.label}
               className={`flex items-center justify-center w-10 h-10 rounded-lg transition-colors duration-150
-                ${activeTab === item.key ? 'bg-blue-900/40 text-blue-400' : 'text-zinc-400 hover:bg-zinc-800 hover:text-blue-400'}`}
+                ${activeTab === item.key 
+                  ? `bg-accent/20 text-accent` 
+                  : 'text-text/60 hover:bg-bg-secondary hover:text-accent'
+                }`}
               title={item.label}
               onClick={() => setActiveTab(item.key)}
               type="button"
@@ -108,7 +149,7 @@ const RestRightPanel: React.FC = () => {
           ))}
         </nav>
         {/* Panel content */}
-        <div className="flex-1 h-full overflow-y-auto">
+        <div className="flex-1 h-full overflow-y-auto bg-bg">
           {panelContent[activeTab]}
         </div>
       </div>

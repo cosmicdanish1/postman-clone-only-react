@@ -5,18 +5,27 @@
 // Role: Renders the UI for editing the HTTP request body in the REST feature.
 // Located at: src/pages/Rest/BodyTab.tsx
 import React, { useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
+
 import { useSelector } from 'react-redux';
+
+import { getThemeStyles } from '../../utils/getThemeStyles';
 
 type BodyType = 'raw' | 'form-data' | 'x-www-form-urlencoded' | 'binary' | 'graphql';
 
 const BodyTab: React.FC = () => {
   const [bodyType, setBodyType] = useState<BodyType>('raw');
-  const theme = useSelector((state: any) => state.theme.theme);
-  let themeClass = '';
-  if (theme === 'dark') themeClass = 'theme-dark';
-  else if (theme === 'black') themeClass = 'theme-black';
+  
   // No class for light (default)
+  
+  const theme = useSelector((state: any) => state.theme.theme);
+  const { themeClass,
+      searchBarClass,
+      textLightClass,
+      textClass,
+      kbdClass,
+      appNameClass,
+      borderClass,
+    buttonBgClass } = getThemeStyles(theme);
 
   const renderBodyContent = () => {
     switch (bodyType) {
@@ -25,7 +34,7 @@ const BodyTab: React.FC = () => {
           <div className="space-y-2">
             <label className="block text-text text-sm font-semibold mb-1">Raw JSON</label>
             <textarea
-              className="w-full min-h-[120px] bg-bg border border-border text-text rounded px-2 py-1 text-sm focus:outline-none resize-y"
+              className="w-full min-h-[120px] bg-bg   text-text rounded px-2 py-1 text-sm focus:outline-none resize-y"
               placeholder={`{\n  "key": "value"\n}`}
             />
             <div className="text-xs text-gray-400 mt-2">Other body types (form-data, x-www-form-urlencoded) can be added later.</div>
@@ -49,9 +58,9 @@ const BodyTab: React.FC = () => {
   };
 
   return (
-    <div className={`space-y-4 bg-bg text-text p-4 rounded ${themeClass}`}>
+    <div className={`space-y-4 bg-bg text-text  p-4 rounded ${themeClass}`}>
       {/* Body Bar */}
-      <div className="flex items-center justify-between px-4 py-2 bg-bg border-b border-border rounded-t-md">
+      <div className="flex items-center justify-between px-4 py-2  rounded-t-md">
         <span className="text-gray-400 text-sm">Body</span>
         <div className="flex items-center gap-3">
           {/* Placeholder for icons/buttons, e.g., Help, Clear, Edit, Add */}
@@ -59,7 +68,7 @@ const BodyTab: React.FC = () => {
         </div>
       </div>
       {/* Body Type Selector */}
-      <div className="flex gap-2 border-b border-border">
+      <div className="flex gap-2 ">
         {(['raw', 'form-data', 'x-www-form-urlencoded', 'binary', 'graphql'] as BodyType[]).map((type) => (
           <button
             key={type}

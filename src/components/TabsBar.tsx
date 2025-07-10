@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import EditEnvironmentModal from './EditEnvironmentModal';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
+import { getThemeStyles } from '../utils/getThemeStyles';
 
 interface Tab {
   id: string;
@@ -64,14 +65,35 @@ const TabsBar: React.FC<TabsBarProps> = ({
 
   // Theming logic (must be at the top level)
   const theme = useSelector((state: any) => state.theme.theme);
-  let themeClass = '';
-  if (theme === 'dark') themeClass = 'theme-dark';
-  else if (theme === 'black') themeClass = 'theme-black';
+
   // No class for light (default)
 
   const { t } = useTranslation();
+const accentColors = [
+    { key: 'green', color: '#22c55e' },
+    { key: 'blue', color: '#2563eb' },
+    { key: 'cyan', color: '#06b6d4' },
+    { key: 'purple', color: '#7c3aed' },
+    { key: 'yellow', color: '#eab308' },
+    { key: 'orange', color: '#f59e42' },
+    { key: 'red', color: '#ef4444' },
+    { key: 'pink', color: '#ec4899' },
+  ];
+
+
+   const accentColor = useSelector((state: any) => state.theme.accentColor);
+  const accentHex = accentColors.find(c => c.key === accentColor)?.color;
 
   // Click-away handler for popover
+
+    const { themeClass,
+        searchBarClass,
+        textLightClass,
+        textClass,
+        kbdClass,
+        appNameClass,
+        borderClass,
+      buttonBgClass } = getThemeStyles(theme);
   useEffect(() => {
     if (!showVarsPopover) return;
     function handleClick(e: MouseEvent) {
@@ -154,21 +176,22 @@ const TabsBar: React.FC<TabsBarProps> = ({
         setModalValue={setModalValue}
         onSave={() => setEditModal(null)}
       />
-      <div className={`w-full bg-bg border-b h-10 border-border relative text-text ${themeClass}`}>
-        <div className="flex items-center h-full w-full">
-          <div className="flex items-center flex-1 min-w-0">
+      <div className={`w-full  h-10  relative text-text  ${themeClass}`}>
+        <div className={`flex items-center h-full w-full ${buttonBgClass} `}>
+          <div className={`flex items-center flex-1 min-w-0   `}>
             {tabs.map((tab) => (
               <div
                 key={tab.id}
-                className={`group relative flex items-center h-12 px-0 cursor-pointer select-none font-bold bg-[#18181A] rounded-t-md -mt-1 shadow z-10 transition-all duration-200 ${tab.id === activeTabId ? '' : 'opacity-60'}`}
+                className={`group relative flex items-center h-11   px-0 cursor-pointer select-none font-bold transition-all duration-200 ${tab.id === activeTabId ? '' : 'opacity-60'} ${themeClass}`}
                 onClick={() => onSwitchTab(tab.id)}
               >
+                {/* Highlight active tab */}
                 {tab.id === activeTabId && (
-                  <div className="absolute left-0 top-0 w-full h-1 bg-blue-500 rounded-t-md" style={{zIndex: 2}} />
+                  <div className="absolute left-0 top-0 w-full  h-[2px]" style={{zIndex: 2,  backgroundColor: accentHex }} />
                 )}
-                <div className="flex items-center w-36 overflow-hidden z-10 px-6">
+                <div className="flex items-center w-48 overflow-hidden  z-10 px-6">
                   <span
-                    className="font-medium text-[13px] mr-2 whitespace-nowrap"
+                    className="font-medium text-[13px]  mr-2 whitespace-nowrap"
                     style={{ color: methodColors[tab.method] || '#737373' }}
                   >
                     {tab.method}
@@ -196,7 +219,7 @@ const TabsBar: React.FC<TabsBarProps> = ({
               </div>
             ))}
             <span
-              className="flex items-center justify-center h-12 w-10 -mt-1 rounded-t-md text-blue-500 text-2xl cursor-pointer hover:bg-[#232326] transition"
+              className="flex items-center justify-center h-12 w-10 -mt-1 rounded-t-md text-xl cursor-pointer  transition " style={{color: accentHex  }}
               onClick={onAddTab}
             >
               +

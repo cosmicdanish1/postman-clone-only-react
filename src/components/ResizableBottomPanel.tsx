@@ -1,4 +1,6 @@
 import React, { useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { getThemeStyles } from '../utils/getThemeStyles';
 
 interface ResizableBottomPanelProps {
   children: React.ReactNode;
@@ -15,15 +17,49 @@ const ResizableBottomPanel: React.FC<ResizableBottomPanelProps> = ({
 }) => {
   const [height, setHeight] = useState(defaultHeight);
   const panelRef = useRef<HTMLDivElement>(null);
-  const dragType = useRef<'top' | 'bottom' | null>(null);
   const startY = useRef(0);
   const startHeight = useRef(0);
-  const [dragging, setDragging] = useState<'top' | 'bottom' | null>(null);
-  const [hovered, setHovered] = useState<'top' | 'bottom' | null>(null);
+  const [dragging, setDragging] = useState(false);
+  const [hovered, setHovered] = useState(false);
 
-  const onMouseDown = (e: React.MouseEvent, type: 'top' | 'bottom') => {
-    dragType.current = type;
-    setDragging(type);
+  // 🟡 Theme and Accent Color Setup
+  const theme = useSelector((state: any) => state.theme.theme);
+  const accentColor = useSelector((state: any) => state.theme.accentColor);
+
+  const accentColors = [
+    { key: 'green', color: '#22c55e' },
+    { key: 'blue', color: '#2563eb' },
+    { key: 'cyan', color: '#06b6d4' },
+    { key: 'purple', color: '#7c3aed' },
+    { key: 'yellow', color: '#eab308' },
+    { key: 'orange', color: '#f59e42' },
+    { key: 'red', color: '#ef4444' },
+    { key: 'pink', color: '#ec4899' },
+  ];
+
+  const accentHex = accentColors.find(c => c.key === accentColor)?.color;
+
+  // 🟡 Dynamic classes based on theme
+  let themeClass = '';
+  if (theme === 'dark') themeClass = 'theme-dark';
+  else if (theme === 'black') themeClass = 'theme-black';
+
+  let borderClass = 'border-neutral-700';
+  let bgClass = 'bg-neutral-900';
+  let dragHandleBg = 'rgba(136, 136, 136, 0.25)';
+
+  if (theme === 'black') {
+    borderClass = 'border-neutral-800';
+    bgClass = 'bg-black';
+    dragHandleBg = 'rgba(136, 136, 136, 0.15)';
+  } else if (theme === 'light') {
+    borderClass = 'border-gray-200';
+    bgClass = 'bg-gray-100';
+    dragHandleBg = 'rgba(136, 136, 136, 0.1)';
+  }
+
+  const onMouseDown = (e: React.MouseEvent) => {
+    setDragging(true);
     startY.current = e.clientY;
     startHeight.current = height;
     document.addEventListener('mousemove', onMouseMove);
@@ -31,20 +67,13 @@ const ResizableBottomPanel: React.FC<ResizableBottomPanelProps> = ({
   };
 
   const onMouseMove = (e: MouseEvent) => {
-    if (!dragType.current) return;
-    let newHeight = startHeight.current;
-    if (dragType.current === 'top') {
-      newHeight -= e.clientY - startY.current;
-    } else {
-      newHeight += e.clientY - startY.current;
-    }
-    newHeight = Math.max(minHeight, Math.min(maxHeight, newHeight));
+    if (!dragging) return;
+    const newHeight = Math.max(minHeight, Math.min(maxHeight, startHeight.current - (e.clientY - startY.current)));
     setHeight(newHeight);
   };
 
   const onMouseUp = () => {
-    dragType.current = null;
-    setDragging(null);
+    setDragging(false);
     document.removeEventListener('mousemove', onMouseMove);
     document.removeEventListener('mouseup', onMouseUp);
   };
@@ -56,60 +85,53 @@ const ResizableBottomPanel: React.FC<ResizableBottomPanelProps> = ({
         left: 0,
         right: 0,
         bottom: 0,
+        pointerEvents: 'none',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        pointerEvents: 'none', // allow clicks to pass through except panel
       }}
     >
+      {/* Optional top border */}
+      <div className={`border-t ${borderClass}`} style={{ width: '100%', marginBottom: -1 }} />
+
+      {/* Top drag handle */}
       <div
         style={{
+          height: 16,
           width: '100%',
-          borderTop: '1px solid #e5e7eb', // Tailwind gray-200
-          marginBottom: -1,
+          cursor: 'ns-resize',
+          position: 'relative',
+          zIndex: 3,
+          pointerEvents: 'auto',
         }}
-      />
-      {/* Top drag handle - now outside the panel */}
-      {height > minHeight && (
-        <div
-          style={{
-            height: 16,
-            width: '100%',
-            cursor: 'ns-resize',
-            position: 'relative',
-            zIndex: 3,
-            pointerEvents: 'auto',
-          }}
-          onMouseDown={e => onMouseDown(e, 'top')}
-          onMouseEnter={() => setHovered('top')}
-          onMouseLeave={() => setHovered(null)}
-        >
-          {(hovered === 'top' || dragging === 'top') && (
-            <div style={{
-              width: '100%',
-              height: 3,
-              background: dragging === 'top' ? '#3b82f6' : '#d1d5db',
+        onMouseDown={onMouseDown}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+      >
+        {hovered || dragging ? (
+          <div
+            className="w-full"
+            style={{
+              height: 2,
+              background: dragging ? accentHex : accentHex,
               borderRadius: 2,
-              marginTop: 6
-            }} />
-          )}
-        </div>
-      )}
-      {/* Panel */}
+            }}
+          />
+        ) : null}
+      </div>
+
+      {/* Resizable Panel */}
       <div
         ref={panelRef}
-        className="bg-neutral-900 dark:bg-gray-900"
+        className={`${bgClass} ${themeClass}`}
         style={{
           width: '100%',
           height,
           borderRadius: '12px 12px 0 0',
           boxShadow: '0 -2px 16px rgba(0,0,0,0.06)',
-          margin: '0 auto',
-          position: 'relative',
           pointerEvents: 'auto',
           display: 'flex',
           flexDirection: 'column',
-          alignItems: 'center',
           justifyContent: 'center',
         }}
       >
@@ -117,32 +139,6 @@ const ResizableBottomPanel: React.FC<ResizableBottomPanelProps> = ({
           {children}
         </div>
       </div>
-      {/* Bottom drag handle - now outside the panel */}
-      {height < maxHeight && (
-        <div
-          style={{
-            height: 16,
-            width: '100%',
-            cursor: 'ns-resize',
-            position: 'relative',
-            zIndex: 3,
-            pointerEvents: 'auto',
-          }}
-          onMouseDown={e => onMouseDown(e, 'bottom')}
-          onMouseEnter={() => setHovered('bottom')}
-          onMouseLeave={() => setHovered(null)}
-        >
-          {(hovered === 'bottom' || dragging === 'bottom') && (
-            <div style={{
-              width: '100%',
-              height: 3,
-              background: dragging === 'bottom' ? '#3b82f6' : '#d1d5db',
-              borderRadius: 2,
-              marginBottom: 6
-            }} />
-          )}
-        </div>
-      )}
     </div>
   );
 };

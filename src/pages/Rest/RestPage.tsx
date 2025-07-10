@@ -6,9 +6,8 @@
 // Located at: src/pages/Rest/RestPage.tsx
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { DndContext, closestCenter } from '@dnd-kit/core';
+import { getThemeStyles } from '../../utils/getThemeStyles';
 import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
 import TabsBar from '../../components/TabsBar';
 import RequestEditor from './RequestEditor';
 import TabContentArea from '../../components/TabContentArea';
@@ -18,8 +17,6 @@ import ImportCurlModal from '../../components/ImportCurlModal';
 import GenerateCodeModal from '../../components/GenerateCodeModal';
 import { uuidv4 } from '../../utils/helpers';
 import SortableParamRow from '../../components/SortableParamRow';
-import SortableBodyParamRow from '../../components/SortableBodyParamRow';
-import SortableMultipartBodyParamRow from '../../components/SortableMultipartBodyParamRow';
 import type { TabData, Parameter, Variable } from '../types';
 import SortableHeaderRow from '../../components/SortableHeaderRow';
 import SortableVariableRow from '../../components/SortableVariableRow';
@@ -63,6 +60,32 @@ const DEFAULT_RIGHT_WIDTH = 340;
 
 const HoppscotchClone: React.FC = () => {
   const theme = useSelector((state: any) => state.theme.theme);
+  const { themeClass,
+      searchBarClass,
+      textLightClass,
+      textClass,
+      kbdClass,
+      appNameClass,
+      borderClass,
+    buttonBgClass } = getThemeStyles(theme);
+
+    const accentColors = [
+    { key: 'green', color: '#22c55e' },
+    { key: 'blue', color: '#2563eb' },
+    { key: 'cyan', color: '#06b6d4' },
+    { key: 'purple', color: '#7c3aed' },
+    { key: 'yellow', color: '#eab308' },
+    { key: 'orange', color: '#f59e42' },
+    { key: 'red', color: '#ef4444' },
+    { key: 'pink', color: '#ec4899' },
+  ];
+
+
+ const accentColor = useSelector((state: any) => state.theme.accentColor);
+
+ const accentHex = accentColors.find(c => c.key === accentColor)?.color;
+
+
   const [tabs, setTabs] = useState<TabData[]>([defaultTabData()]);
   const [activeTabId, setActiveTabId] = useState(tabs[0].id);
   const [envDropdownOpen, setEnvDropdownOpen] = useState(false);
@@ -114,6 +137,12 @@ const HoppscotchClone: React.FC = () => {
     msOverflowStyle: 'none', // IE 10+
     overflowY: 'auto',
   };
+
+ 
+
+
+
+
 
   const handleParamChange = (id: string, field: 'key' | 'value' | 'description', value: string): void => {
     setQueryParams(prev => {
@@ -339,6 +368,8 @@ const HoppscotchClone: React.FC = () => {
     }
   };
 
+
+  
   // Headers state and handlers
   const [editHeadersActive, setEditHeadersActive] = useState(false);
   const handleHeaderChange = (id: string, field: 'key' | 'value' | 'description', value: string): void => {
@@ -731,7 +762,7 @@ const HoppscotchClone: React.FC = () => {
   }, [dragging]);
 
   return (
-    <div className={`flex flex-col h-full w-full theme-${theme} bg-bg text-text border-border`}>
+    <div className={`flex flex-col h-full w-full theme-${theme} bg-bg text-text `}>
       {/* Edit Environment Modal */}
       <EditEnvironmentModal
         open={editModal !== null}
@@ -877,21 +908,23 @@ const HoppscotchClone: React.FC = () => {
             saveRequestName={saveRequestName}
           />
           {/* Tabs */}
-          <div className="flex items-center gap-1 text-[12px] border-b border-gray-800 mb-2">
-            {['parameters', 'body', 'headers', 'authorization', 'pre-request', 'post-request', 'variables'].map(tab => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`px-2 py-1 font-semibold ${
-                  activeTabObj.activeTab === tab
-                    ? 'border-b-2 border-blue-500 text-white'
-                    : 'text-gray-400 hover:text-white'
-                }`}
-              >
-                {tab.charAt(0).toUpperCase() + tab.slice(1).replace('-', ' ')}
-              </button>
-            ))}
-          </div>
+         <div className={`flex items-center gap-2 text-[14px] border-b border-gray-800 mb-2`}>
+  {['parameters', 'body', 'headers', 'authorization', 'pre-request', 'post-request', 'variables'].map(tab => (
+    <button
+      key={tab}
+      onClick={() => setActiveTab(tab)}
+      className={`px-2 py-1 font-semibold ${textClass} ${
+        activeTabObj.activeTab === tab
+          ? `${textClass}`
+          : `${textClass} `
+      }`}
+      style={activeTabObj.activeTab === tab ? { borderColor: accentHex } : undefined}
+    >
+      {tab.charAt(0).toUpperCase() + tab.slice(1).replace('-', ' ')}
+    </button>
+  ))}
+</div>
+
           {/* Tab content area (example: Parameters) */}
           {['parameters', 'body', 'headers', 'authorization', 'pre-request', 'post-request', 'variables'].includes(activeTabObj.activeTab) && (
             <TabContentArea

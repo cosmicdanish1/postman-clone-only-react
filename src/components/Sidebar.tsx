@@ -94,7 +94,7 @@ if (theme === 'black') {
 
   return (
     <div
-      className={`flex flex-col h-full bg-bg text-text transition-all duration-300 ${expandNav ? 'w-20' : 'w-16'} ${themeClass} ${borderClass} z-[1]`}
+      className={`flex flex-col h-full bg-bg text-text transition-all duration-300 ${expandNav ? 'w-20' : 'w-16'} ${themeClass} ${borderClass} z-50`}
       style={{ position: 'relative' }}
     >
       {/* Sidebar options */}
@@ -119,7 +119,7 @@ if (theme === 'black') {
                 )}
                 {isActive && (
                   <span 
-                    className="absolute left-0 top-0 h-full w-1" 
+                    className="absolute left-0 top-0 h-full w-[2px]" 
                     style={{ backgroundColor: accentHex }}
                   />
                 )}

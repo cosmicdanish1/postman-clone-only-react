@@ -47,9 +47,9 @@ const ParametersTabContent: React.FC<ParametersTabContentProps> = ({
     '# Entries are separated by newline\n# Keys and values are separated by :\n# Prepend # to any row you want to add but keep disabled\nkey1:value1\nkey2:value2'
   );
   return (
-    <div className={`flex-1 flex flex-col bg-bg text-text rounded p-0 mt-2 ${themeClass}`}>
+    <div className={`flex-1 flex flex-col bg-bg text-text rounded  mt-2 ${themeClass}`}>
       {/* Query Parameters Bar */}
-      <div className="flex items-center justify-between px-4 h-10 bg-[#18181A] w-full border-b border-neutral-800">
+      <div className="flex items-center justify-between px-4 h-10  w-full border-b border-neutral-800">
         <span className="text-gray-400 text-base">{t('query_parameters')}</span>
         <div className="flex items-center gap-3">
           {/* Help icon */}
@@ -118,13 +118,7 @@ const ParametersTabContent: React.FC<ParametersTabContentProps> = ({
         <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={queryParams.map(p => p.id)} strategy={verticalListSortingStrategy}>
             <div className="w-full">
-              <div className="grid grid-cols-5 border-b border-neutral-800 px-2" style={{minHeight: '38px', gridTemplateColumns: '32px 1fr 1fr 1fr auto'}}>
-                <div></div>
-                <div className="text-gray-500 text-sm flex items-center border-r border-neutral-800 py-2">{t('key')}</div>
-                <div className="text-gray-500 text-sm flex items-center border-r border-neutral-800 py-2">{t('value')}</div>
-                <div className="text-gray-500 text-sm flex items-center border-r border-neutral-800 py-2">{t('description')}</div>
-                <div></div>
-              </div>
+              
               {queryParams.map((param, idx) => (
                 <SortableParamRow
                   key={param.id}

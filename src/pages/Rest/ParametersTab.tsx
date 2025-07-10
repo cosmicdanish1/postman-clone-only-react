@@ -34,11 +34,7 @@ const ParametersTab: React.FC = () => {
 
   return (
     <div className={`space-y-2 bg-bg text-text p-4 rounded ${themeClass}`}>
-      <div className="flex font-semibold text-text text-sm mb-2">
-        <div className="w-1/3">Key</div>
-        <div className="w-1/3">Value</div>
-        <div className="w-1/6"></div>
-      </div>
+      
       {params.map((param, idx) => (
         <div className="flex items-center gap-2" key={idx}>
           <input

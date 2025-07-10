@@ -22,6 +22,18 @@ const MyComponent = () => {
   
   // Optional: Get the hex color value
 
+    const accentColors = [
+    { key: 'green', color: '#22c55e' },
+    { key: 'blue', color: '#2563eb' },
+    { key: 'cyan', color: '#06b6d4' },
+    { key: 'purple', color: '#7c3aed' },
+    { key: 'yellow', color: '#eab308' },
+    { key: 'orange', color: '#f59e42' },
+    { key: 'red', color: '#ef4444' },
+    { key: 'pink', color: '#ec4899' },
+  ];
+
+
   
   const accentHex = accentColors.find(c => c.key === accentColor)?.color;
   
@@ -199,10 +211,15 @@ import { FaStar } from 'react-icons/fa';
 const MyComponent = () => {
   const accentColor = useSelector((state: any) => state.theme.accentColor);
   
-  const accentColors = [
+    const accentColors = [
     { key: 'green', color: '#22c55e' },
     { key: 'blue', color: '#2563eb' },
+    { key: 'cyan', color: '#06b6d4' },
     { key: 'purple', color: '#7c3aed' },
+    { key: 'yellow', color: '#eab308' },
+    { key: 'orange', color: '#f59e42' },
+    { key: 'red', color: '#ef4444' },
+    { key: 'pink', color: '#ec4899' },
   ];
   
   const accentHex = accentColors.find(c => c.key === accentColor)?.color;
@@ -237,4 +254,14 @@ const MyComponent = () => {
 4. **Use conditionally** for selected/active elements
 5. **Debug with console logs** and temporary colors
 
-This pattern works for any UI element that should reflect the user's accent color preference! 
+This pattern works for any UI element that should reflect the user's accent color preferenc
+import { getThemeStyles } from '../../utils/getThemeStyles';
+ const theme = useSelector((state: any) => state.theme.theme);
+  const { themeClass,
+      searchBarClass,
+      textLightClass,
+      textClass,
+      kbdClass,
+      appNameClass,
+      borderClass,
+    buttonBgClass } = getThemeStyles(theme);
