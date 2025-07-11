@@ -7,7 +7,7 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getThemeStyles } from '../../utils/getThemeStyles';
-import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { arrayMove } from '@dnd-kit/sortable';
 import TabsBar from '../../components/TabsBar';
 import RequestEditor from './RequestEditor';
 import TabContentArea from '../../components/TabContentArea';
@@ -60,14 +60,7 @@ const DEFAULT_RIGHT_WIDTH = 340;
 
 const HoppscotchClone: React.FC = () => {
   const theme = useSelector((state: any) => state.theme.theme);
-  const { themeClass,
-      searchBarClass,
-      textLightClass,
-      textClass,
-      kbdClass,
-      appNameClass,
-      borderClass,
-    buttonBgClass } = getThemeStyles(theme);
+
 
     const accentColors = [
     { key: 'green', color: '#22c55e' },
@@ -110,7 +103,6 @@ const HoppscotchClone: React.FC = () => {
   const [rightWidth, setRightWidth] = useState(DEFAULT_RIGHT_WIDTH);
   const [dragging, setDragging] = useState(false);
   const dividerRef = useRef<HTMLDivElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
 
   // Remove the dynamic maxRightWidth calculation - use fixed MAX_RIGHT_WIDTH instead
 
@@ -183,9 +175,6 @@ const HoppscotchClone: React.FC = () => {
   };
 
   // Modal logic for renaming tab
-  const openModal = (): void => {
-    setTabs(tabs => tabs.map(tab => tab.id === activeTabId ? { ...tab, modalValue: tab.tabName, showModal: true } : tab));
-  };
   const closeModal = (): void => {
     setTabs(tabs => tabs.map(tab => tab.id === activeTabId ? { ...tab, showModal: false } : tab));
   };
@@ -294,75 +283,6 @@ const HoppscotchClone: React.FC = () => {
   // State for code editor content
   const [rawBody, setRawBody] = useState('');
 
-  // State for x-www-form-urlencoded body parameters
-  const [bodyParams, setBodyParams] = useState<Parameter[]>([
-    { id: uuidv4(), key: '', value: '' }
-  ]);
-  const handleBodyParamChange = (id: string, field: 'key' | 'value', value: string): void => {
-    setBodyParams(prev => {
-      const updated = prev.map((p) => p.id === id ? { ...p, [field]: value } : p);
-      // If editing the last row's key and it's non-empty, add a new row
-      if (field === 'key' && prev[prev.length - 1].id === id && value.trim() !== '') {
-        return [...updated, { id: uuidv4(), key: '', value: '' }];
-      }
-      return updated;
-    });
-  };
-  const handleDeleteBodyParam = (id: string): void => {
-    setBodyParams(prev => prev.length === 1 ? prev : prev.filter((p) => p.id !== id));
-  };
-  const handleAddBodyParam = (): void => {
-    setBodyParams(prev => [...prev, { id: uuidv4(), key: '', value: '' }]);
-  };
-
-  // Drag and drop handlers for bodyParams
-  const handleBodyDragEnd = (event: any): void => {
-    const { active, over } = event;
-    if (active.id !== over.id) {
-      setBodyParams((items) => {
-        const oldIndex = items.findIndex(i => i.id === active.id);
-        const newIndex = items.findIndex(i => i.id === over.id);
-        return arrayMove(items, oldIndex, newIndex);
-      });
-    }
-  };
-
-  // State for multipart/form-data body parameters
-  const [multipartBodyParams, setMultipartBodyParams] = useState<Parameter[]>([
-    { id: uuidv4(), key: '', value: '', contentType: '', file: null as File | null }
-  ]);
-  const [showMultipartContentType, setShowMultipartContentType] = useState(false);
-  const handleMultipartBodyParamChange = (id: string, field: 'key' | 'value' | 'contentType', value: string): void => {
-    setMultipartBodyParams(prev => {
-      const updated = prev.map((p) => p.id === id ? { ...p, [field]: value } : p);
-      if (field === 'key' && prev[prev.length - 1].id === id && value.trim() !== '') {
-        return [...updated, { id: uuidv4(), key: '', value: '', contentType: '', file: null }];
-      }
-      return updated;
-    });
-  };
-  const handleMultipartFileChange = (id: string, file: File | null): void => {
-    setMultipartBodyParams(prev => prev.map((p) => p.id === id ? { ...p, file, value: file ? file.name : '' } : p));
-  };
-  const handleMultipartContentTypeChange = (id: string, value: string): void => {
-    setMultipartBodyParams(prev => prev.map((p) => p.id === id ? { ...p, contentType: value } : p));
-  };
-  const handleDeleteMultipartBodyParam = (id: string): void => {
-    setMultipartBodyParams(prev => prev.length === 1 ? prev : prev.filter((p) => p.id !== id));
-  };
-  const handleAddMultipartBodyParam = (): void => {
-    setMultipartBodyParams(prev => [...prev, { id: uuidv4(), key: '', value: '', contentType: '', file: null }]);
-  };
-  const handleMultipartBodyDragEnd = (event: any): void => {
-    const { active, over } = event;
-    if (active.id !== over.id) {
-      setMultipartBodyParams((items) => {
-        const oldIndex = items.findIndex(i => i.id === active.id);
-        const newIndex = items.findIndex(i => i.id === over.id);
-        return arrayMove(items, oldIndex, newIndex);
-      });
-    }
-  };
 
 
   
@@ -408,38 +328,7 @@ const HoppscotchClone: React.FC = () => {
       return { ...tab, headers: [...tab.headers, { id: uuidv4(), key: '', value: '', description: '', locked: false }] };
     }));
   };
-  const handleHeaderDragEnd = (event: any): void => {
-    const { active, over } = event;
-    if (active.id !== over.id) {
-      setTabs(tabs => tabs.map(tab => {
-        if (tab.id !== activeTabId) return tab;
-        const headers = tab.headers;
-        const lockedIdx = headers.findIndex((h: any) => h.locked);
-        const editable = headers.filter((h: any) => !h.locked);
-        // Only allow reordering editable rows
-        const oldIndex = editable.findIndex((i: any) => i.id === active.id);
-        const newIndex = editable.findIndex((i: any) => i.id === over.id);
-        if (oldIndex === -1 || newIndex === -1) return tab;
-        const newEditable = arrayMove(editable, oldIndex, newIndex);
-        // Rebuild headers: editable rows, then locked row
-        const newHeaders = [...newEditable, headers[lockedIdx]];
-        return { ...tab, headers: newHeaders };
-      }));
-    }
-  };
   // List of common HTTP header names for dropdown
-  const headerNameOptions = [
-    'Accept', 'Accept-Charset', 'Accept-Encoding', 'Accept-Language', 'Accept-Datetime',
-    'Authorization', 'Cache-Control', 'Connection', 'Cookie', 'Content-Length', 'Content-MD5',
-    'Content-Type', 'Date', 'Expect', 'Forwarded', 'From', 'Host', 'If-Match', 'If-Modified-Since',
-    'If-None-Match', 'If-Range', 'If-Unmodified-Since', 'Max-Forwards', 'Pragma', 'Proxy-Authorization',
-    'Range', 'Referer', 'TE', 'User-Agent', 'Upgrade', 'Via', 'Warning', 'WWW-Authenticate',
-    'Proxy-Authenticate', 'Age', 'ETag', 'Location', 'Retry-After', 'Server', 'Set-Cookie', 'Vary',
-    'X-Requested-With', 'DNT', 'X-Frame-Options', 'X-XSS-Protection', 'X-Content-Type-Options',
-    'X-Forwarded-For', 'X-Forwarded-Host', 'X-Forwarded-Proto', 'Front-End-Https', 'X-Http-Method-Override',
-    'X-ATT-DeviceId', 'X-Wap-Profile', 'Proxy-Connection', 'X-UIDH', 'X-Csrf-Token', 'X-Request-ID',
-    'X-Correlation-ID',
-  ];
   // Only these options for all editable header rows
   const editableHeaderOptions = [
     'WWW-Authenticate',
@@ -450,20 +339,8 @@ const HoppscotchClone: React.FC = () => {
   ];
 
   // Add at the top of the component:
-  const authorizationTypes = [
-    'Inherit',
-    'None',
-    'Basic Auth',
-    'Digest Auth',
-    'Bearer',
-    'OAuth 2.0',
-    'API Key',
-    'AWS Signature',
-    'HAWK',
-    'JWT',
-  ];
   const [authDropdownOpen, setAuthDropdownOpen] = useState(false);
-  const [selectedAuthType, setSelectedAuthType] = useState('Inherit');
+
   const authDropdownRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
@@ -478,8 +355,7 @@ const HoppscotchClone: React.FC = () => {
   }, [authDropdownOpen]);
 
   // Add at the top of the component:
-  const digestAlgorithms = ['MD5', 'MD5-sess'];
-  const [digestAlgorithm, setDigestAlgorithm] = useState('MD5');
+ 
   const [digestAlgDropdownOpen, setDigestAlgDropdownOpen] = useState(false);
   const digestAlgDropdownRef = React.useRef<HTMLDivElement>(null);
 
@@ -495,7 +371,6 @@ const HoppscotchClone: React.FC = () => {
   }, [digestAlgDropdownOpen]);
 
   // Add at the top of the component:
-  const oauthGrantTypes = ['Authorization Code', 'Client Credentials', 'Password', 'Implicit'];
   const [oauthGrantType, setOauthGrantType] = useState('Authorization Code');
   const [oauthGrantDropdownOpen, setOauthGrantDropdownOpen] = useState(false);
   const oauthGrantDropdownRef = React.useRef<HTMLDivElement>(null);
@@ -512,7 +387,6 @@ const HoppscotchClone: React.FC = () => {
   }, [oauthGrantDropdownOpen]);
 
   // Add at the top of the component:
-  const oauthPassByOptions = ['Headers', 'Query Params'];
   const [oauthPassBy, setOauthPassBy] = useState('Headers');
   const [oauthPassByDropdownOpen, setOauthPassByDropdownOpen] = useState(false);
   const oauthPassByDropdownRef = React.useRef<HTMLDivElement>(null);
@@ -529,8 +403,7 @@ const HoppscotchClone: React.FC = () => {
   }, [oauthPassByDropdownOpen]);
 
   // Add at the top of the component:
-  const hawkAlgorithms = ['HS256', 'SHA256', 'SHA1'];
-  const [hawkAlgorithm, setHawkAlgorithm] = useState('HS256');
+ 
   const [hawkAlgDropdownOpen, setHawkAlgDropdownOpen] = useState(false);
   const hawkAlgDropdownRef = React.useRef<HTMLDivElement>(null);
 
@@ -545,14 +418,10 @@ const HoppscotchClone: React.FC = () => {
     return () => document.removeEventListener('mousedown', handleClick);
   }, [hawkAlgDropdownOpen]);
 
-  const jwtAlgorithms = ['HS256', 'RS256', 'HS384', 'HS512', 'RS384', 'RS512'];
-  const [jwtAlgorithm, setJwtAlgorithm] = useState('HS256');
+
   const [jwtAlgDropdownOpen, setJwtAlgDropdownOpen] = useState(false);
   const jwtAlgDropdownRef = React.useRef<HTMLDivElement>(null);
-  const [jwtSecret, setJwtSecret] = useState('');
-  const [jwtSecretBase64, setJwtSecretBase64] = useState(false);
-  const [jwtPayload, setJwtPayload] = useState('{}');
-  const [jwtHeaders, setJwtHeaders] = useState('{}');
+ 
 
   React.useEffect(() => {
     if (!jwtAlgDropdownOpen) return;

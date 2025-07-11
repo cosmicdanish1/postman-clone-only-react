@@ -6,7 +6,7 @@
 // Located at: src/pages/Settings/InterceptorSettings.tsx
 import React, { useState } from 'react';
 import { FaSync, FaLock, FaIdBadge, FaEye, FaEyeSlash, FaChrome, FaFirefox, FaCog, FaPlus } from 'react-icons/fa';
-import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ToastContainer, toast, Slide } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useSelector } from 'react-redux';
@@ -18,30 +18,6 @@ const interceptorOptions = [
   'Browser extension',
 ];
 
-// Custom draggable toast component
-type DraggableToastProps = {
-  closeToast: () => void;
-  children: React.ReactNode;
-};
-const DraggableToast = ({ closeToast, children }: DraggableToastProps) => {
-  const x = useMotionValue(0);
-  const opacity = useTransform(x, [-200, 0, 200], [0, 1, 0]);
-  return (
-    <motion.div
-      drag="x"
-      dragConstraints={{ left: 0, right: 0 }}
-      style={{ x, opacity }}
-      onDragEnd={(event, info) => {
-        if (Math.abs(info.point.x) > 120) {
-          closeToast();
-        }
-      }}
-      className="w-[600px] min-w-[320px] max-w-[98vw] p-4 rounded-md"
-    >
-      {children}
-    </motion.div>
-  );
-};
 
 type BrowserExtensionSectionProps = { className?: string };
 const BrowserExtensionSection: React.FC<BrowserExtensionSectionProps> = ({ className }) => (
