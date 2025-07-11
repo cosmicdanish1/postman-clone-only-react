@@ -80,7 +80,7 @@ const Realtime: React.FC = () => {
   };
 
   return (
-    <div className={`flex flex-col h-full w-full bg-bg text-text ${themeClass}`}>
+    <div className={`flex flex-col h-full w-full  bg-bg text-text ${themeClass}`}>
       {/* Protocol tab bar at the top */}
       <RealtimeProtocolTabBar selectedProtocol={selectedProtocol} onSelectProtocol={setSelectedProtocol} />
       {/* Main area: protocol panel and help panel side by side */}

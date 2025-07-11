@@ -146,7 +146,7 @@ const GeneralSettings: React.FC = () => {
             aria-expanded={dropdownOpen}
             aria-controls="language-dropdown-listbox"
             onClick={() => setDropdownOpen((open) => !open)}
-            className="w-full bg-bg size-8 text-text-secondary rounded px-3 py-2 flex justify-between items-center focus:outline-none border border-border"
+            className="w-full bg-bg size-8 text-text-secondary rounded px-3 py-2 flex justify-between items-center focus:outline-none  border-border"
           >
             <span className="mr-2">🌐</span>
             <span>{selected}</span>
@@ -161,7 +161,7 @@ const GeneralSettings: React.FC = () => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.18 }}
-                className="absolute z-50 w-[220px] h-56 overflow-y-auto bg-bg rounded shadow-inner mt-1 border border-border custom-scrollbar"
+                className="absolute z-50 w-[220px] h-56 overflow-y-auto bg-bg rounded shadow-inner mt-1  border-border custom-scrollbar"
                 style={{ scrollbarWidth: 'none', pointerEvents: 'auto' }}
               >
                 <div className="flex items-center px-2 pt-2 pb-1">
@@ -174,7 +174,7 @@ const GeneralSettings: React.FC = () => {
                     value={search}
                     onChange={e => setSearch(e.target.value)}
                     placeholder={t('language') + '...'}
-                    className="w-full px-2 py-1 rounded bg-bg text-text-secondary text-sm focus:outline-none border border-border"
+                    className="w-full px-2 py-1 rounded bg-bg text-text-secondary text-sm focus:outline-none  border-border"
                   />
                 </div>
                 <div className="flex flex-col gap-1">

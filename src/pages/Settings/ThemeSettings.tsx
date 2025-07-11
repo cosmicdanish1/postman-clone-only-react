@@ -51,7 +51,7 @@ const ThemeSettings: React.FC = () => {
             {backgrounds.map((bg) => (
               <button
                 key={bg.key}
-                className={`w-8 h-8 flex items-center justify-center rounded-lg text-sm transition border ${theme === bg.key ? 'bg-bg border-accent' : 'bg-bg border-border'}`}
+                className={`w-8 h-8 flex items-center justify-center rounded-lg text-sm transition  ${theme === bg.key ? 'bg-bg border-accent' : 'bg-bg border-border'}`}
                 onClick={() => dispatch(setTheme(bg.key))}
                 aria-label={bg.label}
               >
@@ -73,7 +73,9 @@ const ThemeSettings: React.FC = () => {
               <div key={c.key} className="relative flex flex-col items-center">
                 <button
                   type="button"
-                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition focus:outline-none group ${accentColor === c.key ? 'ring-2 ring-offset-2 ring-accent' : ''}`}
+                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition focus:outline-none group ${
+    accentColor === c.key ? 'ring-d ring-accent' : ''
+  }`}
                   style={{ 
                     borderColor: c.color, 
                     background: accentColor === c.key ? accentColor : 'transparent',

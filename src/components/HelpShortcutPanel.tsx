@@ -31,49 +31,55 @@ const HelpShortcutPanel: React.FC<HelpShortcutPanelProps> = ({ documentationUrl 
   if (theme === 'dark') themeClass = 'theme-dark';
   else if (theme === 'black') themeClass = 'theme-black';
 
-  let bgClass = 'bg-gray-100';
-  let textClass = 'text-gray-600';
-  let kbdClass = 'bg-gray-200 text-gray-800 border border-gray-300';
-  let hoverClass = 'hover:bg-gray-200';
+  // Use CSS custom properties for proper theming
+  const panelStyle: React.CSSProperties = {
+    backgroundColor: 'var(--color-bg)',
+    color: 'var(--color-text)',
+  };
 
-  if (theme === 'black') {
-    bgClass = 'bg-black';
-    textClass = 'text-gray-300';
-    kbdClass = 'bg-gray-800 text-gray-200 border border-gray-600';
-    hoverClass = 'hover:bg-gray-900';
-  } else if (theme === 'dark') {
-    bgClass = 'bg-gray-900';
-    textClass = 'text-gray-300';
-    kbdClass = 'bg-gray-800 text-gray-200 border border-gray-600';
-    hoverClass = 'hover:bg-gray-800';
-  }
+  const kbdStyle: React.CSSProperties = {
+    backgroundColor: theme === 'light' ? '#e5e7eb' : '#374151',
+    color: theme === 'light' ? '#374151' : '#e5e7eb',
+    border: `1px solid ${theme === 'light' ? '#d1d5db' : '#4b5563'}`,
+  };
+
+  const hoverStyle: React.CSSProperties = {
+    backgroundColor: theme === 'light' ? '#f3f4f6' : '#374151',
+  };
 
   return (
-    <div className={`w-full flex flex-col items-center justify-center p-4 rounded-t-lg ${bgClass} ${textClass} ${themeClass}`}>
+    <div 
+      className={`w-full flex flex-col items-center justify-center p-4 rounded-t-lg ${themeClass}`}
+      style={panelStyle}
+    >
       <div className="flex flex-col gap-2 items-center">
         <div className="flex items-center gap-1">
-          <span className={`text-xs ${textClass}`}>{t('send_request')}</span>
-          <span className={`${kbdClass} px-1.5 py-0.5 rounded text-[10px] font-mono`}>Ctrl</span>
-          <span className={`${kbdClass} px-1.5 py-0.5 rounded text-[10px] font-mono`}>↵</span>
+          <span className="text-xs" style={{ color: 'var(--color-text)' }}>{t('send_request')}</span>
+          <span className="px-1.5 py-0.5 rounded text-[10px] font-mono" style={kbdStyle}>Ctrl</span>
+          <span className="px-1.5 py-0.5 rounded text-[10px] font-mono" style={kbdStyle}>↵</span>
         </div>
         <div className="flex items-center gap-1">
-          <span className={`text-xs ${textClass}`}>{t('keyboard_shortcuts')}</span>
-          <span className={`${kbdClass} px-1.5 py-0.5 rounded text-[10px] font-mono`}>Ctrl</span>
-          <span className={`${kbdClass} px-1.5 py-0.5 rounded text-[10px] font-mono`}>/</span>
+          <span className="text-xs" style={{ color: 'var(--color-text)' }}>{t('keyboard_shortcuts')}</span>
+          <span className="px-1.5 py-0.5 rounded text-[10px] font-mono" style={kbdStyle}>Ctrl</span>
+          <span className="px-1.5 py-0.5 rounded text-[10px] font-mono" style={kbdStyle}>/</span>
         </div>
         <div className="flex items-center gap-1">
-          <span className={`text-xs ${textClass}`}>{t('search_command_menu')}</span>
-          <span className={`${kbdClass} px-1.5 py-0.5 rounded text-[10px] font-mono`}>Ctrl</span>
-          <span className={`${kbdClass} px-1.5 py-0.5 rounded text-[10px] font-mono`}>K</span>
+          <span className="text-xs" style={{ color: 'var(--color-text)' }}>{t('search_command_menu')}</span>
+          <span className="px-1.5 py-0.5 rounded text-[10px] font-mono" style={kbdStyle}>Ctrl</span>
+          <span className="px-1.5 py-0.5 rounded text-[10px] font-mono" style={kbdStyle}>K</span>
         </div>
         <div className="flex items-center gap-1">
-          <span className={`text-xs ${textClass}`}>{t('help_menu')}</span>
-          <span className={`${kbdClass} px-1.5 py-0.5 rounded text-[10px] font-mono`}>?</span>
+          <span className="text-xs" style={{ color: 'var(--color-text)' }}>{t('help_menu')}</span>
+          <span className="px-1.5 py-0.5 rounded text-[10px] font-mono" style={kbdStyle}>?</span>
         </div>
         <a
           href={documentationUrl}
-          className={`mt-2 ${hoverClass} px-3 py-1 rounded text-xs font-semibold text-center transition-colors`}
-          style={{ backgroundColor: accentHex, color: 'white' }}
+          className="mt-2 px-3 py-1 rounded text-xs font-semibold text-center transition-colors"
+          style={{ 
+            backgroundColor: accentHex, 
+            color: 'white',
+            ...hoverStyle 
+          }}
           target="_blank"
           rel="noopener noreferrer"
         >

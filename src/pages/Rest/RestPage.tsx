@@ -904,19 +904,35 @@ const HoppscotchClone: React.FC = () => {
             saveRequestName={saveRequestName}
           />
           {/* Tabs */}
-         <div className={`flex items-center gap-2 text-[14px] border-b border-gray-800 mb-2`}>
+         <div className={`flex items-center gap-2 text-[14px] border-b mb-2`}>
   {['parameters', 'body', 'headers', 'authorization', 'pre-request', 'post-request', 'variables'].map(tab => (
     <button
       key={tab}
       onClick={() => setActiveTab(tab)}
-      className={`px-2 py-1 font-semibold ${textClass} ${
-        activeTabObj.activeTab === tab
-          ? `${textClass}`
-          : `${textClass} `
-      }`}
-      style={activeTabObj.activeTab === tab ? { borderColor: accentHex } : undefined}
+      className="relative px-2 py-1 font-semibold bg-transparent focus:outline-none"
+      style={{ background: 'none', border: 'none' }}
     >
-      {tab.charAt(0).toUpperCase() + tab.slice(1).replace('-', ' ')}
+      <span className={activeTabObj.activeTab === tab ? 'text-black' : 'text-gray-400'}>
+        {tab.charAt(0).toUpperCase() + tab.slice(1).replace('-', ' ')}
+      </span>
+      {activeTabObj.activeTab === tab && (
+        <motion.div
+          layoutId="active-underline"
+          className="absolute left-0"
+          style={{
+            bottom: 0,
+            height: '3px',
+            width: '100%',
+            background: accentHex,
+            marginTop: '4px',
+          }}
+          transition={{
+            type: 'spring',
+            stiffness: 500,
+            damping: 30
+          }}
+        />
+      )}
     </button>
   ))}
 </div>

@@ -11,6 +11,7 @@ import { SortableContext, useSortable, arrayMove, verticalListSortingStrategy } 
 import { CSS } from '@dnd-kit/utilities';
 import CommunicationTab from './CommunicationTab';
 import { useSelector } from 'react-redux';
+import { getThemeStyles } from '../../utils/getThemeStyles';
 
 const initialProtocols = [
   { id: 1, name: 'Protocol 1' },
@@ -19,6 +20,7 @@ const initialProtocols = [
 
 function SortableProtocolRow({ protocol, onNameChange, onDelete }: any) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: protocol.id });
+
   return (
     <div
       ref={setNodeRef}
@@ -74,6 +76,23 @@ const WebSocketPanel: React.FC = () => {
   const [protocols, setProtocols] = useState(initialProtocols);
   const [nextId, setNextId] = useState(3);
   const theme = useSelector((state: any) => state.theme.theme);
+  const accentColor = useSelector((state: any) => state.theme.accentColor);
+
+  const accentColors = [
+    { key: 'green', color: '#22c55e' },
+    { key: 'blue', color: '#2563eb' },
+    { key: 'cyan', color: '#06b6d4' },
+    { key: 'purple', color: '#7c3aed' },
+    { key: 'yellow', color: '#eab308' },
+    { key: 'orange', color: '#f59e42' },
+    { key: 'red', color: '#ef4444' },
+    { key: 'pink', color: '#ec4899' },
+  ];
+  const accentHex = accentColors.find(c => c.key === accentColor)?.color;
+
+ 
+   // for example
+
   let themeClass = '';
   if (theme === 'dark') themeClass = 'theme-dark';
   else if (theme === 'black') themeClass = 'theme-black';
@@ -105,29 +124,45 @@ const WebSocketPanel: React.FC = () => {
     setProtocols([]);
   };
 
+
+   const buttonBgClass =
+    theme === 'light' ? 'bg-[#F9FAFB]' : 'bg-[#1C1C1E]';
+
   return (
     <div className={`flex flex-col flex-1 bg-bg rounded p-4 mt-2 text-text ${themeClass}`}>
       {/* Top bar */}
       <div className="flex items-center gap-4 mb-4">
         <input
-          className="flex-1 bg-bg border border-border rounded px-4 py-2 text-text focus:outline-none"
+          className={`flex-1 bg-bg  border-border ${buttonBgClass} rounded px-4 py-2 text-text focus:outline-none`}
           placeholder="wss://echo-websocket.hoppscotch.io"
           defaultValue="wss://echo-websocket.hoppscotch.io"
           style={{ minWidth: 0 }}
         />
-        <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-2 rounded font-semibold">Connect</button>
+        <button className=" hover:bg-blue-700 text-white px-8 py-2 rounded font-semibold"
+        style={{ backgroundColor: accentHex }}
+        >Connect</button>
       </div>
       {/* Tabs */}
-      <div className="flex gap-6 border-b border-border mb-2">
+      <div className="flex gap-6  border-border mb-2">
         <button
-          className={`px-2 py-1 border-b-2 font-semibold transition-colors ${activeTab === 'communication' ? 'border-blue-500 text-text' : 'border-transparent text-gray-400 hover:text-text'}`}
+          className={`px-2 py-1 border-b-2 font-semibold transition-colors ${
+            activeTab === 'communication'
+              ? ' text-text'
+              : 'border-transparent text-gray-400 hover:text-text'
+          }`}
           onClick={() => setActiveTab('communication')}
+          style={activeTab === 'communication' ? { borderColor: accentHex } : {}}
         >
           Communication
         </button>
         <button
-          className={`px-2 py-1 border-b-2 font-semibold transition-colors ${activeTab === 'protocols' ? 'border-blue-500 text-text' : 'border-transparent text-gray-400 hover:text-text'}`}
+          className={`px-2 py-1 border-b-2 font-semibold transition-colors ${
+            activeTab === 'protocols'
+              ? ' text-text'
+              : 'border-transparent text-gray-400 hover:text-text'
+          }`}
           onClick={() => setActiveTab('protocols')}
+          style={activeTab === 'protocols' ? { borderColor: accentHex } : {}}
         >
           Protocols
         </button>
@@ -170,4 +205,4 @@ const WebSocketPanel: React.FC = () => {
   );
 };
 
-export default WebSocketPanel; 
+export default WebSocketPanel;

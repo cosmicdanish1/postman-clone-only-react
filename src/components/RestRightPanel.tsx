@@ -174,8 +174,10 @@ const RestRightPanel: React.FC = () => {
           ))}
         </nav>
         {/* Panel content */}
-        <div className="flex-1 h-full overflow-y-auto bg-bg">
-          {panelContent[activeTab]}
+        <div className="flex-1 h-full overflow-y-auto bg-bg" style={{ minWidth: 0 }}>
+          <div className="w-full h-full">
+            {panelContent[activeTab]}
+          </div>
         </div>
       </div>
     </div>

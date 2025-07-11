@@ -14,18 +14,11 @@ type BodyType = 'raw' | 'form-data' | 'x-www-form-urlencoded' | 'binary' | 'grap
 
 const BodyTab: React.FC = () => {
   const [bodyType, setBodyType] = useState<BodyType>('raw');
+    const theme = useSelector((state: any) => state.theme.theme);
   
   // No class for light (default)
   
-  const theme = useSelector((state: any) => state.theme.theme);
-  const { themeClass,
-      searchBarClass,
-      textLightClass,
-      textClass,
-      kbdClass,
-      appNameClass,
-      borderClass,
-    buttonBgClass } = getThemeStyles(theme);
+
 
   const renderBodyContent = () => {
     switch (bodyType) {
@@ -56,6 +49,12 @@ const BodyTab: React.FC = () => {
         return null;
     }
   };
+
+
+   let themeClass = '';
+  if (theme === 'dark') themeClass = 'theme-dark';
+  else if (theme === 'black') themeClass = 'theme-black';
+
 
   return (
     <div className={`space-y-4 bg-bg text-text  p-4 rounded ${themeClass}`}>

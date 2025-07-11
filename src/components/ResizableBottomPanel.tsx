@@ -44,21 +44,18 @@ const ResizableBottomPanel: React.FC<ResizableBottomPanelProps> = ({
   if (theme === 'dark') themeClass = 'theme-dark';
   else if (theme === 'black') themeClass = 'theme-black';
 
-  let borderClass = 'border-neutral-700';
-  let bgClass = 'bg-neutral-900';
-  let dragHandleBg = 'rgba(136, 136, 136, 0.25)';
+  // Use CSS custom properties for proper theming
+  const panelStyle: React.CSSProperties = {
+    backgroundColor: 'var(--color-bg)',
+    color: 'var(--color-text)',
+  };
 
-  if (theme === 'black') {
-    borderClass = 'border-neutral-800';
-    bgClass = 'bg-black';
-    dragHandleBg = 'rgba(136, 136, 136, 0.15)';
-  } else if (theme === 'light') {
-    borderClass = 'border-gray-200';
-    bgClass = 'bg-gray-100';
-    dragHandleBg = 'rgba(136, 136, 136, 0.1)';
-  }
+  const borderStyle: React.CSSProperties = {
+    borderTopColor: theme === 'light' ? '#e5e7eb' : '#374151',
+  };
 
   const onMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault(); // Prevent text selection
     setDragging(true);
     startY.current = e.clientY;
     startHeight.current = height;
@@ -92,7 +89,7 @@ const ResizableBottomPanel: React.FC<ResizableBottomPanelProps> = ({
       }}
     >
       {/* Optional top border */}
-      <div className={`border-t ${borderClass}`} style={{ width: '100%' }} />
+      <div className="border-t" style={{ width: '100%', ...borderStyle }} />
 
       {/* Top drag handle */}
       <div
@@ -110,10 +107,10 @@ const ResizableBottomPanel: React.FC<ResizableBottomPanelProps> = ({
       >
         {hovered || dragging ? (
           <div
-            className="w-full "
+            className="w-full"
             style={{
               height: 2,
-              background: dragging ? accentHex : accentHex,
+              background: accentHex,
               borderRadius: 2,
             }}
           />
@@ -123,7 +120,7 @@ const ResizableBottomPanel: React.FC<ResizableBottomPanelProps> = ({
       {/* Resizable Panel */}
       <div
         ref={panelRef}
-        className={`${bgClass} ${themeClass}`}
+        className={`${themeClass}`}
         style={{
           width: '100%',
           height,
@@ -133,6 +130,7 @@ const ResizableBottomPanel: React.FC<ResizableBottomPanelProps> = ({
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
+          ...panelStyle,
         }}
       >
         <div style={{ flex: 1, width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

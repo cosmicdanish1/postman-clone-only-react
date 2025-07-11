@@ -122,7 +122,7 @@ const AuthorizationTabContent: React.FC = () => {
   const renderAuthFields = () => {
     if (authType === 'inherit') {
       return (
-        <div className="flex flex-row w-full h-64 bg-neutral-900 divide-x divide-neutral-800">
+        <div className="flex flex-row w-full h-64  divide-x divide-neutral-800">
           <div className="flex-1 flex items-start p-8">
             <span className="text-gray-200 text-base">
               {t('auth_save_inherit')}
@@ -148,7 +148,7 @@ const AuthorizationTabContent: React.FC = () => {
     switch (authType) {
       case 'bearer':
         return (
-          <div className="flex flex-row w-full bg-neutral-900 divide-x divide-neutral-800">
+          <div className="flex flex-row w-full  divide-x divide-neutral-800">
             <div className="flex-1 flex flex-col justify-start p-8 gap-2">
               <input
                 className="w-full bg-transparent text-gray-200 border-0 border-b border-neutral-800 rounded-none px-0 py-3 focus:outline-none focus:ring-0 placeholder-gray-400"
@@ -178,7 +178,7 @@ const AuthorizationTabContent: React.FC = () => {
 
       case 'basic':
         return (
-          <div className="flex flex-row w-full h-64 bg-neutral-900 divide-x divide-neutral-800">
+          <div className="flex flex-row w-full h-64  divide-x divide-neutral-800">
             <div className="flex-1 flex flex-col justify-start p-8 gap-2">
               <input
                 className="w-full bg-transparent text-gray-200 border-0 border-b border-neutral-800 rounded-none px-0 py-3 focus:outline-none focus:ring-0 placeholder-gray-400"
@@ -216,7 +216,7 @@ const AuthorizationTabContent: React.FC = () => {
 
       case 'apikey':
         return (
-          <div className="flex flex-row w-full bg-neutral-900 divide-x divide-neutral-800">
+          <div className="flex flex-row w-full  divide-x divide-neutral-800">
             <div className="flex-1 flex flex-col justify-start p-8 gap-2">
               <input
                 className="w-full bg-transparent text-gray-200 border-0 border-b border-neutral-800 rounded-none px-0 py-3 focus:outline-none focus:ring-0 placeholder-gray-400"
@@ -263,7 +263,7 @@ const AuthorizationTabContent: React.FC = () => {
 
       case 'digest':
         return (
-          <div className="flex flex-row w-full bg-neutral-900 divide-x divide-neutral-800">
+          <div className="flex flex-row w-full  divide-x divide-neutral-800">
             <div className="flex-1 flex flex-col justify-start p-8 gap-2">
               <input
                 className="w-full bg-transparent text-gray-200 border-0 border-b border-neutral-800 rounded-none px-0 py-3 focus:outline-none focus:ring-0 placeholder-gray-400"
@@ -360,7 +360,7 @@ const AuthorizationTabContent: React.FC = () => {
 
       case 'oauth2':
         return (
-          <div className="flex flex-row w-full bg-neutral-900 divide-x divide-neutral-800">
+          <div className="flex flex-row w-full  divide-x divide-neutral-800">
             <div className="flex-1 flex flex-col justify-start p-8 gap-2">
               <input
                 className="w-full bg-transparent text-gray-200 border-0 border-b border-neutral-800 rounded-none px-0 py-3 focus:outline-none focus:ring-0 placeholder-gray-400"
@@ -377,11 +377,11 @@ const AuthorizationTabContent: React.FC = () => {
                   value={authConfig.grantType || 'authorization_code'}
                   onChange={e => handleAuthConfigChange('grantType', e.target.value)}
                 >
-                  <option value="authorization_code" className="bg-neutral-900 text-gray-200">{t('authorization_code')}</option>
-                  <option value="client_credentials" className="bg-neutral-900 text-gray-200">{t('client_credentials')}</option>
-                  <option value="password" className="bg-neutral-900 text-gray-200">{t('password_grant')}</option>
-                  <option value="implicit" className="bg-neutral-900 text-gray-200">{t('implicit')}</option>
-                  <option value="refresh_token" className="bg-neutral-900 text-gray-200">{t('refresh_token')}</option>
+                  <option value="authorization_code" className="  text-gray-200">{t('authorization_code')}</option>
+                  <option value="client_credentials" className=" text-gray-200">{t('client_credentials')}</option>
+                  <option value="password" className=" text-gray-200">{t('password_grant')}</option>
+                  <option value="implicit" className=" text-gray-200">{t('implicit')}</option>
+                  <option value="refresh_token" className=" text-gray-200">{t('refresh_token')}</option>
                 </select>
               </div>
               <label className="flex items-center gap-2 text-gray-400 text-sm py-3 border-b border-neutral-800 cursor-pointer">
@@ -435,13 +435,13 @@ const AuthorizationTabContent: React.FC = () => {
                   value={authConfig.passBy || 'header'}
                   onChange={e => handleAuthConfigChange('passBy', e.target.value)}
                 >
-                  <option value="header" className="bg-neutral-900 text-gray-200">{t('headers')}</option>
-                  <option value="query" className="bg-neutral-900 text-gray-200">{t('query')}</option>
+                  <option value="header" className=" text-gray-200">{t('headers')}</option>
+                  <option value="query" className=" text-gray-200">{t('query')}</option>
                 </select>
               </div>
               <div className="flex gap-4 mt-4">
-                <button className="bg-neutral-800 text-gray-200 px-4 py-2 rounded hover:bg-neutral-700 transition-colors" type="button">{t('generate_token')}</button>
-                <button className="bg-neutral-800 text-gray-200 px-4 py-2 rounded hover:bg-neutral-700 transition-colors" type="button">{t('refresh_token_btn')}</button>
+                <button className=" text-gray-200 px-4 py-2 rounded hover:bg-neutral-700 transition-colors" type="button">{t('generate_token')}</button>
+                <button className=" text-gray-200 px-4 py-2 rounded hover:bg-neutral-700 transition-colors" type="button">{t('refresh_token_btn')}</button>
               </div>
             </div>
             <div className="w-1/3 min-w-[260px] flex flex-col items-start p-8">
@@ -463,7 +463,7 @@ const AuthorizationTabContent: React.FC = () => {
 
       case 'aws':
         return (
-          <div className="flex flex-row w-full bg-neutral-900 divide-x divide-neutral-800">
+          <div className="flex flex-row w-full  divide-x divide-neutral-800">
             <div className="flex-1 flex flex-col justify-start p-8 gap-2">
               <input
                 className="w-full bg-transparent text-gray-200 border-0 border-b border-neutral-800 rounded-none px-0 py-3 focus:outline-none focus:ring-0 placeholder-gray-400"
@@ -535,7 +535,7 @@ const AuthorizationTabContent: React.FC = () => {
 
       case 'hawk':
         return (
-          <div className="flex flex-row w-full bg-neutral-900 divide-x divide-neutral-800">
+          <div className="flex flex-row w-full  divide-x divide-neutral-800">
             <div className="flex-1 flex flex-col justify-start p-8 gap-2">
               <input
                 className="w-full bg-transparent text-gray-200 border-0 border-b border-neutral-800 rounded-none px-0 py-3 focus:outline-none focus:ring-0 placeholder-gray-400"
@@ -639,7 +639,7 @@ const AuthorizationTabContent: React.FC = () => {
 
       case 'jwt':
         return (
-          <div className="flex flex-row w-full bg-neutral-900 divide-x divide-neutral-800">
+          <div className="flex flex-row w-full  divide-x divide-neutral-800">
             <div className="flex-1 flex flex-col justify-start p-8 gap-2">
               <div className="flex items-center border-b border-neutral-800 py-3">
                 <span className="text-gray-400 text-sm mr-4">{t('algorithm')}</span>
@@ -648,19 +648,19 @@ const AuthorizationTabContent: React.FC = () => {
                   value={authConfig.jwtAlgorithm || 'HS256'}
                   onChange={e => handleAuthConfigChange('jwtAlgorithm', e.target.value)}
                 >
-                  <option value="HS256" className="bg-neutral-900 text-gray-200">{t('HS256')}</option>
-                  <option value="HS384" className="bg-neutral-900 text-gray-200">{t('HS384')}</option>
-                  <option value="HS512" className="bg-neutral-900 text-gray-200">{t('HS512')}</option>
-                  <option value="RS256" className="bg-neutral-900 text-gray-200">{t('RS256')}</option>
-                  <option value="RS384" className="bg-neutral-900 text-gray-200">{t('RS384')}</option>
-                  <option value="RS512" className="bg-neutral-900 text-gray-200">{t('RS512')}</option>
-                  <option value="ES256" className="bg-neutral-900 text-gray-200">{t('ES256')}</option>
-                  <option value="ES384" className="bg-neutral-900 text-gray-200">{t('ES384')}</option>
-                  <option value="ES512" className="bg-neutral-900 text-gray-200">{t('ES512')}</option>
-                  <option value="PS256" className="bg-neutral-900 text-gray-200">{t('PS256')}</option>
-                  <option value="PS384" className="bg-neutral-900 text-gray-200">{t('PS384')}</option>
-                  <option value="PS512" className="bg-neutral-900 text-gray-200">{t('PS512')}</option>
-                  <option value="none" className="bg-neutral-900 text-gray-200">{t('none_alg')}</option>
+                  <option value="HS256" className=" text-gray-200">{t('HS256')}</option>
+                  <option value="HS384" className=" text-gray-200">{t('HS384')}</option>
+                  <option value="HS512" className=" text-gray-200">{t('HS512')}</option>
+                  <option value="RS256" className=" text-gray-200">{t('RS256')}</option>
+                  <option value="RS384" className=" text-gray-200">{t('RS384')}</option>
+                  <option value="RS512" className=" text-gray-200">{t('RS512')}</option>
+                  <option value="ES256" className=" text-gray-200">{t('ES256')}</option>
+                  <option value="ES384" className=" text-gray-200">{t('ES384')}</option>
+                  <option value="ES512" className=" text-gray-200">{t('ES512')}</option>
+                  <option value="PS256" className=" text-gray-200">{t('PS256')}</option>
+                  <option value="PS384" className=" text-gray-200">{t('PS384')}</option>
+                  <option value="PS512" className=" text-gray-200">{t('PS512')}</option>
+                  <option value="none" className=" text-gray-200">{t('none_alg')}</option>
                 </select>
               </div>
               <input
@@ -681,7 +681,7 @@ const AuthorizationTabContent: React.FC = () => {
               </label>
               <div className="mt-2 mb-2">
                 <div className="text-gray-400 text-sm mb-1">{t('payload')}</div>
-                <div className="border border-neutral-800 rounded bg-neutral-900 overflow-hidden">
+                <div className="border border-neutral-800 rounded  overflow-hidden">
                   <MonacoEditor
                     height="100px"
                     language="json"
@@ -695,7 +695,7 @@ const AuthorizationTabContent: React.FC = () => {
               <div className="mt-6 mb-2">
                 <div className="font-semibold text-gray-200 text-sm mb-1">{t('bearer')}</div>
                 <div className="text-gray-400 text-sm mb-1">{t('jwt_headers')}</div>
-                <div className="border border-neutral-800 rounded bg-neutral-900 overflow-hidden">
+                <div className="border border-neutral-800 rounded  overflow-hidden">
                   <MonacoEditor
                     height="100px"
                     language="json"
@@ -727,7 +727,7 @@ const AuthorizationTabContent: React.FC = () => {
       default:
         return (
           <div className="flex flex-col items-center justify-center py-12 text-center">
-            <div className="w-16 h-16 bg-neutral-800 rounded-full flex items-center justify-center mb-4">
+            <div className="w-16 h-16  rounded-full flex items-center justify-center mb-4">
               <span className="material-icons text-gray-400 text-2xl">lock_open</span>
             </div>
             <h3 className="text-gray-300 text-lg font-medium mb-2">{t('no_authorization')}</h3>
@@ -742,12 +742,12 @@ const AuthorizationTabContent: React.FC = () => {
   return (
     <div className={`w-full h-full bg-bg text-text ${themeClass}`}>
       {/* Top bar */}
-      <div className="flex items-center justify-between px-4 h-10 border-b border-neutral-800 bg-neutral-900">
+      <div className="flex items-center justify-between px-4 h-10 border-b border-neutral-800 ">
         <div className="flex items-center gap-4">
           <span className="text-gray-400 text-sm">{t('authorization_type')}</span>
           <div className="relative" ref={dropdownRef}>
             <button
-              className="flex items-center gap-2 bg-neutral-900 text-white font-semibold px-2 py-1 rounded border border-neutral-800 focus:outline-none min-w-[110px]"
+              className="flex items-center gap-2   font-semibold px-2 py-1 rounded border  focus:outline-none min-w-[110px]"
               onClick={() => setDropdownOpen(v => !v)}
               type="button"
             >
@@ -755,7 +755,7 @@ const AuthorizationTabContent: React.FC = () => {
               <span className="material-icons text-base">arrow_drop_down</span>
             </button>
             {dropdownOpen && (
-              <div className="absolute left-0 mt-1 z-50 w-56 bg-neutral-900 border border-neutral-800 rounded shadow-lg py-2">
+              <div className="absolute left-0 mt-1 z-50 w-56  border border-neutral-800 rounded shadow-lg py-2">
                 {authTypes.map(type => (
                   <label
                     key={type.value}

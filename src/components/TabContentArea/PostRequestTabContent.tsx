@@ -44,7 +44,7 @@ const PostRequestTabContent: React.FC<PostRequestTabContentProps> = ({
       </div>
       <div className="flex flex-1 min-h-0">
         {/* Left: MonacoEditor */}
-        <div className="flex-1 flex bg-[#18181A] min-h-0 border-r border-neutral-900" style={{ fontFamily: 'monospace' }}>
+        <div className="flex-1 flex  min-h-0 border-r border-neutral-900" style={{ fontFamily: 'monospace' }}>
           <div className="w-full h-full">
             <MonacoEditor
               height="100%"
@@ -58,7 +58,7 @@ const PostRequestTabContent: React.FC<PostRequestTabContentProps> = ({
           </div>
         </div>
         {/* Right: info panel */}
-        <div className="w-[32%] min-w-[300px] flex flex-col items-start p-6 bg-[#18181A]">
+        <div className="w-[32%] min-w-[300px] flex flex-col items-start p-6 ">
           <span className="text-zinc-400 text-base mb-2">{t('post_request_info')}</span>
           <a
             href="https://learning.postman.com/docs/writing-scripts/test-scripts/"

@@ -51,7 +51,7 @@ const BrowserExtensionSection: React.FC<BrowserExtensionSectionProps> = ({ class
     <div className="flex gap-3">
       <button
         type="button"
-        className="flex items-center gap-2 px-4 py-2 rounded border text-text border-border bg-bg hover:border-accent hover:text-text-primary transition font-semibold"
+        className="flex items-center gap-2 px-4 py-2 rounded  text-text border-border bg-bg hover:border-accent hover:text-text-primary transition font-semibold"
         onClick={() => window.open('https://chromewebstore.google.com/detail/hoppscotch-browser-extens/amknoiejhlmhancpahfcfcfhllgkpbld', '_blank')}
       >
         <FaChrome className="w-5 h-5 text-[#4285F4]" />
@@ -59,7 +59,7 @@ const BrowserExtensionSection: React.FC<BrowserExtensionSectionProps> = ({ class
       </button>
       <button
         type="button"
-        className="flex items-center gap-2 px-4 py-2 rounded border text-text border-border bg-bg hover:border-accent hover:text-text-primary transition font-semibold"
+        className="flex items-center gap-2 px-4 py-2 rounded  text-text border-border bg-bg hover:border-accent hover:text-text-primary transition font-semibold"
         onClick={() => window.open('https://addons.mozilla.org/en-US/firefox/addon/hoppscotch/', '_blank')}
       >
         <FaFirefox className="w-5 h-5 text-[#FF7139]" />
@@ -135,7 +135,7 @@ const InterceptorSettings: React.FC = () => {
                     exit={{ opacity: 0, y: 12 }}
                     transition={{ duration: 0.2 }}
                     type="button"
-                    className="flex items-center gap-2 ml-7 mt-2 px-4 py-1.5 rounded border border-border bg-bg hover:border-blue-500 hover:text-blue-400 transition font-semibold shadow text-xs"
+                    className="flex items-center gap-2 ml-7 mt-2 px-4 py-1.5 rounded  border-border bg-bg hover:border-blue-500 hover:text-blue-400 transition font-semibold shadow text-xs"
                     onClick={() => {
                       toast(
                         <span className="font-semibold text-red-600">
@@ -181,7 +181,7 @@ const InterceptorSettings: React.FC = () => {
           <div className="relative w-[840px]">
         <input
           type="text"
-              className="bg-bg text-text w-full pr-8 pl-3 py-2 text-sm focus:outline-none border border-border rounded-sm"
+              className="bg-bg text-text w-full pr-8 pl-3 py-2 text-sm focus:outline-none  border-border rounded-sm"
           value="https://proxy.hoppscotch.io/"
           readOnly
         />
@@ -269,7 +269,7 @@ const InterceptorSettings: React.FC = () => {
           <div className="flex gap-3 mt-2">
             <button
               type="button"
-              className="flex items-center gap-2 px-2 py-1 text-xs rounded border text-gray-600 border-border bg-bg hover:border-gray-400 hover:text-gray-200 transition font-semibold"
+              className="flex items-center gap-2 px-2 py-1 text-xs rounded  text-gray-600 border-border bg-bg hover:border-gray-400 hover:text-gray-200 transition font-semibold"
               onClick={() => setShowCAModal(true)}
             >
               <FaLock className="w-4 h-4" />
@@ -277,7 +277,7 @@ const InterceptorSettings: React.FC = () => {
             </button>
             <button
               type="button"
-              className="flex items-center gap-2 px-2 py-1 text-xs rounded border text-gray-600 border-border bg-bg hover:border-gray-400 hover:text-gray-200 transition font-semibold"
+              className="flex items-center gap-2 px-2 py-1 text-xs rounded  text-gray-600 border-border bg-bg hover:border-gray-400 hover:text-gray-200 transition font-semibold"
               onClick={() => setShowClientModal(true)}
             >
               <FaIdBadge className="w-4 h-4" />
@@ -411,7 +411,7 @@ const InterceptorSettings: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -40 }}
               transition={{ duration: 0.25, ease: 'easeOut' }}
-              className="bg-bg-secondary rounded-2xl shadow-2xl w-full max-w-md mx-4 p-6 relative border border-border mt-10"
+              className="bg-bg-secondary rounded-2xl shadow-2xl w-full max-w-md mx-4 p-6 relative  border-border mt-10"
             >
               <button
                 className="absolute top-4 right-4 text-text-secondary hover:text-text text-xl focus:outline-none"
@@ -429,7 +429,7 @@ const InterceptorSettings: React.FC = () => {
                 className="hidden"
               />
               <button
-                className="w-full flex items-center justify-center gap-2 py-3 rounded border border-border bg-bg-secondary text-text hover:border-blue-500 hover:text-blue-400 transition font-semibold text-base mb-4"
+                className="w-full flex items-center justify-center gap-2 py-3 rounded  border-border bg-bg-secondary text-text hover:border-blue-500 hover:text-blue-400 transition font-semibold text-base mb-4"
                 onClick={() => fileInputRef.current?.click()}
               >
                 <span className="text-xl">+</span> Add Certificate File

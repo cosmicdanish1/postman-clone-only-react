@@ -34,7 +34,7 @@ const VariablesTabContent: React.FC<VariablesTabContentProps> = ({
   return (
     <div className={`flex-1 flex flex-col bg-bg text-text rounded p-0 mt-2 ${themeClass}`}>
       {/* Variables Bar */}
-      <div className="flex items-center justify-between px-4 h-10 bg-[#18181A] w-full">
+      <div className="flex items-center justify-between px-4 h-10  w-full">
         <span className="text-gray-400 text-base">{t('request_variables')}</span>
         <div className="flex items-center gap-3">
           {/* Help icon */}
@@ -59,11 +59,8 @@ const VariablesTabContent: React.FC<VariablesTabContentProps> = ({
       <DndContext collisionDetection={closestCenter} onDragEnd={handleVariableDragEnd}>
         <SortableContext items={variables.map((v: any) => v.id)} strategy={verticalListSortingStrategy}>
           <div className="w-full">
-            <div className="grid grid-cols-4 border-b border-neutral-800 px-2" style={{minHeight: '38px', gridTemplateColumns: '32px 1fr 1fr 48px'}}>
-              <div></div>
-              <div className="text-gray-500 text-sm flex items-center border-r border-neutral-800 py-2">{t('variable_1')}</div>
-              <div className="text-gray-500 text-sm flex items-center border-r border-neutral-800 py-2">{t('value_1')}</div>
-              <div></div>
+            <div className="grid grid-cols-4 border-b " style={{minHeight: '3px', gridTemplateColumns: '32px 1fr 1fr 48px'}}>
+              
             </div>
             {variables.map((variable: any, idx: number) => (
               <SortableVariableRow

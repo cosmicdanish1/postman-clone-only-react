@@ -24,7 +24,7 @@ const HeadersTabContent: React.FC<HeadersTabContentProps> = ({
   headers,
   handleHeaderChange,
   handleDeleteHeader,
-  handleAddHeader,
+  
   editHeadersActive,
   setEditHeadersActive,
   SortableHeaderRow,
@@ -38,7 +38,7 @@ const HeadersTabContent: React.FC<HeadersTabContentProps> = ({
   return (
     <div className={`flex-1 flex flex-col bg-bg text-text rounded p-0 mt-2 ${themeClass}`}>
       {/* Request Headers Bar */}
-      <div className="flex items-center justify-between px-4 h-10 bg-[#18181A] w-full border-b border-neutral-800">
+      <div className="flex items-center justify-between px-4 h-10  w-full border-b border-neutral-800">
         <span className="text-gray-400 text-base">{t('request_headers')}</span>
         <div className="flex items-center gap-3">
           {/* Help icon */}
@@ -63,13 +63,7 @@ const HeadersTabContent: React.FC<HeadersTabContentProps> = ({
       <DndContext collisionDetection={closestCenter} onDragEnd={() => {}}>
         <SortableContext items={headers.map(h => h.id)} strategy={verticalListSortingStrategy}>
           <div className="w-full">
-            <div className="grid grid-cols-5 border-b border-neutral-800 px-2" style={{minHeight: '38px', gridTemplateColumns: '32px 1fr 1fr 1fr auto'}}>
-              <div></div>
-              <div className="text-gray-500 text-sm flex items-center border-r border-neutral-800 py-2">{t('key')}</div>
-              <div className="text-gray-500 text-sm flex items-center border-r border-neutral-800 py-2">{t('value')}</div>
-              <div className="text-gray-500 text-sm flex items-center border-r border-neutral-800 py-2">{t('description')}</div>
-              <div></div>
-            </div>
+            
             {headers.map((header, idx) => (
               <SortableHeaderRow
                 key={header.id}
