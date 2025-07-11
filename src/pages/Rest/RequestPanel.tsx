@@ -8,10 +8,6 @@ import React from 'react';
 import ParametersTab from './ParametersTab';
 import BodyTab from './BodyTab';
 import AuthorizationTab from './AuthorizationTab';
-import ScriptTab from './ScriptTab';
-import ResponsePanel from './ResponsePanel';
-import DraggableHeaders from './DraggableHeaders';
-import type { DraggableHeader } from './DraggableHeaders';
 import { useSelector } from 'react-redux';
 
 const methods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'];
@@ -27,7 +23,6 @@ const tabs = [
 const RequestPanel: React.FC = () => {
   const [selectedMethod, setSelectedMethod] = React.useState('GET');
   const [activeTab, setActiveTab] = React.useState('Parameters');
-  const [headers, setHeaders] = React.useState<DraggableHeader[]>([{ key: '', value: '' }]);
 
   const theme = useSelector((state: any) => state.theme.theme);
   let themeClass = '';
@@ -39,15 +34,11 @@ const RequestPanel: React.FC = () => {
   if (activeTab === 'Parameters') tabContent = <ParametersTab />;
   else if (activeTab === 'Body') tabContent = <BodyTab />;
   else if (activeTab === 'Headers') tabContent = (
-    <DraggableHeaders
-      headers={headers}
-      setHeaders={setHeaders}
-      title="Headers"
-    />
+    <div className="text-center">Headers Content (stub)</div>
   );
   else if (activeTab === 'Authorization') tabContent = <AuthorizationTab />;
-  else if (activeTab === 'Pre-request Script') tabContent = <ScriptTab label="Pre-request Script" />;
-  else if (activeTab === 'Post-request Script') tabContent = <ScriptTab label="Post-request Script" />;
+  else if (activeTab === 'Pre-request Script') tabContent = <div className="text-center">Pre-request Script Content (stub)</div>;
+  else if (activeTab === 'Post-request Script') tabContent = <div className="text-center">Post-request Script Content (stub)</div>;
   else tabContent = <div className="text-center">{activeTab} Content (stub)</div>;
 
   return (
@@ -93,7 +84,7 @@ const RequestPanel: React.FC = () => {
           {tabContent}
         </div>
       </div>
-      <ResponsePanel />
+      <div className="text-center">Response Panel (stub)</div>
     </>
   );
 };

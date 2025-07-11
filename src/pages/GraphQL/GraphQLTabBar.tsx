@@ -84,7 +84,7 @@ const GraphQLTabBar: React.FC<GraphQLTabBarProps> = ({
           return (
             <div
               key={tab.id}
-              ref={el => (tabRefs.current[tab.id] = el)}
+              ref={el => { tabRefs.current[tab.id] = el; }}
               className={`flex items-center h-10 cursor-pointer select-none border-b-2 transition relative group ${isActive ? 'bg-bg text-text font-bold border-blue-500' : 'border-transparent text-gray-400 hover:text-text'}`}
               style={{ minWidth: 160, maxWidth: 240, width: 200, paddingLeft: 24, paddingRight: 24 }}
               onClick={() => onSwitchTab(tab.id)}

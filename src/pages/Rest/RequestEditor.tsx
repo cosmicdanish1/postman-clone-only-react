@@ -83,11 +83,7 @@ const RequestEditor: React.FC<RequestEditorProps> = (props) => {
 
 
   const { themeClass,
-    searchBarClass,
-    textLightClass,
     textClass,
-    kbdClass,
-    appNameClass,
     borderClass,
   buttonBgClass } = getThemeStyles(theme);
 

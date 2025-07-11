@@ -8,7 +8,6 @@ import React from 'react';
 import Sidebar from './Sidebar';
 // import GraphQLSubSidebar from '../pages/GraphQL/GraphQLSubSidebar';
 import { useSelector } from 'react-redux';
-import type { RootState } from '../store';
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const theme = useSelector((state: any) => state.theme.theme);

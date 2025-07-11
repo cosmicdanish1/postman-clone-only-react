@@ -5,13 +5,11 @@
 // Role: Renders the UI for interacting with WebSocket protocol in the Realtime feature.
 // Located at: src/pages/Realtime/WebSocketPanel.tsx
 import React, { useState } from 'react';
-import MonacoEditor from '@monaco-editor/react';
 import { DndContext, closestCenter } from '@dnd-kit/core';
 import { SortableContext, useSortable, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import CommunicationTab from './CommunicationTab';
 import { useSelector } from 'react-redux';
-import { getThemeStyles } from '../../utils/getThemeStyles';
 
 const initialProtocols = [
   { id: 1, name: 'Protocol 1' },

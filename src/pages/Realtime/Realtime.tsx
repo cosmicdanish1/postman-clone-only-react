@@ -16,13 +16,6 @@ import { useSelector } from 'react-redux';
 const MIN_LEFT_WIDTH = 300;
 const MAX_LEFT_WIDTH = 900;
 
-const PROTOCOLS = [
-  { key: 'websocket', label: 'WebSocket', icon: 'wifi' },
-  { key: 'sse', label: 'SSE', icon: 'rss_feed' },
-  { key: 'socketio', label: 'Socket.IO', icon: 'settings_input_antenna' },
-  { key: 'mqtt', label: 'MQTT', icon: 'router' },
-];
-
 const Realtime: React.FC = () => {
   const [leftWidth, setLeftWidth] = useState(700);
   const [dragging, setDragging] = useState(false);
@@ -35,7 +28,7 @@ const Realtime: React.FC = () => {
   else if (theme === 'black') themeClass = 'theme-black';
   // No class for light (default)
 
-  const handleMouseDown = (e: React.MouseEvent) => {
+  const handleMouseDown = (_e: React.MouseEvent) => {
     setDragging(true);
     document.body.style.cursor = 'col-resize';
   };

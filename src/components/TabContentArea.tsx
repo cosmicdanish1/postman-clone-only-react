@@ -6,9 +6,6 @@
 // Located at: src/components/TabContentArea.tsx
 
 import React from 'react';
-import { DndContext, closestCenter } from '@dnd-kit/core';
-import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { AnimatePresence, motion } from 'framer-motion';
 import ParametersTabContent from './TabContentArea/ParametersTabContent';
 import BodyTabContent from './TabContentArea/BodyTabContent';
 import HeadersTabContent from './TabContentArea/HeadersTabContent';
@@ -28,7 +25,6 @@ interface TabContentAreaProps {
   queryParams: any[];
   handleParamChange: (id: string, field: string, value: string) => void;
   handleDeleteParam: (id: string) => void;
-  setFocusedRow: (id: string) => void;
   handleDragEnd: (event: any) => void;
   SortableParamRow: any;
   // Body tab
@@ -84,14 +80,13 @@ const TabContentArea: React.FC<TabContentAreaProps> = (props) => {
   // No class for light (default)
 
   if (props.activeTab === 'parameters') {
-    const { queryParams, handleParamChange, handleDeleteParam, setFocusedRow, handleDragEnd, SortableParamRow } = props;
+    const { queryParams, handleParamChange, handleDeleteParam, handleDragEnd, SortableParamRow } = props;
     return (
       <div className={`w-full h-full bg-bg text-text ${themeClass}`}>
         <ParametersTabContent
           queryParams={queryParams}
           handleParamChange={handleParamChange}
           handleDeleteParam={handleDeleteParam}
-          setFocusedRow={setFocusedRow}
           handleDragEnd={handleDragEnd}
           SortableParamRow={SortableParamRow}
         />
@@ -140,29 +135,25 @@ const TabContentArea: React.FC<TabContentAreaProps> = (props) => {
     );
   }
   if (props.activeTab === 'pre-request') {
-    const { preRequestScript, setPreRequestScript, insertPreRequestSnippet, highlightPreRequestScript, preRequestDivRef } = props;
+    const { preRequestScript, setPreRequestScript, insertPreRequestSnippet } = props;
     return (
       <div className={`w-full h-full bg-bg text-text ${themeClass}`}>
         <PreRequestTabContent
           preRequestScript={preRequestScript}
           setPreRequestScript={setPreRequestScript}
           insertPreRequestSnippet={insertPreRequestSnippet}
-          highlightPreRequestScript={highlightPreRequestScript}
-          preRequestDivRef={preRequestDivRef}
         />
       </div>
     );
   }
   if (props.activeTab === 'post-request') {
-    const { postRequestScript, setPostRequestScript, insertPostRequestSnippet, highlightPostRequestScript, postRequestDivRef } = props;
+    const { postRequestScript, setPostRequestScript, insertPostRequestSnippet } = props;
     return (
       <div className={`w-full h-full bg-bg text-text ${themeClass}`}>
         <PostRequestTabContent
           postRequestScript={postRequestScript}
           setPostRequestScript={setPostRequestScript}
           insertPostRequestSnippet={insertPostRequestSnippet}
-          highlightPostRequestScript={highlightPostRequestScript}
-          postRequestDivRef={postRequestDivRef}
         />
       </div>
     );

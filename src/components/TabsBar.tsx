@@ -56,7 +56,6 @@ const TabsBar: React.FC<TabsBarProps> = ({
   const popoverRef = useRef<HTMLDivElement>(null);
   // State for which modal to show
   const [editModal, setEditModal] = useState<null | 'global' | 'environment'>(null);
-  const [modalValue, setModalValue] = useState('');
   const envBtnRef = useRef<HTMLButtonElement>(null);
   const [envPopoverLeft, setEnvPopoverLeft] = useState<number | null>(null);
   const [envPopoverTop, setEnvPopoverTop] = useState<number | null>(null);
@@ -87,12 +86,7 @@ const accentColors = [
   // Click-away handler for popover
 
     const { themeClass,
-        searchBarClass,
-        textLightClass,
-        textClass,
-        kbdClass,
-        appNameClass,
-      buttonBgClass } = getThemeStyles(theme);
+        buttonBgClass } = getThemeStyles(theme);
   useEffect(() => {
     if (!showVarsPopover) return;
     function handleClick(e: MouseEvent) {
@@ -115,7 +109,6 @@ const accentColors = [
       const eyeRect = eyeRef.current.getBoundingClientRect();
       const popover = popoverRef.current;
       const popoverWidth = popover.offsetWidth;
-      const popoverHeight = popover.offsetHeight;
       const viewportWidth = window.innerWidth;
       // Calculate left so popover is centered below the eye icon
       let left = eyeRect.left + eyeRect.width / 2 - popoverWidth / 2;
@@ -172,7 +165,7 @@ const accentColors = [
         open={editModal !== null}
         onClose={() => setEditModal(null)}
         modalValue={editModal === 'global' ? t('global') : t('environment')}
-        setModalValue={setModalValue}
+        setModalValue={() => {}}
         onSave={() => setEditModal(null)}
       />
       <div className={`w-full  h-10  relative text-text  ${themeClass}`}>

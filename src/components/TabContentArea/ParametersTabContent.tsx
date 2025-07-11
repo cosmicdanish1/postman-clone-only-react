@@ -16,7 +16,6 @@ interface ParametersTabContentProps {
   queryParams: any[];
   handleParamChange: (id: string, field: string, value: string) => void;
   handleDeleteParam: (id: string) => void;
-  setFocusedRow: (id: string) => void;
   handleDragEnd: (event: any) => void;
   SortableParamRow: any;
 }
@@ -32,7 +31,6 @@ const ParametersTabContent: React.FC<ParametersTabContentProps> = ({
   queryParams,
   handleParamChange,
   handleDeleteParam,
-  setFocusedRow,
   handleDragEnd,
   SortableParamRow,
 }) => {
@@ -125,7 +123,6 @@ const ParametersTabContent: React.FC<ParametersTabContentProps> = ({
                   param={param}
                   handleParamChange={handleParamChange}
                   handleDeleteParam={handleDeleteParam}
-                  setFocusedRow={setFocusedRow}
                   isOdd={idx % 2 === 1}
                 />
               ))}

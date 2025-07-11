@@ -1,14 +1,11 @@
 // File: GraphQLTabContentArea.tsx
 // Type: Component (tab content area for GraphQL tabs)
-// Imports: React, MonacoEditor, GraphQLQueryEditor, VariablesTabContent, SortableVariableRow, GraphQLVariablesEditor, HeadersTabContent, SortableHeaderRow, AuthorizationTabContent
+// Imports: React, GraphQLQueryEditor, GraphQLVariablesEditor, HeadersTabContent, SortableHeaderRow, AuthorizationTabContent
 // Imported by: GraphQL.tsx
 // Role: Displays the content for the active GraphQL tab (query, variables, headers, authorization, etc.).
 // Located at: src/pages/GraphQL/GraphQLTabContentArea.tsx
 import React from 'react';
-import MonacoEditor from '@monaco-editor/react';
 import GraphQLQueryEditor from './GraphQLQueryEditor';
-import VariablesTabContent from '../../components/TabContentArea/VariablesTabContent';
-import SortableVariableRow from '../../components/SortableVariableRow';
 import GraphQLVariablesEditor from './GraphQLVariablesEditor';
 import HeadersTabContent from '../../components/TabContentArea/HeadersTabContent';
 import SortableHeaderRow from '../../components/SortableHeaderRow';

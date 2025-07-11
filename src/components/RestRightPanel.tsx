@@ -166,7 +166,7 @@ const RestRightPanel: React.FC = () => {
                   : 'text-text/60 hover:bg-bg-secondary hover:text-accent'
                 }`}
               title={item.label}
-              onClick={() => setActiveTab(item.key)}
+              onClick={() => setActiveTab(item.key as 'collections' | 'history' | 'generate-code')}
               type="button"
             >
               {item.icon}

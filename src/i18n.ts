@@ -200,7 +200,7 @@ i18n
           "search": "Search",
           "new": "New",
           "import_or_create_collection": "Import or create a collection",
-          "shortcuts": "Shortcuts",
+          
           "close_shortcuts_panel_overlay": "Close shortcuts panel overlay",
           "close_shortcuts_panel": "Close shortcuts panel",
           "no_shortcuts_found": "No shortcuts found.",
@@ -443,7 +443,7 @@ i18n
           "search": "Search",
           "new": "New",
           "import_or_create_collection": "Import or create a collection",
-          "shortcuts": "Shortcuts",
+         
           "close_shortcuts_panel_overlay": "Close shortcuts panel overlay",
           "close_shortcuts_panel": "Close shortcuts panel",
           "no_shortcuts_found": "No shortcuts found.",
@@ -686,7 +686,7 @@ i18n
           "search": "Search",
           "new": "New",
           "import_or_create_collection": "Import or create a collection",
-          "shortcuts": "Shortcuts",
+        
           "close_shortcuts_panel_overlay": "Close shortcuts panel overlay",
           "close_shortcuts_panel": "Close shortcuts panel",
           "no_shortcuts_found": "No shortcuts found.",
@@ -929,7 +929,7 @@ i18n
           "search": "Search",
           "new": "New",
           "import_or_create_collection": "Import or create a collection",
-          "shortcuts": "Shortcuts",
+          
           "close_shortcuts_panel_overlay": "Close shortcuts panel overlay",
           "close_shortcuts_panel": "Close shortcuts panel",
           "no_shortcuts_found": "No shortcuts found.",

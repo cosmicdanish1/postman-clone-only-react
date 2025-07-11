@@ -1,6 +1,5 @@
 import React, { useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { getThemeStyles } from '../utils/getThemeStyles';
 
 interface ResizableBottomPanelProps {
   children: React.ReactNode;

@@ -74,7 +74,6 @@ const BodyTabContent: React.FC<BodyTabContentProps> = ({
 
   const addRow = () => setFormRows([...formRows, { id: Date.now(), key: '', value: '', description: '', enabled: true }]);
   const deleteRow = (id: number) => setFormRows(formRows.filter(row => row.id !== id));
-  const updateRow = (id: number, field: 'key' | 'value' | 'description', value: string) => setFormRows(formRows.map(row => row.id === id ? { ...row, [field]: value } : row));
   const toggleRow = (id: number) => setFormRows(formRows.map(row => row.id === id ? { ...row, enabled: !row.enabled } : row));
 
   const getMonacoTheme = (theme: string) => {
@@ -105,7 +104,7 @@ const BodyTabContent: React.FC<BodyTabContentProps> = ({
               className={` absolute left-0 mt-1 w-56 rounded shadow-lg z-50 py-2 max-h-72 overflow-y-auto`}
               style={{ ...hideScrollbarStyle }}
             >
-              {contentTypeOptions.map((opt, idx) => (
+              {contentTypeOptions.map((opt, _) => (
                 opt.isSection ? (
                   <div key={opt.label} className="px-4 py-1 text-xs text-zinc-500 uppercase tracking-wider select-none">
                     {opt.label}
@@ -242,15 +241,15 @@ const BodyTabContent: React.FC<BodyTabContentProps> = ({
                   <div className="text-gray-500 text-sm flex items-center border-r border-neutral-800 py-2">Value</div>
                   <div></div>
                 </div>
-                {formRows.map((row, idx) => (
+                {formRows.map((row, _) => (
                   <SortableFormRow
                     key={row.id}
                     row={row}
                     onChange={handleInputChange}
                     onDelete={deleteRow}
                     onToggle={toggleRow}
-                    isOdd={idx % 2 === 1}
-                    index={idx}
+                    isOdd={_ % 2 === 1}
+                    index={_}
                   />
                 ))}
               </div>

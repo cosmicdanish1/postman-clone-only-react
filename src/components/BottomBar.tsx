@@ -152,7 +152,7 @@ if (theme === 'black') {
             </svg>
             {t('help_feedback')}
           </a>
-          <HelpMenu open={helpMenuOpen} onClose={() => setHelpMenuOpen(false)} anchorRef={helpRef} />
+          <HelpMenu open={helpMenuOpen} />
         </div>
         <button
           title={t('shortcuts')}

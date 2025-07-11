@@ -8,7 +8,6 @@ import React, { useState } from 'react';
 
 import { useSelector } from 'react-redux';
 
-import { getThemeStyles } from '../../utils/getThemeStyles';
 
 type BodyType = 'raw' | 'form-data' | 'x-www-form-urlencoded' | 'binary' | 'graphql';
 

@@ -13,8 +13,6 @@ interface PreRequestTabContentProps {
   preRequestScript: string;
   setPreRequestScript: (script: string) => void;
   insertPreRequestSnippet: (snippet: string) => void;
-  highlightPreRequestScript: (script: string) => React.ReactNode;
-  preRequestDivRef: React.RefObject<HTMLDivElement>;
 }
 
 const getMonacoTheme = (theme: string) => {
@@ -28,8 +26,6 @@ const PreRequestTabContent: React.FC<PreRequestTabContentProps> = ({
   preRequestScript,
   setPreRequestScript,
   insertPreRequestSnippet,
-  highlightPreRequestScript,
-  preRequestDivRef,
 }) => {
   const theme = useSelector((state: any) => state.theme.theme);
   const { t } = useTranslation();

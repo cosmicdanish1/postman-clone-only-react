@@ -110,11 +110,6 @@ const AuthorizationTabContent: React.FC = () => {
     return () => document.removeEventListener('mousedown', handleClick);
   }, [dropdownOpen]);
 
-  const handleAuthTypeChange = (type: AuthType) => {
-    setAuthType(type);
-    setAuthConfig({ type });
-  };
-
   const handleAuthConfigChange = (field: keyof AuthConfig, value: string) => {
     setAuthConfig(prev => ({ ...prev, [field]: value }));
   };

@@ -4,7 +4,6 @@
 // Imported by: Main layout or request/response editors
 // Role: Renders a help menu panel with shortcuts and documentation links.
 // Located at: src/components/HelpMenu.tsx
-import React from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';

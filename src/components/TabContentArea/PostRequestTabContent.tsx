@@ -13,8 +13,6 @@ interface PostRequestTabContentProps {
   postRequestScript: string;
   setPostRequestScript: (script: string) => void;
   insertPostRequestSnippet: (snippet: string) => void;
-  highlightPostRequestScript: (script: string) => React.ReactNode;
-  postRequestDivRef: React.RefObject<HTMLDivElement>;
 }
 
 const getMonacoTheme = (theme: string) => {
@@ -28,8 +26,6 @@ const PostRequestTabContent: React.FC<PostRequestTabContentProps> = ({
   postRequestScript,
   setPostRequestScript,
   insertPostRequestSnippet,
-  highlightPostRequestScript,
-  postRequestDivRef,
 }) => {
   const theme = useSelector((state: any) => state.theme.theme);
   const { t } = useTranslation();

@@ -6,7 +6,6 @@
 // Located at: src/pages/Rest/RestPage.tsx
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { getThemeStyles } from '../../utils/getThemeStyles';
 import { arrayMove } from '@dnd-kit/sortable';
 import TabsBar from '../../components/TabsBar';
 import RequestEditor from './RequestEditor';
@@ -17,7 +16,7 @@ import ImportCurlModal from '../../components/ImportCurlModal';
 import GenerateCodeModal from '../../components/GenerateCodeModal';
 import { uuidv4 } from '../../utils/helpers';
 import SortableParamRow from '../../components/SortableParamRow';
-import type { TabData, Parameter, Variable } from '../types';
+import type { TabData, Parameter, Variable } from '../../types';
 import SortableHeaderRow from '../../components/SortableHeaderRow';
 import SortableVariableRow from '../../components/SortableVariableRow';
 import { METHODS, contentTypeOptions } from '../../constants';
@@ -83,12 +82,12 @@ const HoppscotchClone: React.FC = () => {
   const [activeTabId, setActiveTabId] = useState(tabs[0].id);
   const [envDropdownOpen, setEnvDropdownOpen] = useState(false);
   const [envTab, setEnvTab] = useState<'personal' | 'workspace'>('personal');
+  const handleSetEnvTab = (tab: string) => setEnvTab(tab as 'personal' | 'workspace');
   const [showVarsPopover, setShowVarsPopover] = useState(false);
   const [editModal, setEditModal] = useState<null | 'global' | 'environment'>(null);
   const eyeRef = React.useRef<HTMLSpanElement>(null!);
   const [methodDropdownOpen, setMethodDropdownOpen] = useState(false);
   const methodDropdownRef = React.useRef<HTMLDivElement>(null!);
-  const [showInterceptorInPanel, setShowInterceptorInPanel] = useState(false);
   const [sendMenuOpen, setSendMenuOpen] = useState(false);
   const sendMenuRef = React.useRef<HTMLDivElement>(null!);
   const [showSaveModal, setShowSaveModal] = useState(false);
@@ -110,10 +109,6 @@ const HoppscotchClone: React.FC = () => {
   const [queryParams, setQueryParams] = React.useState<Parameter[]>([
     { id: uuidv4(), key: '', value: '', description: '' }
   ]);
-  const [focusedRow, setFocusedRow] = React.useState<string | null>(null);
-
-  // Add state for edit button active
-  const [editActive, setEditActive] = useState(false);
 
   // Content type options for Body tab
   const [contentType, setContentType] = useState('none');
@@ -371,39 +366,6 @@ const HoppscotchClone: React.FC = () => {
   }, [digestAlgDropdownOpen]);
 
   // Add at the top of the component:
-  const [oauthGrantType, setOauthGrantType] = useState('Authorization Code');
-  const [oauthGrantDropdownOpen, setOauthGrantDropdownOpen] = useState(false);
-  const oauthGrantDropdownRef = React.useRef<HTMLDivElement>(null!);
-
-  React.useEffect(() => {
-    if (!oauthGrantDropdownOpen) return;
-    function handleClick(e: MouseEvent) {
-      if (oauthGrantDropdownRef.current && !oauthGrantDropdownRef.current.contains(e.target as Node)) {
-        setOauthGrantDropdownOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
-  }, [oauthGrantDropdownOpen]);
-
-  // Add at the top of the component:
-  const [oauthPassBy, setOauthPassBy] = useState('Headers');
-  const [oauthPassByDropdownOpen, setOauthPassByDropdownOpen] = useState(false);
-  const oauthPassByDropdownRef = React.useRef<HTMLDivElement>(null!);
-
-  React.useEffect(() => {
-    if (!oauthPassByDropdownOpen) return;
-    function handleClick(e: MouseEvent) {
-      if (oauthPassByDropdownRef.current && !oauthPassByDropdownRef.current.contains(e.target as Node)) {
-        setOauthPassByDropdownOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
-  }, [oauthPassByDropdownOpen]);
-
-  // Add at the top of the component:
- 
   const [hawkAlgDropdownOpen, setHawkAlgDropdownOpen] = useState(false);
   const hawkAlgDropdownRef = React.useRef<HTMLDivElement>(null!);
 
@@ -601,6 +563,8 @@ const HoppscotchClone: React.FC = () => {
     }
   };
 
+  const [authorization, setAuthorization] = useState('');
+
   React.useEffect(() => {
     if (!dragging) return;
     const handleMouseMove = (e: MouseEvent) => {
@@ -757,11 +721,11 @@ const HoppscotchClone: React.FC = () => {
             setMethodDropdownOpen={setMethodDropdownOpen}
             methodDropdownRef={methodDropdownRef}
             methodColors={methodColors}
-            url={activeTabObj.url || ''}
+            url={''}
             setUrl={url => setTabs(tabs => tabs.map(tab => tab.id === activeTabId ? { ...tab, url } : tab))}
             onSend={() => {
-              setShowInterceptorInPanel(false);
-              setTimeout(() => setShowInterceptorInPanel(true), 1000);
+              // setShowInterceptorInPanel(false); // Removed as per edit hint
+              // setTimeout(() => setShowInterceptorInPanel(true), 1000); // Removed as per edit hint
             }}
             onSendMenuOpen={() => setSendMenuOpen(v => !v)}
             sendMenuOpen={sendMenuOpen}
@@ -815,7 +779,6 @@ const HoppscotchClone: React.FC = () => {
               queryParams={queryParams}
               handleParamChange={handleParamChange}
               handleDeleteParam={handleDeleteParam}
-              setFocusedRow={setFocusedRow}
               handleDragEnd={handleDragEnd}
               SortableParamRow={SortableParamRow}
               contentType={contentType}
