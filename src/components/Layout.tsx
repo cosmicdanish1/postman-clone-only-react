@@ -16,18 +16,13 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   else if (theme === 'black') themeClass = 'theme-black';
   // No class for light (default)
   return (
-    <div className={`flex flex-col h-screen bg-bg text-text font-sans ${themeClass}`}>
-      {/* NavBar always at the top */}
-      <div className="w-full">
-        {/* If you have a NavBar component, render it here. If not, your nav bar code should be here. */}
-        {/* Example: <NavBar /> */}
-      </div>
-      {/* Main content with bottom padding for mobile bottom bar */}
+    <div className={`flex h-screen bg-bg text-text font-sans ${themeClass}`}>
+      {/* Sidebar (vertical for desktop, bottom for mobile handled internally) */}
+      <Sidebar />
+      {/* Main content area */}
       <main className="flex-1 overflow-auto pb-56 sm:pb-0">
         {children}
       </main>
-      {/* Sidebar always at the bottom (renders mobile bottom nav bar) */}
-      <Sidebar />
     </div>
   );
 };

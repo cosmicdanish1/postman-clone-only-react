@@ -74,23 +74,25 @@ const Realtime: React.FC = () => {
 
   return (
     <div className={`flex flex-col h-full w-full  bg-bg text-text ${themeClass}`}>
-      {/* Protocol tab bar at the top */}
-      <RealtimeProtocolTabBar selectedProtocol={selectedProtocol} onSelectProtocol={setSelectedProtocol} />
-      {/* Main area: protocol panel and help panel side by side */}
-      <div className="flex flex-1 min-h-0 w-full">
-        {/* Left: Protocol panel (resizable width) */}
-        <div style={{ width: leftWidth }} className="flex flex-col h-full min-w-[300px] max-w-[900px] bg-bg">
+      {/* Protocol tab bar at the top (make scrollable on mobile) */}
+      <div className="overflow-x-auto whitespace-nowrap">
+        <RealtimeProtocolTabBar selectedProtocol={selectedProtocol} onSelectProtocol={setSelectedProtocol} />
+      </div>
+      {/* Main area: protocol panel and help panel side by side on desktop, stacked on mobile */}
+      <div className="flex flex-col sm:flex-row flex-1 min-h-0 w-full">
+        {/* Left: Protocol panel (resizable width on sm+, full width on mobile) */}
+        <div style={{ width: leftWidth }} className="flex flex-col h-full min-w-[300px] max-w-[900px] bg-bg w-full sm:w-auto">
           {renderProtocolUI()}
         </div>
-        {/* Vertical divider for resizing */}
+        {/* Vertical divider for resizing (hide on mobile) */}
         <div
           ref={dividerRef}
-          className="w-2 h-full cursor-col-resize bg-border hover:bg-blue-600 transition"
+          className="w-2 h-full cursor-col-resize bg-border hover:bg-blue-600 transition hidden sm:block"
           onMouseDown={handleMouseDown}
           style={{ zIndex: 10 }}
         />
-        {/* Right: Help panel */}
-        <div className="flex-1 h-full bg-bg">
+        {/* Right: Help panel (hide on mobile) */}
+        <div className="flex-1 h-full bg-bg hidden sm:block">
           <RealtimeHelpPanel />
         </div>
       </div>

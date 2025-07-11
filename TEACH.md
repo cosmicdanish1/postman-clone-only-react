@@ -265,3 +265,14 @@ import { getThemeStyles } from '../../utils/getThemeStyles';
       appNameClass,
       borderClass,
     buttonBgClass } = getThemeStyles(theme);
+
+
+
+
+
+    import { useSelector } from 'react-redux';
+const theme = useSelector((state: any) => state.theme.theme);
+
+      let themeClass = '';
+  if (theme === 'dark') themeClass = 'theme-dark';
+  else if (theme === 'black') themeClass = 'theme-black';

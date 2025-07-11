@@ -10,8 +10,6 @@ import GraphQLTabBar from './GraphQLTabBar';
 import GraphQLTabContentArea from './GraphQLTabContentArea';
 import GraphQLSecondaryTabBar from './GraphQLSecondaryTabBar';
 // import GraphQLHelpPanel from './GraphQLHelpPanel';
-import HelpShortcutPanel from '../../components/HelpShortcutPanel';
-import ResizableBottomPanel from '../../components/ResizableBottomPanel';
 import GraphQLRightPanel from './GraphQLRightPanel';
 import { useSelector } from 'react-redux';
 
@@ -106,28 +104,32 @@ const GraphQL: React.FC = () => {
   }, [dragging]);
 
   return (
-   <div className={`flex h-full w-full bg-bg text-text ${themeClass}`}>
+   <div className={`flex flex-col sm:flex-row h-full w-full bg-bg text-text ${themeClass}`}>
       {/* Main content: left side, vertical stack */}
       <div className="flex flex-col flex-1 h-full min-w-0">
         {/* Top bar */}
         <GraphQLTopBar />
-        {/* Tab bar */}
-        <GraphQLTabBar
-          tabs={tabs}
-          activeTabId={activeTabId}
-          onSwitchTab={switchTab}
-          onAddTab={addTab}
-          onCloseTab={closeTab}
-          onOpenModal={openModal}
-          onCloseModal={closeModal}
-          onSaveModal={saveModal}
-          onSetModalValue={setModalValue}
-        />
-        {/* Secondary tab bar */}
-        <GraphQLSecondaryTabBar
-          activeTab={activeTabObj.activeTab}
-          onChange={tab => updateTab(activeTabId, 'activeTab', tab)}
-        />
+        {/* Tab bar (make scrollable on mobile) */}
+        <div className="overflow-x-auto whitespace-nowrap">
+          <GraphQLTabBar
+            tabs={tabs}
+            activeTabId={activeTabId}
+            onSwitchTab={switchTab}
+            onAddTab={addTab}
+            onCloseTab={closeTab}
+            onOpenModal={openModal}
+            onCloseModal={closeModal}
+            onSaveModal={saveModal}
+            onSetModalValue={setModalValue}
+          />
+        </div>
+        {/* Secondary tab bar (make scrollable on mobile) */}
+        <div className="overflow-x-auto whitespace-nowrap">
+          <GraphQLSecondaryTabBar
+            activeTab={activeTabObj.activeTab}
+            onChange={tab => updateTab(activeTabId, 'activeTab', tab)}
+          />
+        </div>
         {/* Center content and bottom panel */}
         <div className="flex-1 flex flex-col min-h-0">
           <GraphQLTabContentArea
@@ -135,19 +137,22 @@ const GraphQL: React.FC = () => {
             activeTabId={activeTabId}
             updateTab={updateTab}
           />
-          <ResizableBottomPanel>
-            <HelpShortcutPanel documentationUrl="https://your-graphql-docs-link.com" />
-          </ResizableBottomPanel>
+          {/* Only show bottom panel on sm+ */}
+          {/* <div className="hidden sm:block w-full h-full">
+            <ResizableBottomPanel>
+              <HelpShortcutPanel documentationUrl="https://your-graphql-docs-link.com" />
+            </ResizableBottomPanel>
+          </div> */}
         </div>
       </div>
-      {/* Drag handle between center and right panel */}
+      {/* Drag handle between center and right panel (hide on mobile) */}
       <div
-        className="w-2 h-full cursor-col-resize bg-border hover:bg-blue-600 transition"
+        className="w-2 h-full cursor-col-resize bg-border hover:bg-blue-600 transition hidden sm:block"
         style={{ zIndex: 40 }}
         onMouseDown={handleMouseDown}
       />
-      {/* Right: GraphQLRightPanel, resizable width, stretches top to bottom */}
-      <div className="h-full" style={{ width: rightWidth, zIndex: 30 }}>
+      {/* Right: GraphQLRightPanel, resizable width, stretches top to bottom (hide on mobile) */}
+      <div className="h-full hidden sm:block" style={{ width: rightWidth, zIndex: 30 }}>
         <GraphQLRightPanel />
       </div>
     </div>

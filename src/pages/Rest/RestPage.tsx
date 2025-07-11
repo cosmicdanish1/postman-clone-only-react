@@ -4,7 +4,7 @@
 // Imported by: App.tsx (via route)
 // Role: Main entry point for the REST feature, renders the REST request/response UI.
 // Located at: src/pages/Rest/RestPage.tsx
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { arrayMove } from '@dnd-kit/sortable';
 import TabsBar from '../../components/TabsBar';
@@ -21,9 +21,8 @@ import SortableHeaderRow from '../../components/SortableHeaderRow';
 import SortableVariableRow from '../../components/SortableVariableRow';
 import { METHODS, contentTypeOptions } from '../../constants';
 import { useSelector } from 'react-redux';
-import HelpShortcutPanel from '../../components/HelpShortcutPanel';
-import ResizableBottomPanel from '../../components/ResizableBottomPanel';
 import RestRightPanel from '../../components/RestRightPanel';
+import RestBottomActions from '../../components/RestBottomActions';
 
 const defaultTabData = (): TabData => ({
   id: uuidv4(),
@@ -590,6 +589,47 @@ const HoppscotchClone: React.FC = () => {
     };
   }, [dragging]);
 
+  // State for resizable bottom sheet overlay
+  const mainPanelRef = useRef<HTMLDivElement>(null);
+  const MIN_OVERLAY_HEIGHT = 80;
+  const MAX_OVERLAY_HEIGHT = 400;
+  const [overlayHeight, setOverlayHeight] = useState(180);
+  const [draggingOverlay, setDraggingOverlay] = useState(false);
+  const dragStartY = useRef(0);
+  const dragStartHeight = useRef(overlayHeight);
+
+  // Stable drag handlers using refs
+  const draggingOverlayRef = useRef(draggingOverlay);
+  draggingOverlayRef.current = draggingOverlay;
+
+  function onOverlayDragMouseMove(e: MouseEvent) {
+    if (!draggingOverlayRef.current) return;
+    const delta = dragStartY.current - e.clientY;
+    let newHeight = dragStartHeight.current + delta;
+    newHeight = Math.max(MIN_OVERLAY_HEIGHT, Math.min(MAX_OVERLAY_HEIGHT, newHeight));
+    setOverlayHeight(newHeight);
+  }
+  function onOverlayDragMouseUp() {
+    setDraggingOverlay(false);
+    document.removeEventListener('mousemove', onOverlayDragMouseMove);
+    document.removeEventListener('mouseup', onOverlayDragMouseUp);
+  }
+  function onOverlayDragMouseDown(e: React.MouseEvent) {
+    setDraggingOverlay(true);
+    dragStartY.current = e.clientY;
+    dragStartHeight.current = overlayHeight;
+    document.addEventListener('mousemove', onOverlayDragMouseMove);
+    document.addEventListener('mouseup', onOverlayDragMouseUp);
+  }
+
+  // Add at the top of the component, after overlayHeight state:
+  const [dragBarHover, setDragBarHover] = useState(false);
+
+  let themeClass = '';
+  if (theme === 'dark') themeClass = 'theme-dark';
+  else if (theme === 'black') themeClass = 'theme-black';
+  else themeClass = 'theme-light'; // fallback
+
   return (
     <div className={`flex flex-col h-full w-full theme-${theme} bg-bg text-text `}>
       {/* Edit Environment Modal */}
@@ -711,119 +751,161 @@ const HoppscotchClone: React.FC = () => {
       {/* Main layout below top bar */}
       <div className="flex flex-col sm:flex-row flex-1 w-full min-h-0">
         {/* Left Content (main panel) */}
-        <div className="flex flex-col flex-1 p-2 sm:p-4 min-w-0 min-h-0">
-          {/* URL bar */}
-          <RequestEditor
-            METHODS={METHODS}
-            method={activeTabObj.method}
-            setMethod={setMethod}
-            methodDropdownOpen={methodDropdownOpen}
-            setMethodDropdownOpen={setMethodDropdownOpen}
-            methodDropdownRef={methodDropdownRef}
-            methodColors={methodColors}
-            url={''}
-            setUrl={url => setTabs(tabs => tabs.map(tab => tab.id === activeTabId ? { ...tab, url } : tab))}
-            onSend={() => {
-              // setShowInterceptorInPanel(false); // Removed as per edit hint
-              // setTimeout(() => setShowInterceptorInPanel(true), 1000); // Removed as per edit hint
-            }}
-            onSendMenuOpen={() => setSendMenuOpen(v => !v)}
-            sendMenuOpen={sendMenuOpen}
-            sendMenuRef={sendMenuRef}
-            onShowImportCurlModal={() => { setShowImportCurlModal(true); setSendMenuOpen(false); }}
-            onShowGenerateCodeModal={() => { setShowGenerateCodeModal(true); setSendMenuOpen(false); }}
-            onShowSaveModal={() => setShowSaveModal(true)}
-            onShowSaveDropdown={() => setShowSaveDropdown(v => !v)}
-            showSaveDropdown={showSaveDropdown}
-            saveDropdownRef={saveDropdownRef}
-            saveRequestName={saveRequestName}
-          />
-          {/* Tabs */}
-          <div className="flex items-center gap-2 text-[14px] border-b mb-2 overflow-x-auto scrollbar-hide whitespace-nowrap">
-  {['parameters', 'body', 'headers', 'authorization', 'pre-request', 'post-request', 'variables'].map(tab => (
-    <button
-      key={tab}
-      onClick={() => setActiveTab(tab)}
-      className="relative px-2 py-1 font-semibold bg-transparent focus:outline-none"
-      style={{ background: 'none', border: 'none' }}
-    >
-      <span className={activeTabObj.activeTab === tab ? 'text-black' : 'text-gray-400'}>
-        {tab.charAt(0).toUpperCase() + tab.slice(1).replace('-', ' ')}
-      </span>
-      {activeTabObj.activeTab === tab && (
-        <motion.div
-          layoutId="active-underline"
-          className="absolute left-0"
-          style={{
-            bottom: 0,
-            height: '3px',
-            width: '100%',
-            background: accentHex,
-            marginTop: '4px',
-          }}
-          transition={{
-            type: 'spring',
-            stiffness: 500,
-            damping: 30
-          }}
-        />
-      )}
-    </button>
-  ))}
-</div>
-
-          {/* Tab content area (example: Parameters) */}
-          {['parameters', 'body', 'headers', 'authorization', 'pre-request', 'post-request', 'variables'].includes(activeTabObj.activeTab) && (
-            <TabContentArea
-              activeTab={activeTabObj.activeTab}
-              queryParams={queryParams}
-              handleParamChange={handleParamChange}
-              handleDeleteParam={handleDeleteParam}
-              handleDragEnd={handleDragEnd}
-              SortableParamRow={SortableParamRow}
-              contentType={contentType}
-              contentTypeOptions={contentTypeOptions}
-              setContentType={setContentType}
-              dropdownOpen={dropdownOpen}
-              setDropdownOpen={setDropdownOpen}
-              hideScrollbarStyle={hideScrollbarStyle}
-              setActiveTab={setActiveTab}
-              rawBody={rawBody}
-              setRawBody={setRawBody}
-              // Headers tab props
-              headers={activeTabObj.activeTab === 'headers' ? activeTabObj.headers : []}
-              handleHeaderChange={activeTabObj.activeTab === 'headers' ? (handleHeaderChange as (id: string, field: string, value: string) => void) : () => {}}
-              handleDeleteHeader={activeTabObj.activeTab === 'headers' ? (handleDeleteHeader as (id: string) => void) : () => {}}
-              handleAddHeader={activeTabObj.activeTab === 'headers' ? handleAddHeader : () => {}}
-              editHeadersActive={activeTabObj.activeTab === 'headers' ? editHeadersActive : false}
-              setEditHeadersActive={activeTabObj.activeTab === 'headers' ? setEditHeadersActive : () => {}}
-              SortableHeaderRow={activeTabObj.activeTab === 'headers' ? SortableHeaderRow : () => null}
-              uuidv4={uuidv4}
-              setTabs={setTabs}
-              activeTabId={activeTabId}
-              tabs={tabs}
-              authorization={authorization}
-              setAuthorization={setAuthorization}
-              // Pre-request tab props
-              preRequestScript={preRequestScript}
-              setPreRequestScript={setPreRequestScript}
-              insertPreRequestSnippet={insertPreRequestSnippet}
-              highlightPreRequestScript={highlightPreRequestScript}
-              preRequestDivRef={preRequestDivRef as React.RefObject<HTMLDivElement>}
-              // Post-request tab props
-              postRequestScript={postRequestScript}
-              setPostRequestScript={setPostRequestScript}
-              insertPostRequestSnippet={insertPostRequestSnippet}
-              highlightPostRequestScript={highlightPostRequestScript}
-              postRequestDivRef={postRequestDivRef as React.RefObject<HTMLDivElement>}
-              // Variables tab props
-              variables={variables}
-              handleVariableChange={handleVariableChange as (id: string, field: string, value: string) => void}
-              handleDeleteVariable={handleDeleteVariable}
-              handleVariableDragEnd={handleVariableDragEnd}
-              SortableVariableRow={SortableVariableRow}
+        <div className="flex flex-col flex-1 min-h-0 relative" ref={mainPanelRef}>
+          <div className="flex flex-col flex-1 p-2 sm:p-4 min-w-0 min-h-0">
+            {/* URL bar */}
+            <RequestEditor
+              METHODS={METHODS}
+              method={activeTabObj.method}
+              setMethod={setMethod}
+              methodDropdownOpen={methodDropdownOpen}
+              setMethodDropdownOpen={setMethodDropdownOpen}
+              methodDropdownRef={methodDropdownRef}
+              methodColors={methodColors}
+              url={''}
+              setUrl={url => setTabs(tabs => tabs.map(tab => tab.id === activeTabId ? { ...tab, url } : tab))}
+              onSend={() => {
+                // setShowInterceptorInPanel(false); // Removed as per edit hint
+                // setTimeout(() => setShowInterceptorInPanel(true), 1000); // Removed as per edit hint
+              }}
+              onSendMenuOpen={() => setSendMenuOpen(v => !v)}
+              sendMenuOpen={sendMenuOpen}
+              sendMenuRef={sendMenuRef}
+              onShowImportCurlModal={() => { setShowImportCurlModal(true); setSendMenuOpen(false); }}
+              onShowGenerateCodeModal={() => { setShowGenerateCodeModal(true); setSendMenuOpen(false); }}
+              onShowSaveModal={() => setShowSaveModal(true)}
+              onShowSaveDropdown={() => setShowSaveDropdown(v => !v)}
+              showSaveDropdown={showSaveDropdown}
+              saveDropdownRef={saveDropdownRef}
+              saveRequestName={saveRequestName}
             />
-          )}
+            {/* Tabs */}
+            <div className="flex items-center gap-2 text-[14px] border-b mb-2 overflow-x-auto scrollbar-hide whitespace-nowrap">
+              {['parameters', 'body', 'headers', 'authorization', 'pre-request', 'post-request', 'variables'].map(tab => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className="relative px-2 py-1 font-semibold bg-transparent focus:outline-none"
+                  style={{ background: 'none', border: 'none' }}
+                >
+                  <span className={activeTabObj.activeTab === tab ? 'text-black' : 'text-gray-400'}>
+                    {tab.charAt(0).toUpperCase() + tab.slice(1).replace('-', ' ')}
+                  </span>
+                  {activeTabObj.activeTab === tab && (
+                    <motion.div
+                      layoutId="active-underline"
+                      className="absolute left-0"
+                      style={{
+                        bottom: 0,
+                        height: '3px',
+                        width: '100%',
+                        background: accentHex,
+                        marginTop: '4px',
+                      }}
+                      transition={{
+                        type: 'spring',
+                        stiffness: 500,
+                        damping: 30
+                      }}
+                    />
+                  )}
+                </button>
+              ))}
+            </div>
+            {/* Tab content area (example: Parameters) */}
+            {['parameters', 'body', 'headers', 'authorization', 'pre-request', 'post-request', 'variables'].includes(activeTabObj.activeTab) && (
+              <TabContentArea
+                activeTab={activeTabObj.activeTab}
+                queryParams={queryParams}
+                handleParamChange={handleParamChange}
+                handleDeleteParam={handleDeleteParam}
+                handleDragEnd={handleDragEnd}
+                SortableParamRow={SortableParamRow}
+                contentType={contentType}
+                contentTypeOptions={contentTypeOptions}
+                setContentType={setContentType}
+                dropdownOpen={dropdownOpen}
+                setDropdownOpen={setDropdownOpen}
+                hideScrollbarStyle={hideScrollbarStyle}
+                setActiveTab={setActiveTab}
+                rawBody={rawBody}
+                setRawBody={setRawBody}
+                // Headers tab props
+                headers={activeTabObj.activeTab === 'headers' ? activeTabObj.headers : []}
+                handleHeaderChange={activeTabObj.activeTab === 'headers' ? (handleHeaderChange as (id: string, field: string, value: string) => void) : () => {}}
+                handleDeleteHeader={activeTabObj.activeTab === 'headers' ? (handleDeleteHeader as (id: string) => void) : () => {}}
+                handleAddHeader={activeTabObj.activeTab === 'headers' ? handleAddHeader : () => {}}
+                editHeadersActive={activeTabObj.activeTab === 'headers' ? editHeadersActive : false}
+                setEditHeadersActive={activeTabObj.activeTab === 'headers' ? setEditHeadersActive : () => {}}
+                SortableHeaderRow={activeTabObj.activeTab === 'headers' ? SortableHeaderRow : () => null}
+                uuidv4={uuidv4}
+                setTabs={setTabs}
+                activeTabId={activeTabId}
+                tabs={tabs}
+                authorization={authorization}
+                setAuthorization={setAuthorization}
+                // Pre-request tab props
+                preRequestScript={preRequestScript}
+                setPreRequestScript={setPreRequestScript}
+                insertPreRequestSnippet={insertPreRequestSnippet}
+                highlightPreRequestScript={highlightPreRequestScript}
+                preRequestDivRef={preRequestDivRef as React.RefObject<HTMLDivElement>}
+                // Post-request tab props
+                postRequestScript={postRequestScript}
+                setPostRequestScript={setPostRequestScript}
+                insertPostRequestSnippet={insertPostRequestSnippet}
+                highlightPostRequestScript={highlightPostRequestScript}
+                postRequestDivRef={postRequestDivRef as React.RefObject<HTMLDivElement>}
+                // Variables tab props
+                variables={variables}
+                handleVariableChange={handleVariableChange as (id: string, field: string, value: string) => void}
+                handleDeleteVariable={handleDeleteVariable}
+                handleVariableDragEnd={handleVariableDragEnd}
+                SortableVariableRow={SortableVariableRow}
+              />
+            )}
+          </div>
+          {/* Overlay: resizable bottom sheet RestBottomActions */}
+          <div
+            className={themeClass}
+            style={{
+              position: 'absolute',
+              left: 0,
+              right: 0,
+              bottom: 0,
+              height: overlayHeight,
+              zIndex: 50,
+              // background removed, now handled by themeClass
+              // No boxShadow, no borderRadius for sharp rectangle edges
+              transition: draggingOverlay ? 'none' : 'height 0.15s',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'flex-start',
+              pointerEvents: 'auto',
+              userSelect: draggingOverlay ? 'none' : 'auto',
+            }}
+          >
+            {/* Drag handle at the top */}
+            <div
+              onMouseDown={onOverlayDragMouseDown}
+              onMouseEnter={() => setDragBarHover(true)}
+              onMouseLeave={() => setDragBarHover(false)}
+              style={{
+                height: dragBarHover ? 4 : 1,
+                cursor: 'ns-resize',
+                width: '100%',
+                margin: '0 0 12px 0',
+                borderRadius: 0,
+                background: dragBarHover ? accentHex : '#27272a',
+                transition: 'background 0.15s',
+              }}
+              title="Resize panel"
+            ></div>
+            <div className="w-full flex-1 flex flex-col items-center justify-center">
+              <RestBottomActions />
+            </div>
+          </div>
         </div>
         {/* Vertical divider for resizing (hide on mobile) */}
         <div
@@ -839,11 +921,7 @@ const HoppscotchClone: React.FC = () => {
       </div>
       {/* Add the resizable bottom panel here */}
       {/** Only show HelpShortcutPanel in ResizableBottomPanel on sm and up */}
-      <ResizableBottomPanel>
-        <div className="hidden sm:block w-full h-full">
-          <HelpShortcutPanel documentationUrl="https://your-docs-link.com" />
-        </div>
-      </ResizableBottomPanel>
+      {/* Removed ResizableBottomPanel and HelpShortcutPanel for debugging */}
     </div>
   );
 };
