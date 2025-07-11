@@ -131,17 +131,17 @@ if (theme === 'black') {
         </nav>
       </div>
       {/* Mobile Bottom Navigation Bar */}
-      <nav className={`fixed bottom-0 left-0 right-0 w-full z-50 flex sm:hidden h-56  ${themeClass}`} style={{pointerEvents: 'auto'}}>
+      <nav className={`fixed bottom-0 left-0 right-0 w-full z-50 flex sm:hidden h-16 border-t border-neutral-200 dark:border-neutral-800 bg-bg ${themeClass}`} style={{pointerEvents: 'auto'}}>
         {tabs.map((tab) => {
           const isActive = location.pathname === tab.to;
           return (
             <Link
               key={tab.label}
               to={tab.to}
-              className={`flex-1 flex flex-col items-center justify-center group py-2 relative ${isActive ? 'text-accent' : 'text-text/70'} hover:text-accent transition-colors`}
+              className={`flex-1 flex flex-col items-center justify-center group relative ${isActive ? 'text-accent' : 'text-text/70'} hover:text-accent transition-colors`}
             >
-              <span className="flex items-center justify-center text-6xl sm:text-6xl mb-1 mt-3">{tab.icon}</span>
-              <span className="text-3xl">{tab.label}</span>
+              <span className="flex items-center justify-center text-2xl mb-0.5">{tab.icon}</span>
+              <span className="text-xs font-medium leading-tight">{tab.label}</span>
               {/* Active bottom bar indicator */}
               {isActive && (
                 <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-1 rounded-t bg-accent" style={{backgroundColor: accentHex}} />
