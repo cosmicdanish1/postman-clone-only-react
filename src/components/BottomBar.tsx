@@ -80,7 +80,7 @@ if (theme === 'black') {
 }
   // Positioning: popup appears just above the icon, always fully visible
   return (
-    <footer className={`fixed bottom-0 left-0 right-0 h-8 bg-bg  text-text flex items-center justify-between px-3 select-none z-[50] ${themeClass} ${borderClass}`} style={{ zIndex: 50 }}>
+    <footer className={`fixed bottom-0 left-0 right-0 h-8 bg-bg  text-text flex items-center justify-between px-3 select-none z-[50] ${themeClass} ${borderClass} hidden sm:flex`} style={{ zIndex: 50 }}>
     {/* Left side icons */}
       <div className="flex items-center space-x-4 text-gray-400 relative">
         <button 
