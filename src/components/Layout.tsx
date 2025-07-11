@@ -6,17 +6,11 @@
 // Located at: src/components/Layout.tsx
 import React from 'react';
 import Sidebar from './Sidebar';
-import { useLocation } from 'react-router-dom';
-// import RestSubSidebar from '../pages/Rest/RestSubSidebar';
-
 // import GraphQLSubSidebar from '../pages/GraphQL/GraphQLSubSidebar';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../store';
-import RestRightPanel from './RestRightPanel';
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const location = useLocation();
-  const sidebarLeft = useSelector((state: RootState) => state.settings.sidebarLeft);
   const theme = useSelector((state: any) => state.theme.theme);
   let themeClass = '';
   if (theme === 'dark') themeClass = 'theme-dark';

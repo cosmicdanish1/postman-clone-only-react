@@ -1,6 +1,5 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { getThemeStyles } from '../utils/getThemeStyles';
 import { useSelector } from 'react-redux';
 
 interface HelpShortcutPanelProps {

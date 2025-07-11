@@ -92,7 +92,6 @@ const accentColors = [
         textClass,
         kbdClass,
         appNameClass,
-        borderClass,
       buttonBgClass } = getThemeStyles(theme);
   useEffect(() => {
     if (!showVarsPopover) return;

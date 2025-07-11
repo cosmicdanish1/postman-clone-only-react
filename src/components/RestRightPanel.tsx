@@ -3,7 +3,6 @@ import { useSelector } from 'react-redux';
 import Collections from '../pages/Collections';
 import History from '../pages/History';
 import GenerateCode from '../pages/GenerateCode';
-import { getThemeStyles } from '../utils/getThemeStyles';
 
 const navItems = [
   {
@@ -37,10 +36,11 @@ const navItems = [
 ];
 
 const panelContent = {
-  'collections': <Collections />,
-  'history': <History />,
+  collections: <Collections />,
+  history: <History />,
   'generate-code': <GenerateCode />,
 };
+type PanelTab = keyof typeof panelContent;
 
 const MIN_WIDTH = 260;
 const DEFAULT_WIDTH = 340;
@@ -49,7 +49,7 @@ const MAX_WIDTH = 500; // Limited maximum width
 const RestRightPanel: React.FC = () => {
   const theme = useSelector((state: any) => state.theme.theme);
   const accentColor = useSelector((state: any) => state.theme.accentColor);
-  const [activeTab, setActiveTab] = useState('collections');
+  const [activeTab, setActiveTab] = useState<PanelTab>('collections');
   const [width, setWidth] = useState(DEFAULT_WIDTH);
   const [dragging, setDragging] = useState<'left' | 'right' | null>(null);
   const [hovered, setHovered] = useState(false);

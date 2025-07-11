@@ -6,8 +6,6 @@
 // Located at: src/components/Sidebar.tsx
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { FaCog } from 'react-icons/fa';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import type { RootState } from '../store';

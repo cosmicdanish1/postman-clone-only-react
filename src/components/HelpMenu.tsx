@@ -9,7 +9,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
-const HelpMenu = ({ open, onClose, anchorRef }: { open: boolean; onClose: () => void; anchorRef: React.RefObject<HTMLElement | null> }) => {
+const HelpMenu = ({ open }: { open: boolean }) => {
   const theme = useSelector((state: any) => state.theme.theme);
   const { t } = useTranslation();
   let themeClass = '';
@@ -57,28 +57,29 @@ const HelpMenu = ({ open, onClose, anchorRef }: { open: boolean; onClose: () => 
           className={`absolute bottom-10 right-0 z-50 min-w-[240px] bg-bg border border-border rounded-xl shadow-xl py-2 px-1 text-sm text-text ${themeClass}`}
           style={{ boxShadow: '0 8px 32px 0 rgba(0,0,0,0.25)' }}
         >
-          {menuItems.map((item, idx) =>
-            item === 'divider' ? (
-              <div key={`divider-${idx}`} className="my-2 border-t border-border" />
-            ) : (
-              typeof item === 'object' && item !== null ? (
-                <a
-                  key={`item-${idx}`}
-                  href={item.href}
-                  className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-bg/80 transition-colors group"
-                  tabIndex={0}
-                >
-                  <span className="text-lg opacity-80">{item.icon}</span>
-                  <span className="flex-1">{item.label}</span>
-                  {item.shortcut && (
-                    <kbd className="px-2 py-1 rounded bg-bg/80 border border-border text-xs font-mono text-text ml-2">
-                      {item.shortcut}
-                    </kbd>
-                  )}
-                </a>
-              ) : null
-            )
-          )}
+          {menuItems.map((item, idx) => {
+            if (typeof item === 'string') {
+              // Handle divider
+              return <div key={`divider-${idx}`} className="my-2 border-t border-border" />;
+            }
+            // Now item is an object with icon, label, href, and optional shortcut
+            return (
+              <a
+                key={`item-${idx}`}
+                href={item.href}
+                className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-bg/80 transition-colors group"
+                tabIndex={0}
+              >
+                <span className="text-lg opacity-80">{item.icon}</span>
+                <span className="flex-1">{item.label}</span>
+                {item.shortcut && (
+                  <kbd className="px-2 py-1 rounded bg-bg/80 border border-border text-xs font-mono text-text ml-2">
+                    {item.shortcut}
+                  </kbd>
+                )}
+              </a>
+            );
+          })}
         </motion.div>
       )}
     </AnimatePresence>

@@ -4,7 +4,7 @@
 // Imported by: Main layout or request/response editors
 // Role: Renders a panel displaying keyboard shortcuts for the app.
 // Located at: src/components/ShortcutsPanel.tsx
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';

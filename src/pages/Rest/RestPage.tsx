@@ -85,12 +85,12 @@ const HoppscotchClone: React.FC = () => {
   const [envTab, setEnvTab] = useState<'personal' | 'workspace'>('personal');
   const [showVarsPopover, setShowVarsPopover] = useState(false);
   const [editModal, setEditModal] = useState<null | 'global' | 'environment'>(null);
-  const eyeRef = React.useRef<HTMLSpanElement | null>(null);
+  const eyeRef = React.useRef<HTMLSpanElement>(null!);
   const [methodDropdownOpen, setMethodDropdownOpen] = useState(false);
-  const methodDropdownRef = React.useRef<HTMLDivElement>(null);
+  const methodDropdownRef = React.useRef<HTMLDivElement>(null!);
   const [showInterceptorInPanel, setShowInterceptorInPanel] = useState(false);
   const [sendMenuOpen, setSendMenuOpen] = useState(false);
-  const sendMenuRef = React.useRef<HTMLDivElement>(null);
+  const sendMenuRef = React.useRef<HTMLDivElement>(null!);
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [saveRequestName, setSaveRequestName] = useState('Untitled');
   const [showImportCurlModal, setShowImportCurlModal] = useState(false);
@@ -99,10 +99,10 @@ const HoppscotchClone: React.FC = () => {
   const [selectedLanguage, setSelectedLanguage] = useState('Shell - cURL');
   const generatedCode = `curl --request GET \\n  --url https://echo.hoppscotch.io/`;
   const [showSaveDropdown, setShowSaveDropdown] = useState(false);
-  const saveDropdownRef = React.useRef<HTMLDivElement>(null);
+  const saveDropdownRef = React.useRef<HTMLDivElement>(null!);
   const [rightWidth, setRightWidth] = useState(DEFAULT_RIGHT_WIDTH);
   const [dragging, setDragging] = useState(false);
-  const dividerRef = useRef<HTMLDivElement>(null);
+  const dividerRef = useRef<HTMLDivElement>(null!);
 
   // Remove the dynamic maxRightWidth calculation - use fixed MAX_RIGHT_WIDTH instead
 
@@ -132,7 +132,7 @@ const HoppscotchClone: React.FC = () => {
 
 
 
-  const handleParamChange = (id: string, field: 'key' | 'value' | 'description', value: string): void => {
+  const handleParamChange = (id: string, field: string, value: string): void => {
     setQueryParams(prev => {
       const updated = prev.map((p) => p.id === id ? { ...p, [field]: value } : p);
       // If editing the last row's key and it's non-empty, add a new row with a stable id
@@ -288,7 +288,7 @@ const HoppscotchClone: React.FC = () => {
   
   // Headers state and handlers
   const [editHeadersActive, setEditHeadersActive] = useState(false);
-  const handleHeaderChange = (id: string, field: 'key' | 'value' | 'description', value: string): void => {
+  const handleHeaderChange = (id: string, field: string, value: string): void => {
     setTabs(tabs => tabs.map(tab => {
       if (tab.id !== activeTabId) return tab;
       let updatedHeaders = tab.headers.map((h: any) => h.id === id ? { ...h, [field]: value } : h);
@@ -341,7 +341,7 @@ const HoppscotchClone: React.FC = () => {
   // Add at the top of the component:
   const [authDropdownOpen, setAuthDropdownOpen] = useState(false);
 
-  const authDropdownRef = React.useRef<HTMLDivElement>(null);
+  const authDropdownRef = React.useRef<HTMLDivElement>(null!);
 
   React.useEffect(() => {
     if (!authDropdownOpen) return;
@@ -357,7 +357,7 @@ const HoppscotchClone: React.FC = () => {
   // Add at the top of the component:
  
   const [digestAlgDropdownOpen, setDigestAlgDropdownOpen] = useState(false);
-  const digestAlgDropdownRef = React.useRef<HTMLDivElement>(null);
+  const digestAlgDropdownRef = React.useRef<HTMLDivElement>(null!);
 
   React.useEffect(() => {
     if (!digestAlgDropdownOpen) return;
@@ -373,7 +373,7 @@ const HoppscotchClone: React.FC = () => {
   // Add at the top of the component:
   const [oauthGrantType, setOauthGrantType] = useState('Authorization Code');
   const [oauthGrantDropdownOpen, setOauthGrantDropdownOpen] = useState(false);
-  const oauthGrantDropdownRef = React.useRef<HTMLDivElement>(null);
+  const oauthGrantDropdownRef = React.useRef<HTMLDivElement>(null!);
 
   React.useEffect(() => {
     if (!oauthGrantDropdownOpen) return;
@@ -389,7 +389,7 @@ const HoppscotchClone: React.FC = () => {
   // Add at the top of the component:
   const [oauthPassBy, setOauthPassBy] = useState('Headers');
   const [oauthPassByDropdownOpen, setOauthPassByDropdownOpen] = useState(false);
-  const oauthPassByDropdownRef = React.useRef<HTMLDivElement>(null);
+  const oauthPassByDropdownRef = React.useRef<HTMLDivElement>(null!);
 
   React.useEffect(() => {
     if (!oauthPassByDropdownOpen) return;
@@ -405,7 +405,7 @@ const HoppscotchClone: React.FC = () => {
   // Add at the top of the component:
  
   const [hawkAlgDropdownOpen, setHawkAlgDropdownOpen] = useState(false);
-  const hawkAlgDropdownRef = React.useRef<HTMLDivElement>(null);
+  const hawkAlgDropdownRef = React.useRef<HTMLDivElement>(null!);
 
   React.useEffect(() => {
     if (!hawkAlgDropdownOpen) return;
@@ -420,7 +420,7 @@ const HoppscotchClone: React.FC = () => {
 
 
   const [jwtAlgDropdownOpen, setJwtAlgDropdownOpen] = useState(false);
-  const jwtAlgDropdownRef = React.useRef<HTMLDivElement>(null);
+  const jwtAlgDropdownRef = React.useRef<HTMLDivElement>(null!);
  
 
   React.useEffect(() => {
@@ -435,7 +435,7 @@ const HoppscotchClone: React.FC = () => {
   }, [jwtAlgDropdownOpen]);
 
   const [preRequestScript, setPreRequestScript] = useState('');
-  const preRequestDivRef = useRef<HTMLDivElement>(null);
+  const preRequestDivRef = useRef<HTMLDivElement>(null!);
 
   function insertPreRequestSnippet(snippet: string) {
     if (!preRequestDivRef.current) {
@@ -505,7 +505,7 @@ const HoppscotchClone: React.FC = () => {
   }
 
   const [postRequestScript, setPostRequestScript] = useState('');
-  const postRequestDivRef = useRef<HTMLDivElement>(null);
+  const postRequestDivRef = useRef<HTMLDivElement>(null!);
 
   function insertPostRequestSnippet(snippet: string) {
     if (!postRequestDivRef.current) {
@@ -576,7 +576,7 @@ const HoppscotchClone: React.FC = () => {
   ]);
 
   // Handler for variable changes
-  const handleVariableChange = (id: string, field: 'key' | 'value', value: string): void => {
+  const handleVariableChange = (id: string, field: string, value: string): void => {
     setVariables(prev => {
       const updated = prev.map((v) => v.id === id ? { ...v, [field]: value } : v);
       // If editing the last row and it's non-empty, add a new row
@@ -642,11 +642,11 @@ const HoppscotchClone: React.FC = () => {
         activeTabId={activeTabId}
         onSwitchTab={switchTab}
         onAddTab={addTab}
-        onCloseTab={(id) => {
-          setTabs(tabs => {
-            const idx = tabs.findIndex(t => t.id === id);
-            const newTabs = tabs.filter(t => t.id !== id);
-            if (id === activeTabId && newTabs.length > 0) {
+        onCloseTab={id => {
+          setTabs(newTabs => {
+            const idx = newTabs.findIndex(tab => tab.id === id);
+            if (idx !== -1) {
+              newTabs.splice(idx, 1);
               setActiveTabId(newTabs[Math.max(0, idx - 1)].id);
             }
             return newTabs;
@@ -659,6 +659,8 @@ const HoppscotchClone: React.FC = () => {
         showVarsPopover={showVarsPopover}
         setShowVarsPopover={setShowVarsPopover}
         eyeRef={eyeRef}
+        envTab={envTab}
+        setEnvTab={handleSetEnvTab}
       />
 
       {/* Modal */}
@@ -837,6 +839,8 @@ const HoppscotchClone: React.FC = () => {
               setTabs={setTabs}
               activeTabId={activeTabId}
               tabs={tabs}
+              authorization={authorization}
+              setAuthorization={setAuthorization}
               // Pre-request tab props
               preRequestScript={preRequestScript}
               setPreRequestScript={setPreRequestScript}
