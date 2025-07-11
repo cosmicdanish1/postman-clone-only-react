@@ -20,16 +20,16 @@ const RestBottomActions: React.FC = () => {
           <div className={`flex items-center gap-2 text-sm ${textClass}`}>
             <span>Keyboard shortcuts</span>
             <kbd className={`px-2 py-1 rounded text-xs ${textClass}`}>Ctrl</kbd>
-            <kbd className={`px-2 py-1 rounded bg-zinc-800 text-xs ${textClass}`}>/</kbd>
+            <kbd className={`px-2 py-1 rounded  text-xs ${textClass}`}>/</kbd>
           </div>
           <div className={`flex items-center gap-2 text-sm ${textClass}`}>
             <span>Search & command menu</span>
-            <kbd className={`px-2 py-1 rounded bg-zinc-800 text-xs ${textClass}`}>Ctrl</kbd>
-            <kbd className={`px-2 py-1 rounded bg-zinc-800 text-xs ${textClass}`}>K</kbd>
+            <kbd className={`px-2 py-1 rounded  text-xs ${textClass}`}>Ctrl</kbd>
+            <kbd className={`px-2 py-1 rounded  text-xs ${textClass}`}>K</kbd>
           </div>
           <div className={`flex items-center gap-2 text-sm ${textClass}`}>
             <span>Help menu</span>
-            <kbd className={`px-2 py-1 rounded bg-zinc-800 text-xs ${textClass}`}>?</kbd>
+            <kbd className={`px-2 py-1 rounded  text-xs ${textClass}`}>?</kbd>
           </div>
           <div className={`flex items-center gap-2 text-sm ${textClass}`}>
             <span>Documentation</span>

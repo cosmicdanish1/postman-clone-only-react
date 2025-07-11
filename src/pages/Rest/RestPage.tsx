@@ -630,6 +630,9 @@ const HoppscotchClone: React.FC = () => {
   else if (theme === 'black') themeClass = 'theme-black';
   else themeClass = 'theme-light'; // fallback
 
+  // After themeClass is set:
+  const activeTabTextClass = theme === 'light' ? 'text-black' : 'text-white';
+
   return (
     <div className={`flex flex-col h-full w-full theme-${theme} bg-bg text-text `}>
       {/* Edit Environment Modal */}
@@ -780,7 +783,7 @@ const HoppscotchClone: React.FC = () => {
               saveRequestName={saveRequestName}
             />
             {/* Tabs */}
-            <div className="flex items-center gap-2 text-[14px] border-b mb-2 overflow-x-auto scrollbar-hide whitespace-nowrap">
+            <div className="flex items-center gap-2 text-[14px]  mb-2 overflow-x-auto scrollbar-hide whitespace-nowrap">
               {['parameters', 'body', 'headers', 'authorization', 'pre-request', 'post-request', 'variables'].map(tab => (
                 <button
                   key={tab}
@@ -788,7 +791,7 @@ const HoppscotchClone: React.FC = () => {
                   className="relative px-2 py-1 font-semibold bg-transparent focus:outline-none"
                   style={{ background: 'none', border: 'none' }}
                 >
-                  <span className={activeTabObj.activeTab === tab ? 'text-black' : 'text-gray-400'}>
+                  <span className={activeTabObj.activeTab === tab ? activeTabTextClass : 'text-gray-400'}>
                     {tab.charAt(0).toUpperCase() + tab.slice(1).replace('-', ' ')}
                   </span>
                   {activeTabObj.activeTab === tab && (
@@ -897,7 +900,7 @@ const HoppscotchClone: React.FC = () => {
                 width: '100%',
                 margin: '0 0 12px 0',
                 borderRadius: 0,
-                background: dragBarHover ? accentHex : '#27272a',
+                background: dragBarHover ? accentHex : (draggingOverlay ? '#f472b6' : '#27272a'),
                 transition: 'background 0.15s',
               }}
               title="Resize panel"
