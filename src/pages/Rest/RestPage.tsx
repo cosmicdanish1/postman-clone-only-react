@@ -709,9 +709,9 @@ const HoppscotchClone: React.FC = () => {
       />
 
       {/* Main layout below top bar */}
-      <div className="flex flex-1 w-full min-h-0">
-        {/* Left Content (hide when editActive) */}
-        <div className="flex flex-col flex-1 p-4 min-w-0 min-h-0">
+      <div className="flex flex-col sm:flex-row flex-1 w-full min-h-0">
+        {/* Left Content (main panel) */}
+        <div className="flex flex-col flex-1 p-2 sm:p-4 min-w-0 min-h-0">
           {/* URL bar */}
           <RequestEditor
             METHODS={METHODS}
@@ -739,7 +739,7 @@ const HoppscotchClone: React.FC = () => {
             saveRequestName={saveRequestName}
           />
           {/* Tabs */}
-         <div className={`flex items-center gap-2 text-[14px] border-b mb-2`}>
+          <div className="flex items-center gap-2 text-[14px] border-b mb-2 overflow-x-auto scrollbar-hide whitespace-nowrap">
   {['parameters', 'body', 'headers', 'authorization', 'pre-request', 'post-request', 'variables'].map(tab => (
     <button
       key={tab}
@@ -825,21 +825,24 @@ const HoppscotchClone: React.FC = () => {
             />
           )}
         </div>
-        {/* Vertical divider for resizing */}
+        {/* Vertical divider for resizing (hide on mobile) */}
         <div
           ref={dividerRef}
-          className="w-2 h-full cursor-col-resize bg-border hover:bg-blue-600 transition"
+          className="w-2 h-full cursor-col-resize bg-border hover:bg-blue-600 transition hidden sm:block"
           onMouseDown={() => setDragging(true)}
           style={{ zIndex: 10 }}
         />
-        {/* Right sub sidebar for REST page */}
-        <div className="flex-none" style={{ width: rightWidth, minWidth: MIN_RIGHT_WIDTH, maxWidth: MAX_RIGHT_WIDTH, overflow: 'hidden' }}>
+        {/* Right sub sidebar for REST page (hide on mobile) */}
+        <div className="flex-none hidden sm:block" style={{ width: rightWidth, minWidth: MIN_RIGHT_WIDTH, maxWidth: MAX_RIGHT_WIDTH, overflow: 'hidden' }}>
           <RestRightPanel />
         </div>
       </div>
       {/* Add the resizable bottom panel here */}
+      {/** Only show HelpShortcutPanel in ResizableBottomPanel on sm and up */}
       <ResizableBottomPanel>
-        <HelpShortcutPanel documentationUrl="https://your-docs-link.com" />
+        <div className="hidden sm:block w-full h-full">
+          <HelpShortcutPanel documentationUrl="https://your-docs-link.com" />
+        </div>
       </ResizableBottomPanel>
     </div>
   );
