@@ -5,13 +5,15 @@
 // Role: Renders the bottom bar/footer for the application, including status, links, and actions.
 // Located at: src/components/BottomBar.tsx
 import React, { useRef, useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from '../store';
 import { toggleExpandNav } from '../features/settingsSlice';
 import { AnimatePresence, motion } from 'framer-motion';
 import ShortcutsPanel from './ShortcutsPanel';
 import HelpMenu from './HelpMenu';
 import { useTranslation } from 'react-i18next';
+import useAccentColor from '../hooks/useAccentColor';
+import useThemeClass from '../hooks/useThemeClass';
 
 /**
  * BottomBar – a slim footer bar that stays pinned to the bottom of the viewport.
@@ -21,11 +23,8 @@ import { useTranslation } from 'react-i18next';
 const BottomBar: React.FC = () => {
   const dispatch = useDispatch();
   const expandNav = useSelector((state: RootState) => state.settings.expandNav);
-  const theme = useSelector((state: any) => state.theme.theme);
-  let themeClass = '';
-  if (theme === 'dark') themeClass = 'theme-dark';
-  else if (theme === 'black') themeClass = 'theme-black';
-  // No class for light (default)
+  const accentHex = useAccentColor();
+  const { themeClass } = useThemeClass();
   const [showInterceptor, setShowInterceptor] = useState(false);
   const iconRef = useRef<HTMLButtonElement>(null);
   const popupRef = useRef<HTMLDivElement>(null);
@@ -69,18 +68,8 @@ const BottomBar: React.FC = () => {
     return () => document.removeEventListener('mousedown', handleClick);
   }, [helpMenuOpen]);
 
-
-
-
-   let borderClass = 'border-t border-neutral-700'; // default for dark
-if (theme === 'black') {
-  borderClass = 'border-t border-neutral-800';
-} else if (theme === 'light') {
-  borderClass = 'border-t border-gray-200';
-}
-  // Positioning: popup appears just above the icon, always fully visible
   return (
-    <footer className={`fixed bottom-0 left-0 right-0 h-8 bg-bg  text-text flex items-center justify-between px-3 select-none z-[50] ${themeClass} ${borderClass} hidden sm:flex`} style={{ zIndex: 50 }}>
+    <footer className={`fixed bottom-0 left-0 right-0 h-8 bg-bg text-text flex items-center justify-between px-3 select-none hidden sm:flex ${themeClass}`} style={{ zIndex: 50, borderTop: `1px solid ${accentHex}` }}>
     {/* Left side icons */}
       <div className="flex items-center space-x-4 text-gray-400 relative">
         <button 

@@ -5,9 +5,12 @@
 // Role: Renders the theme customization options in the Settings feature.
 // Located at: src/pages/Settings/ThemeSettings.tsx
 import React, { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setTheme, setAccentColor } from '../../features/themeSlice';
 import { FaDesktop, FaSun, FaCloud, FaMoon } from 'react-icons/fa';
+import useThemeClass from '../../hooks/useThemeClass';
+import { ACCENT_COLOR_MAP } from '../../hooks/useAccentColor';
+import type { RootState } from '../../store';
 
 const backgrounds = [
   { key: 'system', label: 'System (Dark)', icon: <FaDesktop /> },
@@ -16,30 +19,24 @@ const backgrounds = [
   { key: 'black', label: 'Black', icon: <FaMoon /> },
 ];
 
-const accentColors = [
-  { key: 'green', label: 'Green', color: '#22c55e' },
-  { key: 'blue', label: 'Blue', color: '#2563eb' },
-  { key: 'cyan', label: 'Cyan', color: '#06b6d4' },
-  { key: 'purple', label: 'Purple', color: '#7c3aed' },
-  { key: 'yellow', label: 'Yellow', color: '#eab308' },
-  { key: 'orange', label: 'Orange', color: '#f59e42' },
-  { key: 'red', label: 'Red', color: '#ef4444' },
-  { key: 'pink', label: 'Pink', color: '#ec4899' },
-];
+const accentColors = Object.entries(ACCENT_COLOR_MAP).map(([key, color]) => ({
+  key,
+  label: key.charAt(0).toUpperCase() + key.slice(1),
+  color
+}));
 
 const ThemeSettings: React.FC = () => {
   const dispatch = useDispatch();
-  const theme = useSelector((state: any) => state.theme.theme);
-  const accentColor = useSelector((state: any) => state.theme.accentColor);
+  const { themeClass, theme } = useThemeClass();
+  const accentColor = useSelector((state: RootState) => state.theme.accentColor);
   const [hoveredColor, setHoveredColor] = useState<string | null>(null);
-  const accentHex = accentColors.find(c => c.key === accentColor)?.color;
 
   const handleAccentColorClick = (colorKey: string) => {
     dispatch(setAccentColor(colorKey));
   };
 
   return (
-    <div className={`flex flex-col gap-12 items-start bg-bg text-text theme-${theme}`}>
+    <div className={`flex flex-col gap-12 items-start bg-bg text-text ${themeClass}`}>
       <div className="flex-1 space-y-8">
         {/* Background */}
         <div>
@@ -51,12 +48,12 @@ const ThemeSettings: React.FC = () => {
             {backgrounds.map((bg) => (
               <button
                 key={bg.key}
-                className={`w-8 h-8 flex items-center justify-center rounded-lg text-sm transition  ${theme === bg.key ? 'bg-bg border-accent' : 'bg-bg border-border'}`}
+                className={`w-8 h-8 flex items-center justify-center rounded-lg text-sm transition border ${theme === bg.key ? 'bg-bg border-accent' : 'bg-bg border-border'}`}
                 onClick={() => dispatch(setTheme(bg.key))}
                 aria-label={bg.label}
               >
                 {theme === bg.key
-                  ? <span style={{ color: accentHex }}>{bg.icon}</span> // Use actual accent color
+                  ? <span style={{ color: accentColors.find(ac => ac.key === accentColor)?.color }}>{bg.icon}</span>
                   : bg.icon}
               </button>
             ))}
@@ -74,19 +71,19 @@ const ThemeSettings: React.FC = () => {
                 <button
                   type="button"
                   className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition focus:outline-none group ${
-    accentColor === c.key ? 'ring-d ring-accent' : ''
-  }`}
+                    accentColor === c.key ? 'ring-d ring-accent' : ''
+                  }`}
                   style={{ 
                     borderColor: c.color, 
-                    background: accentColor === c.key ? accentColor : 'transparent',
+                    background: accentColor === c.key ? c.color : 'transparent',
                   }}
                   onClick={() => handleAccentColorClick(c.key)}
-                  aria-label={c.label}
                   onMouseEnter={() => setHoveredColor(c.key)}
                   onMouseLeave={() => setHoveredColor(null)}
+                  aria-label={c.label}
                 >
                   {accentColor === c.key && (
-                    <span className="w-1.5 h-1.5 rounded-full block" style={{ background: accentColor === c.key ? accentColor : 'transparent' }} />
+                    <span className="w-1.5 h-1.5 rounded-full block" style={{ backgroundColor: 'white' }} />
                   )}
                 </button>
                 {/* Tooltip for color name on hover */}

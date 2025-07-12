@@ -6,13 +6,13 @@
 // Located at: src/components/TabContentArea.tsx
 
 import React from 'react';
-import ParametersTabContent from './TabContentArea/ParametersTabContent';
-import BodyTabContent from './TabContentArea/BodyTabContent';
-import HeadersTabContent from './TabContentArea/HeadersTabContent';
-import AuthorizationTabContent from './TabContentArea/AuthorizationTabContent';
-import PreRequestTabContent from './TabContentArea/PreRequestTabContent';
-import PostRequestTabContent from './TabContentArea/PostRequestTabContent';
-import VariablesTabContent from './TabContentArea/VariablesTabContent';
+import ParametersTabContent from './ParametersTabContent';
+import BodyTabContent from './BodyTabContent';
+import HeadersTabContent from './HeadersTabContent';
+import AuthorizationTabContent from './AuthorizationTabContent';
+import PreRequestTabContent from './PreRequestTabContent';
+import PostRequestTabContent from './PostRequestTabContent';
+import VariablesTabContent from './VariablesTabContent';
 import { useSelector } from 'react-redux';
 
 // This is a placeholder for the actual implementation.

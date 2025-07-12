@@ -9,7 +9,7 @@ import { FaSync, FaLock, FaIdBadge, FaEye, FaEyeSlash, FaChrome, FaFirefox, FaCo
 import { motion, AnimatePresence } from 'framer-motion';
 import { ToastContainer, toast, Slide } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useSelector } from 'react-redux';
+import useThemeClass from '../../hooks/useThemeClass';
 
 const interceptorOptions = [
   'Browser',
@@ -58,7 +58,7 @@ const BrowserExtensionSection: React.FC<BrowserExtensionSectionProps> = ({ class
 // - Toast notifications for agent registration
 // All modals and toasts are managed with local state and framer-motion for animation.
 const InterceptorSettings: React.FC = () => {
-  const theme = useSelector((state: any) => state.theme.theme);
+  const themeClass = useThemeClass();
   const [selected, setSelected] = useState('Browser');
   const [verifyHost, setVerifyHost] = useState(false);
   const [verifyPeer, setVerifyPeer] = useState(false);
@@ -80,7 +80,7 @@ const InterceptorSettings: React.FC = () => {
   const [domainInput, setDomainInput] = useState('');
 
   return (
-    <div className={`space-y-8 theme-${theme} bg-bg text-text border-border`}>
+    <div className={`space-y-8 ${themeClass} bg-bg text-text border-border`}>
     {/* Interceptor */}
     <div>
       <label className="block text-sm font-semibold text-text mb-2">Interceptor</label>
@@ -560,7 +560,7 @@ const InterceptorSettings: React.FC = () => {
                   value={domainInput}
                   onChange={e => setDomainInput(e.target.value)}
                   placeholder="example.com"
-                  className="flex-1 px-3 py-2 rounded border border-border bg-bg-secondary text-text focus:outline-none focus:border-blue-500 text-base"
+                  className={`p-4 sm:p-6 rounded-lg shadow-sm border border-border bg-bg text-text ${themeClass}`}
                 />
                 <button
                   className="w-10 h-10 flex items-center justify-center rounded bg-border bg-opacity-20 text-text-secondary hover:border-blue-500 hover:text-blue-400 transition text-xl"

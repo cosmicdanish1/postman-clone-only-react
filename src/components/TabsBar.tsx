@@ -6,7 +6,7 @@
 // Located at: src/components/TabsBar.tsx
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import EditEnvironmentModal from './EditEnvironmentModal';
+import EditEnvironmentModal from './modals/EditEnvironmentModal';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { getThemeStyles } from '../utils/getThemeStyles';

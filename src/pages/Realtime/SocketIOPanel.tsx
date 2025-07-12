@@ -7,7 +7,7 @@
 import React, { useState } from 'react';
 import CommunicationTab from './CommunicationTab';
 import { FiRss } from 'react-icons/fi';
-import AuthorizationTabContent from '../../components/TabContentArea/AuthorizationTabContent';
+import AuthorizationTabContent from '../Rest/TabContentArea/AuthorizationTabContent';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 

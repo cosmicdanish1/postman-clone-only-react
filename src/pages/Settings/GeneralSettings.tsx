@@ -6,7 +6,8 @@
 // Located at: src/pages/Settings/GeneralSettings.tsx
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import useThemeClass from '../../hooks/useThemeClass';
 import type { RootState } from '../../store';
 import {
   toggleTelemetry,
@@ -96,7 +97,7 @@ const GeneralSettings: React.FC = () => {
   const namingDropdownRef = useRef<HTMLDivElement>(null);
   const [experimentalSandbox, setExperimentalSandbox] = useState(false);
   const [encoding, setEncoding] = useState('Enable');
-  const theme = useSelector((state: any) => state.theme.theme);
+  const themeClass = useThemeClass();
 
   const handleLanguageChange = (lang: string) => {
     const langKey = languageMap[lang] || 'en';
@@ -134,7 +135,7 @@ const GeneralSettings: React.FC = () => {
   );
 
   return (
-    <div className={`space-y-10 theme-${theme} bg-bg text-text border-border`}>
+    <div className={`space-y-8 ${themeClass} bg-bg text-text`}>
     {/* Language */}
     <div>
         <label className="block text-sm font-semibold text-text-secondary mb-5">{t('language')}</label>

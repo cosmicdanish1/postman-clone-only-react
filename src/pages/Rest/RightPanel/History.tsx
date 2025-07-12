@@ -22,8 +22,8 @@ const THEME_SVGS = {
 };
 
 const History: React.FC = () => {
-  const theme = useSelector((state: any) => state.theme.theme);
-  const svgSrc = THEME_SVGS[theme] || THEME_SVGS.light;
+  const theme = useSelector((state: { theme: { theme: keyof typeof THEME_SVGS } }) => state.theme.theme);
+  const svgSrc = (THEME_SVGS as Record<string, string>)[theme] ?? THEME_SVGS.light;
   const textClass = theme === 'light' ? 'text-black' : 'text-white';
   const subTextClass = theme === 'light' ? 'text-gray-500' : 'text-gray-400';
 

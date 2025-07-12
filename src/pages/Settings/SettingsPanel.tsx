@@ -5,10 +5,10 @@
 // Role: Renders the main settings panel and tabs for the Settings feature.
 // Located at: src/pages/Settings/SettingsPanel.tsx
 import React from 'react';
-import { useSelector } from 'react-redux';
 import GeneralSettings from './GeneralSettings';
 import ThemeSettings from './ThemeSettings';
 import InterceptorSettings from './InterceptorSettings';
+import useThemeClass from '../../hooks/useThemeClass';
 
 // SettingsPanel is the main layout for the settings page.
 // It organizes and renders the three main settings cards:
@@ -39,9 +39,9 @@ const sections = [
 ];
 
 const SettingsPanel: React.FC = () => {
-  const theme = useSelector((state: any) => state.theme.theme);
+  const { themeClass } = useThemeClass();
   return (
-    <div className={`flex-1 overflow-y-auto p-1 pr-2 sm:pr-8 bg-bg text-text scrollbar-hide theme-${theme}`}>
+    <div className={`flex-1 overflow-y-auto p-1 pr-2 sm:pr-8 bg-bg text-text scrollbar-hide ${themeClass}`}>
       {/* General Card */} 
       <div className="flex flex-col sm:flex-row bg-bg text-text shadow-md">
         <div className="px-2 py-4 sm:pl-0 sm:pr-8 sm:py-8 flex flex-col items-start justify-start w-full sm:min-w-[220px] sm:max-w-xs">

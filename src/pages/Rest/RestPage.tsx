@@ -2,83 +2,40 @@
 // Type: Page (REST feature entry)
 // Imports: React, various tab and panel components
 // Imported by: App.tsx (via route)
-// Role: Main entry point for the REST feature, renders the REST request/response UI.
+// Role: Main entry point for the REST feature, renders the REST request/UI.
 // Located at: src/pages/Rest/RestPage.tsx
-import React, { useState, useRef, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useRef } from 'react';
+import { useRestTabs } from '../../hooks/useRestTabs';
+import { motion } from 'framer-motion';
 import { arrayMove } from '@dnd-kit/sortable';
-import TabsBar from '../../components/TabsBar';
+import RestTabsHeader from './components/RestTabsHeader';
 import RequestEditor from './RequestEditor';
-import TabContentArea from '../../components/TabContentArea';
-import EditEnvironmentModal from '../../components/EditEnvironmentModal';
-import SaveAsModal from '../../components/SaveAsModal';
-import ImportCurlModal from '../../components/ImportCurlModal';
-import GenerateCodeModal from '../../components/GenerateCodeModal';
+import EditEnvironmentModal from '../../components/modals/EditEnvironmentModal';
+import SaveAsModal from '../../components/modals/SaveAsModal';
+import ImportCurlModal from '../../components/modals/ImportCurlModal';
+import GenerateCodeModal from '../../components/modals/GenerateCodeModal';
+import TabContentArea from './TabContentArea/TabContentArea';
+
 import { uuidv4 } from '../../utils/helpers';
 import SortableParamRow from '../../components/SortableParamRow';
-import type { TabData, Parameter, Variable } from '../../types';
+import type { Parameter, Variable } from '../../types';
 import SortableHeaderRow from '../../components/SortableHeaderRow';
 import SortableVariableRow from '../../components/SortableVariableRow';
 import { METHODS, contentTypeOptions } from '../../constants';
-import { useSelector } from 'react-redux';
-import RestRightPanel from '../../components/RestRightPanel';
+import RestRightPanel from './RightPanel/RestRightPanel';
 import RestBottomActions from '../../components/RestBottomActions';
+import RestSplitPane from './components/RestSplitPane';
+import { useOutsideClick } from '../../hooks/useOutsideClick';
+import useAccentColor from '../../hooks/useAccentColor';
+import useThemeClass from '../../hooks/useThemeClass';
 
-const defaultTabData = (): TabData => ({
-  id: uuidv4(),
-  method: 'GET',
-  tabName: 'Untitled',
-  showModal: false,
-  modalValue: 'Untitled',
-  activeTab: 'parameters',
-  parameters: [],
-  body: '',
-  headers: [
-    { id: uuidv4(), key: '', value: '', description: '', locked: false },
-    { id: uuidv4(), key: 'content type', value: '', description: '', locked: true }
-  ],
-  authorization: '',
-  preRequest: '',
-  postRequest: '',
-  variables: [],
-  // Response-related properties
-  responseStatus: null,
-  responseStatusText: '',
-  responseHeaders: [],
-  responseBody: '',
-  responseTime: null,
-  responseSize: null,
-  isLoading: false,
-  responseError: null,
-});
-
-const MIN_RIGHT_WIDTH = 260;
-const MAX_RIGHT_WIDTH = 500; // Use fixed limit instead of 50% of window
-const DEFAULT_RIGHT_WIDTH = 340;
 
 const HoppscotchClone: React.FC = () => {
-  const theme = useSelector((state: any) => state.theme.theme);
+  const { themeClass, isDarkMode } = useThemeClass();
+  const accentHex = useAccentColor();
 
 
-    const accentColors = [
-    { key: 'green', color: '#22c55e' },
-    { key: 'blue', color: '#2563eb' },
-    { key: 'cyan', color: '#06b6d4' },
-    { key: 'purple', color: '#7c3aed' },
-    { key: 'yellow', color: '#eab308' },
-    { key: 'orange', color: '#f59e42' },
-    { key: 'red', color: '#ef4444' },
-    { key: 'pink', color: '#ec4899' },
-  ];
-
-
- const accentColor = useSelector((state: any) => state.theme.accentColor);
-
- const accentHex = accentColors.find(c => c.key === accentColor)?.color;
-
-
-  const [tabs, setTabs] = useState<TabData[]>([defaultTabData()]);
-  const [activeTabId, setActiveTabId] = useState(tabs[0].id);
+  const { tabs, setTabs, activeTabId, setActiveTabId, activeTabObj, addTab, switchTab, setMethod, setActiveTab } = useRestTabs();
   const [envDropdownOpen, setEnvDropdownOpen] = useState(false);
   const [envTab, setEnvTab] = useState<'personal' | 'workspace'>('personal');
   const handleSetEnvTab = (tab: string) => setEnvTab(tab as 'personal' | 'workspace');
@@ -98,11 +55,7 @@ const HoppscotchClone: React.FC = () => {
   const generatedCode = `curl --request GET \\n  --url https://echo.hoppscotch.io/`;
   const [showSaveDropdown, setShowSaveDropdown] = useState(false);
   const saveDropdownRef = React.useRef<HTMLDivElement>(null!);
-  const [rightWidth, setRightWidth] = useState(DEFAULT_RIGHT_WIDTH);
-  const [dragging, setDragging] = useState(false);
-  const dividerRef = useRef<HTMLDivElement>(null!);
-
-  // Remove the dynamic maxRightWidth calculation - use fixed MAX_RIGHT_WIDTH instead
+  // Right side resizing now handled by useDragResize inside RestSplitPane
 
   // Query Parameters state and handlers
   const [queryParams, setQueryParams] = React.useState<Parameter[]>([
@@ -119,12 +72,6 @@ const HoppscotchClone: React.FC = () => {
     msOverflowStyle: 'none', // IE 10+
     overflowY: 'auto',
   };
-
- 
-
-
-
-
 
   const handleParamChange = (id: string, field: string, value: string): void => {
     setQueryParams(prev => {
@@ -152,8 +99,6 @@ const HoppscotchClone: React.FC = () => {
     }
   };
 
-  // Helper to get the active tab object
-  const activeTabObj = tabs.find(tab => tab.id === activeTabId) || tabs[0];
 
   const methodColors: Record<string, string> = {
     GET: '#10B981',
@@ -168,38 +113,6 @@ const HoppscotchClone: React.FC = () => {
     CUSTOM: '#737373',
   };
 
-  // Modal logic for renaming tab
-  const closeModal = (): void => {
-    setTabs(tabs => tabs.map(tab => tab.id === activeTabId ? { ...tab, showModal: false } : tab));
-  };
-  const saveModal = (): void => {
-    setTabs(tabs => tabs.map(tab => tab.id === activeTabId ? { ...tab, tabName: tab.modalValue, showModal: false } : tab));
-  };
-
-  // Add new tab
-  const addTab = (): void => {
-    const newTab = defaultTabData();
-    setTabs([...tabs, newTab]);
-    setActiveTabId(newTab.id);
-  };
-
-  // Switch tab
-  const switchTab = (id: string): void => setActiveTabId(id);
-
-  // Update method for active tab
-  const setMethod = (method: string): void => {
-    setTabs(tabs => tabs.map(tab => tab.id === activeTabId ? { ...tab, method } : tab));
-  };
-
-  // Update activeTab (Parameters, Body, etc.) for active tab
-  const setActiveTab = (tab: string): void => {
-    setTabs(tabs => tabs.map(t => t.id === activeTabId ? { ...t, activeTab: tab } : t));
-  };
-
-  // Update modal value for renaming
-  const setModalValue = (val: string): void => {
-    setTabs(tabs => tabs.map(tab => tab.id === activeTabId ? { ...tab, modalValue: val } : tab));
-  };
 
   // Click-away handler for variable popover
   React.useEffect(() => {
@@ -229,50 +142,14 @@ const HoppscotchClone: React.FC = () => {
     return () => document.removeEventListener('mousedown', handleClick);
   }, [editModal]);
 
-  // Close custom dropdown on outside click
-  React.useEffect(() => {
-    if (!methodDropdownOpen) return;
-    function handleClick(e: MouseEvent) {
-      if (
-        methodDropdownRef.current &&
-        !methodDropdownRef.current.contains(e.target as Node)
-      ) {
-        setMethodDropdownOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
-  }, [methodDropdownOpen]);
+  // Close method dropdown via reusable hook
+  useOutsideClick(methodDropdownRef, methodDropdownOpen, () => setMethodDropdownOpen(false));
 
-  // Close send menu on outside click
-  React.useEffect(() => {
-    if (!sendMenuOpen) return;
-    function handleClick(e: MouseEvent) {
-      if (
-        sendMenuRef.current &&
-        !sendMenuRef.current.contains(e.target as Node)
-      ) {
-        setSendMenuOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
-  }, [sendMenuOpen]);
+  // Close send menu via reusable hook
+  useOutsideClick(sendMenuRef, sendMenuOpen, () => setSendMenuOpen(false));
 
-  // Close save dropdown on outside click
-  React.useEffect(() => {
-    if (!showSaveDropdown) return;
-    function handleClick(e: MouseEvent) {
-      if (
-        saveDropdownRef.current &&
-        !saveDropdownRef.current.contains(e.target as Node)
-      ) {
-        setShowSaveDropdown(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
-  }, [showSaveDropdown]);
+  // Close save dropdown via reusable hook
+  useOutsideClick(saveDropdownRef, showSaveDropdown, () => setShowSaveDropdown(false));
 
   // State for code editor content
   const [rawBody, setRawBody] = useState('');
@@ -564,33 +441,10 @@ const HoppscotchClone: React.FC = () => {
 
   const [authorization, setAuthorization] = useState('');
 
-  React.useEffect(() => {
-    if (!dragging) return;
-    const handleMouseMove = (e: MouseEvent) => {
-      const container = dividerRef.current?.parentElement;
-      if (!container) return;
-      const rect = container.getBoundingClientRect();
-      let newWidth = rect.right - e.clientX;
-      if (newWidth < MIN_RIGHT_WIDTH) newWidth = MIN_RIGHT_WIDTH;
-      if (newWidth > MAX_RIGHT_WIDTH) newWidth = MAX_RIGHT_WIDTH;
-      setRightWidth(newWidth);
-    };
-    const handleMouseUp = () => {
-      setDragging(false);
-      document.body.style.cursor = '';
-    };
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseup', handleMouseUp);
-    document.body.style.cursor = 'col-resize';
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
-      document.body.style.cursor = '';
-    };
-  }, [dragging]);
+
 
   // State for resizable bottom sheet overlay
-  const mainPanelRef = useRef<HTMLDivElement>(null);
+
   const MIN_OVERLAY_HEIGHT = 80;
   const MAX_OVERLAY_HEIGHT = 400;
   const [overlayHeight, setOverlayHeight] = useState(180);
@@ -624,19 +478,14 @@ const HoppscotchClone: React.FC = () => {
 
   // Add at the top of the component, after overlayHeight state:
   const [dragBarHover, setDragBarHover] = useState(false);
-
-  let themeClass = '';
-  if (theme === 'dark') themeClass = 'theme-dark';
-  else if (theme === 'black') themeClass = 'theme-black';
-  else themeClass = 'theme-light'; // fallback
-
-  // After themeClass is set:
-  const activeTabTextClass = theme === 'light' ? 'text-black' : 'text-white';
+  const activeTabTextClass = isDarkMode ? 'text-white' : 'text-black';
 
   return (
-    <div className={`flex flex-col h-full w-full theme-${theme} bg-bg text-text `}>
-      {/* Edit Environment Modal */}
-      <EditEnvironmentModal
+    <div className={`flex flex-col h-full w-full ${themeClass} bg-bg text-text`}>
+      
+
+      
+<EditEnvironmentModal
         open={editModal !== null}
         onClose={() => setEditModal(null)}
         modalValue={editModal === 'global' ? 'Global' : 'Environment'}
@@ -644,7 +493,7 @@ const HoppscotchClone: React.FC = () => {
         onSave={() => setEditModal(null)}
       />
       {/* Top full-width bar */}
-      <TabsBar
+      <RestTabsHeader
         tabs={tabs}
         activeTabId={activeTabId}
         onSwitchTab={switchTab}
@@ -670,62 +519,10 @@ const HoppscotchClone: React.FC = () => {
         setEnvTab={handleSetEnvTab}
       />
 
-      {/* Modal */}
-      <AnimatePresence>
-        {activeTabObj.showModal && (
-          <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <motion.div
-              className="bg-zinc-900 rounded-xl shadow-xl p-8 w-full max-w-md relative border border-zinc-700"
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-            >
-              <button
-                className="absolute top-4 right-4 text-gray-400 hover:text-white text-xl"
-                onClick={closeModal}
-                aria-label="Close"
-              >
-                &times;
-              </button>
-              <div className="text-2xl font-bold text-center mb-6">Edit Request</div>
-              <div className="mb-6">
-                <label className="block text-xs text-gray-400 mb-1">Label</label>
-                <div className="flex items-center bg-zinc-800 rounded px-3 py-2">
-                  <input
-                    className="flex-1 bg-transparent border-none outline-none text-white text-lg"
-                    value={activeTabObj.modalValue}
-                    onChange={e => setModalValue(e.target.value)}
-                    autoFocus
-                  />
-                </div>
-              </div>
-              <div className="flex gap-4 justify-start mt-4">
-                <button
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded font-semibold"
-                  onClick={saveModal}
-                >
-                  Save
-                </button>
-                <button
-                  className="bg-zinc-800 hover:bg-zinc-700 text-white px-6 py-2 rounded font-semibold"
-                  onClick={closeModal}
-                >
-                  Cancel
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
-      {/* Save as Modal */}
-      <SaveAsModal
+      
+      
+<SaveAsModal
         open={showSaveModal}
         onClose={() => setShowSaveModal(false)}
         saveRequestName={saveRequestName}
@@ -733,8 +530,9 @@ const HoppscotchClone: React.FC = () => {
         onSave={() => setShowSaveModal(false)}
       />
 
-      {/* Import cURL Modal */}
-      <ImportCurlModal
+      
+      
+<ImportCurlModal
         open={showImportCurlModal}
         onClose={() => setShowImportCurlModal(false)}
         curlInput={curlInput}
@@ -742,8 +540,9 @@ const HoppscotchClone: React.FC = () => {
         onImport={() => setShowImportCurlModal(false)}
       />
 
-      {/* Generate code Modal */}
-      <GenerateCodeModal
+      
+      
+<GenerateCodeModal
         open={showGenerateCodeModal}
         onClose={() => setShowGenerateCodeModal(false)}
         selectedLanguage={selectedLanguage}
@@ -752,122 +551,119 @@ const HoppscotchClone: React.FC = () => {
       />
 
       {/* Main layout below top bar */}
-      <div className="flex flex-col sm:flex-row flex-1 w-full min-h-0">
-        {/* Left Content (main panel) */}
-        <div className="flex flex-col flex-1 min-h-0 relative" ref={mainPanelRef}>
-          <div className="flex flex-col flex-1 p-2 sm:p-4 min-w-0 min-h-0">
-            {/* URL bar */}
-            <RequestEditor
-              METHODS={METHODS}
-              method={activeTabObj.method}
-              setMethod={setMethod}
-              methodDropdownOpen={methodDropdownOpen}
-              setMethodDropdownOpen={setMethodDropdownOpen}
-              methodDropdownRef={methodDropdownRef}
-              methodColors={methodColors}
-              url={''}
-              setUrl={url => setTabs(tabs => tabs.map(tab => tab.id === activeTabId ? { ...tab, url } : tab))}
-              onSend={() => {
-                // setShowInterceptorInPanel(false); // Removed as per edit hint
-                // setTimeout(() => setShowInterceptorInPanel(true), 1000); // Removed as per edit hint
-              }}
-              onSendMenuOpen={() => setSendMenuOpen(v => !v)}
-              sendMenuOpen={sendMenuOpen}
-              sendMenuRef={sendMenuRef}
-              onShowImportCurlModal={() => { setShowImportCurlModal(true); setSendMenuOpen(false); }}
-              onShowGenerateCodeModal={() => { setShowGenerateCodeModal(true); setSendMenuOpen(false); }}
-              onShowSaveModal={() => setShowSaveModal(true)}
-              onShowSaveDropdown={() => setShowSaveDropdown(v => !v)}
-              showSaveDropdown={showSaveDropdown}
-              saveDropdownRef={saveDropdownRef}
-              saveRequestName={saveRequestName}
-            />
-            {/* Tabs */}
-            <div className="flex items-center gap-2 text-[14px]  mb-2 overflow-x-auto scrollbar-hide whitespace-nowrap">
-              {['parameters', 'body', 'headers', 'authorization', 'pre-request', 'post-request', 'variables'].map(tab => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className="relative px-2 py-1 font-semibold bg-transparent focus:outline-none"
-                  style={{ background: 'none', border: 'none' }}
-                >
-                  <span className={activeTabObj.activeTab === tab ? activeTabTextClass : 'text-gray-400'}>
-                    {tab.charAt(0).toUpperCase() + tab.slice(1).replace('-', ' ')}
-                  </span>
-                  {activeTabObj.activeTab === tab && (
-                    <motion.div
-                      layoutId="active-underline"
-                      className="absolute left-0"
-                      style={{
-                        bottom: 0,
-                        height: '3px',
-                        width: '100%',
-                        background: accentHex,
-                        marginTop: '4px',
-                      }}
-                      transition={{
-                        type: 'spring',
-                        stiffness: 500,
-                        damping: 30
-                      }}
-                    />
-                  )}
-                </button>
-              ))}
-            </div>
-            {/* Tab content area (example: Parameters) */}
-            {['parameters', 'body', 'headers', 'authorization', 'pre-request', 'post-request', 'variables'].includes(activeTabObj.activeTab) && (
-              <TabContentArea
-                activeTab={activeTabObj.activeTab}
-                queryParams={queryParams}
-                handleParamChange={handleParamChange}
-                handleDeleteParam={handleDeleteParam}
-                handleDragEnd={handleDragEnd}
-                SortableParamRow={SortableParamRow}
-                contentType={contentType}
-                contentTypeOptions={contentTypeOptions}
-                setContentType={setContentType}
-                dropdownOpen={dropdownOpen}
-                setDropdownOpen={setDropdownOpen}
-                hideScrollbarStyle={hideScrollbarStyle}
-                setActiveTab={setActiveTab}
-                rawBody={rawBody}
-                setRawBody={setRawBody}
-                // Headers tab props
-                headers={activeTabObj.activeTab === 'headers' ? activeTabObj.headers : []}
-                handleHeaderChange={activeTabObj.activeTab === 'headers' ? (handleHeaderChange as (id: string, field: string, value: string) => void) : () => {}}
-                handleDeleteHeader={activeTabObj.activeTab === 'headers' ? (handleDeleteHeader as (id: string) => void) : () => {}}
-                handleAddHeader={activeTabObj.activeTab === 'headers' ? handleAddHeader : () => {}}
-                editHeadersActive={activeTabObj.activeTab === 'headers' ? editHeadersActive : false}
-                setEditHeadersActive={activeTabObj.activeTab === 'headers' ? setEditHeadersActive : () => {}}
-                SortableHeaderRow={activeTabObj.activeTab === 'headers' ? SortableHeaderRow : () => null}
-                uuidv4={uuidv4}
-                setTabs={setTabs}
-                activeTabId={activeTabId}
-                tabs={tabs}
-                authorization={authorization}
-                setAuthorization={setAuthorization}
-                // Pre-request tab props
-                preRequestScript={preRequestScript}
-                setPreRequestScript={setPreRequestScript}
-                insertPreRequestSnippet={insertPreRequestSnippet}
-                highlightPreRequestScript={highlightPreRequestScript}
-                preRequestDivRef={preRequestDivRef as React.RefObject<HTMLDivElement>}
-                // Post-request tab props
-                postRequestScript={postRequestScript}
-                setPostRequestScript={setPostRequestScript}
-                insertPostRequestSnippet={insertPostRequestSnippet}
-                highlightPostRequestScript={highlightPostRequestScript}
-                postRequestDivRef={postRequestDivRef as React.RefObject<HTMLDivElement>}
-                // Variables tab props
-                variables={variables}
-                handleVariableChange={handleVariableChange as (id: string, field: string, value: string) => void}
-                handleDeleteVariable={handleDeleteVariable}
-                handleVariableDragEnd={handleVariableDragEnd}
-                SortableVariableRow={SortableVariableRow}
-              />
-            )}
+      <RestSplitPane right={<RestRightPanel />}>
+        <div className="flex flex-col flex-1 overflow-hidden">
+          {/* Top full-width bar */}
+          <RequestEditor
+            METHODS={METHODS}
+            method={activeTabObj.method}
+            setMethod={setMethod}
+            methodDropdownOpen={methodDropdownOpen}
+            setMethodDropdownOpen={setMethodDropdownOpen}
+            methodDropdownRef={methodDropdownRef}
+            methodColors={methodColors}
+            url={''}
+            setUrl={url => setTabs(tabs => tabs.map(tab => tab.id === activeTabId ? { ...tab, url } : tab))}
+            onSend={() => {
+              // setShowInterceptorInPanel(false); // Removed as per edit hint
+              // setTimeout(() => setShowInterceptorInPanel(true), 1000); // Removed as per edit hint
+            }}
+            onSendMenuOpen={() => setSendMenuOpen(v => !v)}
+            sendMenuOpen={sendMenuOpen}
+            sendMenuRef={sendMenuRef}
+            onShowImportCurlModal={() => { setShowImportCurlModal(true); setSendMenuOpen(false); }}
+            onShowGenerateCodeModal={() => { setShowGenerateCodeModal(true); setSendMenuOpen(false); }}
+            onShowSaveModal={() => setShowSaveModal(true)}
+            onShowSaveDropdown={() => setShowSaveDropdown(v => !v)}
+            showSaveDropdown={showSaveDropdown}
+            saveDropdownRef={saveDropdownRef}
+            saveRequestName={saveRequestName}
+          />
+          {/* Tabs */}
+          <div className="flex items-center gap-2 text-[14px]  mb-2 overflow-x-auto scrollbar-hide whitespace-nowrap">
+            {['parameters', 'body', 'headers', 'authorization', 'pre-request', 'post-request', 'variables'].map(tab => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className="relative px-2 py-1 font-semibold bg-transparent focus:outline-none"
+                style={{ background: 'none', border: 'none' }}
+              >
+                <span className={activeTabObj.activeTab === tab ? activeTabTextClass : 'text-gray-400'}>
+                  {tab.charAt(0).toUpperCase() + tab.slice(1).replace('-', ' ')}
+                </span>
+                {activeTabObj.activeTab === tab && (
+                  <motion.div
+                    layoutId="active-underline"
+                    className="absolute left-0"
+                    style={{
+                      bottom: 0,
+                      height: '3px',
+                      width: '100%',
+                      background: accentHex,
+                      marginTop: '4px',
+                    }}
+                    transition={{
+                      type: 'spring',
+                      stiffness: 500,
+                      damping: 30
+                    }}
+                  />
+                )}
+              </button>
+            ))}
           </div>
+          {/* Tab content area (example: Parameters) */}
+          {['parameters', 'body', 'headers', 'authorization', 'pre-request', 'post-request', 'variables'].includes(activeTabObj.activeTab) && (
+            <TabContentArea
+              activeTab={activeTabObj.activeTab}
+              queryParams={queryParams}
+              handleParamChange={handleParamChange}
+              handleDeleteParam={handleDeleteParam}
+              handleDragEnd={handleDragEnd}
+              SortableParamRow={SortableParamRow}
+              contentType={contentType}
+              contentTypeOptions={contentTypeOptions}
+              setContentType={setContentType}
+              dropdownOpen={dropdownOpen}
+              setDropdownOpen={setDropdownOpen}
+              hideScrollbarStyle={hideScrollbarStyle}
+              setActiveTab={setActiveTab}
+              rawBody={rawBody}
+              setRawBody={setRawBody}
+              // Headers tab props
+              headers={activeTabObj.activeTab === 'headers' ? activeTabObj.headers : []}
+              handleHeaderChange={activeTabObj.activeTab === 'headers' ? (handleHeaderChange as (id: string, field: string, value: string) => void) : () => {}}
+              handleDeleteHeader={activeTabObj.activeTab === 'headers' ? (handleDeleteHeader as (id: string) => void) : () => {}}
+              handleAddHeader={activeTabObj.activeTab === 'headers' ? handleAddHeader : () => {}}
+              editHeadersActive={activeTabObj.activeTab === 'headers' ? editHeadersActive : false}
+              setEditHeadersActive={activeTabObj.activeTab === 'headers' ? setEditHeadersActive : () => {}}
+              SortableHeaderRow={activeTabObj.activeTab === 'headers' ? SortableHeaderRow : () => null}
+              uuidv4={uuidv4}
+              setTabs={setTabs}
+              activeTabId={activeTabId}
+              tabs={tabs}
+              authorization={authorization}
+              setAuthorization={setAuthorization}
+              // Pre-request tab props
+              preRequestScript={preRequestScript}
+              setPreRequestScript={setPreRequestScript}
+              insertPreRequestSnippet={insertPreRequestSnippet}
+              highlightPreRequestScript={highlightPreRequestScript}
+              preRequestDivRef={preRequestDivRef as React.RefObject<HTMLDivElement>}
+              // Post-request tab props
+              postRequestScript={postRequestScript}
+              setPostRequestScript={setPostRequestScript}
+              insertPostRequestSnippet={insertPostRequestSnippet}
+              highlightPostRequestScript={highlightPostRequestScript}
+              postRequestDivRef={postRequestDivRef as React.RefObject<HTMLDivElement>}
+              // Variables tab props
+              variables={variables}
+              handleVariableChange={handleVariableChange as (id: string, field: string, value: string) => void}
+              handleDeleteVariable={handleDeleteVariable}
+              handleVariableDragEnd={handleVariableDragEnd}
+              SortableVariableRow={SortableVariableRow}
+            />
+          )}
           {/* Overlay: resizable bottom sheet RestBottomActions */}
           <div
             className={themeClass}
@@ -878,8 +674,6 @@ const HoppscotchClone: React.FC = () => {
               bottom: 0,
               height: overlayHeight,
               zIndex: 50,
-              // background removed, now handled by themeClass
-              // No boxShadow, no borderRadius for sharp rectangle edges
               transition: draggingOverlay ? 'none' : 'height 0.15s',
               display: 'flex',
               flexDirection: 'column',
@@ -910,23 +704,10 @@ const HoppscotchClone: React.FC = () => {
             </div>
           </div>
         </div>
-        {/* Vertical divider for resizing (hide on mobile) */}
-        <div
-          ref={dividerRef}
-          className="w-2 h-full cursor-col-resize bg-border hover:bg-blue-600 transition hidden sm:block"
-          onMouseDown={() => setDragging(true)}
-          style={{ zIndex: 10 }}
-        />
-        {/* Right sub sidebar for REST page (hide on mobile) */}
-        <div className="flex-none hidden sm:block" style={{ width: rightWidth, minWidth: MIN_RIGHT_WIDTH, maxWidth: MAX_RIGHT_WIDTH, overflow: 'hidden' }}>
-          <RestRightPanel />
-        </div>
-      </div>
-      {/* Add the resizable bottom panel here */}
-      {/** Only show HelpShortcutPanel in ResizableBottomPanel on sm and up */}
-      {/* Removed ResizableBottomPanel and HelpShortcutPanel for debugging */}
+      </RestSplitPane>
     </div>
+
   );
 };
 
-export default HoppscotchClone; 
+export default HoppscotchClone;

@@ -7,9 +7,9 @@
 import React from 'react';
 import GraphQLQueryEditor from './GraphQLQueryEditor';
 import GraphQLVariablesEditor from './GraphQLVariablesEditor';
-import HeadersTabContent from '../../components/TabContentArea/HeadersTabContent';
+import HeadersTabContent from '../Rest/TabContentArea/HeadersTabContent';
 import SortableHeaderRow from '../../components/SortableHeaderRow';
-import AuthorizationTabContent from '../../components/TabContentArea/AuthorizationTabContent';
+import AuthorizationTabContent from '../Rest/TabContentArea/AuthorizationTabContent';
 import { useSelector } from 'react-redux';
 
 interface GraphQLTabContentAreaProps {

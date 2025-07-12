@@ -6,7 +6,7 @@
 // Located at: src/pages/Settings/InterceptorCard.tsx
 import React, { useState } from 'react';
 import { FaChrome, FaFirefox } from 'react-icons/fa';
-import { useSelector } from 'react-redux';
+import useThemeClass from '../../hooks/useThemeClass';
 
 const interceptorOptions = [
   'Browser',
@@ -40,11 +40,11 @@ const BrowserExtensionSection: React.FC = () => (
 );
 
 const InterceptorCard: React.FC = () => {
-  const theme = useSelector((state: any) => state.theme.theme);
+  const themeClass = useThemeClass();
   const [selected, setSelected] = useState('Browser extension');
 
   return (
-    <div className={`bg-bg border border-border rounded-lg shadow-lg p-5 w-80 text-left z-50 theme-${theme}`}>
+    <div className={`bg-bg border border-border rounded-lg shadow-lg p-5 w-80 text-left z-50 ${themeClass}`}>
       <div className="font-bold text-lg text-text-primary mb-1">Interceptor</div>
       <div className="text-text-secondary text-sm mb-4">Middleware between application and APIs.</div>
       <div className="flex flex-col gap-3 mb-2">
