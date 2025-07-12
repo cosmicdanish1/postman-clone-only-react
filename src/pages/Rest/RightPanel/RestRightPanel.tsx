@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { useSelector } from 'react-redux';
+import useThemeClass from '../../../hooks/useThemeClass';
 import Collections from './Collections';
 import History from './History';
 import GenerateCode from './GenerateCode';
@@ -56,40 +56,15 @@ const DEFAULT_WIDTH = 340;
 const MAX_WIDTH = 500; // Limited maximum width
 
 const RestRightPanel: React.FC = () => {
-  const theme = useSelector((state: any) => state.theme.theme);
-  const accentColor = useSelector((state: any) => state.theme.accentColor);
+  // Use theme class hook for consistent theming
+  const { themeClass, borderClass, accentColor, accentColorClass } = useThemeClass();
+  
   const [activeTab, setActiveTab] = useState<PanelTab>('collections');
   const [width, setWidth] = useState(DEFAULT_WIDTH);
   const [dragging, setDragging] = useState<'left' | 'right' | null>(null);
   const [hovered, setHovered] = useState(false);
   const startX = useRef(0);
   const startWidth = useRef(width);
-
-  // 🟡 Theme and Accent Color Setup
-  const accentColors = [
-    { key: 'green', color: '#22c55e' },
-    { key: 'blue', color: '#2563eb' },
-    { key: 'cyan', color: '#06b6d4' },
-    { key: 'purple', color: '#7c3aed' },
-    { key: 'yellow', color: '#eab308' },
-    { key: 'orange', color: '#f59e42' },
-    { key: 'red', color: '#ef4444' },
-    { key: 'pink', color: '#ec4899' },
-  ];
-
-  const accentHex = accentColors.find(c => c.key === accentColor)?.color;
-
-  // 🟡 Dynamic classes based on theme
-  let themeClass = '';
-  if (theme === 'dark') themeClass = 'theme-dark';
-  else if (theme === 'black') themeClass = 'theme-black';
-
-  let borderClass = 'border-l border-neutral-700';
-  if (theme === 'black') {
-    borderClass = 'border-l border-neutral-800';
-  } else if (theme === 'light') {
-    borderClass = 'border-l border-gray-200';
-  }
 
   const onMouseDown = (e: React.MouseEvent, edge: 'left' | 'right') => {
     setDragging(edge);
@@ -132,16 +107,9 @@ const RestRightPanel: React.FC = () => {
     >
       {/* Thin left drag handle */}
       <div
+        className={`h-full cursor-ew-resize z-[41] absolute left-0 top-0 transition-colors duration-150 ${dragging === 'left' ? accentColorClass.bg : 'bg-transparent'}`}
         style={{ 
           width: 4, // Much thinner drag handle
-          height: '100%', 
-          cursor: 'ew-resize', 
-          background: dragging === 'left' ? accentHex : 'transparent', 
-          zIndex: 41, 
-          position: 'absolute', 
-          left: 0, 
-          top: 0,
-          transition: 'background 0.15s ease'
         }}
         onMouseDown={e => onMouseDown(e, 'left')}
         onMouseEnter={() => setHovered(true)}
@@ -154,7 +122,7 @@ const RestRightPanel: React.FC = () => {
             style={{
               width: '100%',
               height: '100%',
-              background: accentHex,
+              background: accentColor,
               opacity: dragging ? 1 : 0.6,
               transition: 'opacity 0.15s ease'
             }}
@@ -178,7 +146,7 @@ const RestRightPanel: React.FC = () => {
               onClick={() => setActiveTab(item.key as PanelTab)}
               type="button"
             >
-              <span style={activeTab === item.key ? { color: accentHex } : undefined}>
+              <span className={activeTab === item.key ? accentColorClass.text : ''}>
                 {item.icon}
               </span>
             </button>

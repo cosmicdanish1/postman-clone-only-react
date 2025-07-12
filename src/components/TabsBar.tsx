@@ -7,9 +7,8 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import EditEnvironmentModal from './modals/EditEnvironmentModal';
-import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-import { getThemeStyles } from '../utils/getThemeStyles';
+import useThemeClass from '../hooks/useThemeClass';
 
 interface Tab {
   id: string;
@@ -62,31 +61,13 @@ const TabsBar: React.FC<TabsBarProps> = ({
   const envPopoverRef = useRef<HTMLDivElement>(null);
   const [envSearch, setEnvSearch] = useState('');
 
-  // Theming logic (must be at the top level)
-  const theme = useSelector((state: any) => state.theme.theme);
-
-  // No class for light (default)
-
+  // Get theme classes and accent color utilities from useThemeClass
   const { t } = useTranslation();
-const accentColors = [
-    { key: 'green', color: '#22c55e' },
-    { key: 'blue', color: '#2563eb' },
-    { key: 'cyan', color: '#06b6d4' },
-    { key: 'purple', color: '#7c3aed' },
-    { key: 'yellow', color: '#eab308' },
-    { key: 'orange', color: '#f59e42' },
-    { key: 'red', color: '#ef4444' },
-    { key: 'pink', color: '#ec4899' },
-  ];
-
-
-   const accentColor = useSelector((state: any) => state.theme.accentColor);
-  const accentHex = accentColors.find(c => c.key === accentColor)?.color;
+  const { themeClass, buttonBgClass, accentColor, accentColorClass } = useThemeClass();
+  const accentHex = accentColor; // Keep for backward compatibility
 
   // Click-away handler for popover
 
-    const { themeClass,
-        buttonBgClass } = getThemeStyles(theme);
   useEffect(() => {
     if (!showVarsPopover) return;
     function handleClick(e: MouseEvent) {
@@ -223,7 +204,7 @@ const accentColors = [
             {/* Layers icon */}
             <button
               ref={envBtnRef}
-              className="flex items-center h-full opacity-50 hover:opacity-100"
+              className={`flex items-center h-full opacity-50 hover:opacity-100 ${accentColorClass.hover} transition-opacity`}
               onClick={() => setEnvDropdownOpen(!envDropdownOpen)}
               tabIndex={0}
             >

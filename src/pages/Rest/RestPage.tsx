@@ -32,7 +32,7 @@ import useThemeClass from '../../hooks/useThemeClass';
 
 const HoppscotchClone: React.FC = () => {
   const { themeClass, isDarkMode } = useThemeClass();
-  const accentHex = useAccentColor();
+  const { current: accentHex } = useAccentColor();
 
 
   const { tabs, setTabs, activeTabId, setActiveTabId, activeTabObj, addTab, switchTab, setMethod, setActiveTab } = useRestTabs();
@@ -599,7 +599,7 @@ const HoppscotchClone: React.FC = () => {
                       bottom: 0,
                       height: '3px',
                       width: '100%',
-                      background: accentHex,
+                      background: accentHex as string,
                       marginTop: '4px',
                     }}
                     transition={{

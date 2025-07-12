@@ -1,0 +1,14 @@
+{
+  "search": {
+    "all": "All",
+    "requests": "Requests",
+    "collections": "Collections",
+    "environments": "Environments",
+    "documentation": "Documentation",
+    "search_and_commands": "Search and commands...",
+    "placeholder": "Search requests, collections, and more...",
+    "recent_searches": "Recent searches",
+    "no_results": "No results found",
+    "tip": "Press Esc to close"
+  }
+}

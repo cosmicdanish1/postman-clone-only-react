@@ -1,0 +1,19 @@
+{
+  "download": {
+    "title": "Download Postman",
+    "subtitle": "Get the latest version for your platform",
+    "windows": {
+      "title": "Windows",
+      "subtitle": "Windows 7 or later (64-bit)"
+    },
+    "mac": {
+      "title": "Mac",
+      "subtitle": "macOS 10.13 or later"
+    },
+    "linux": {
+      "title": "Linux",
+      "subtitle": "Supports most Linux distributions"
+    },
+    "viewAll": "View all downloads"
+  }
+}

@@ -6,7 +6,7 @@
 // Located at: src/pages/GraphQL/GraphQLTabBar.tsx
 import React, { useRef, useLayoutEffect, useState } from 'react';
 import { FiPlus } from 'react-icons/fi';
-import { useSelector } from 'react-redux';
+import useThemeClass from '../../hooks/useThemeClass';
 
 interface Tab {
   id: string;
@@ -44,12 +44,8 @@ const GraphQLTabBar: React.FC<GraphQLTabBarProps> = ({
   const [hoveredTabId, setHoveredTabId] = useState<string | null>(null);
   const [hoveredCloseId, setHoveredCloseId] = useState<string | null>(null);
 
-  // Theming logic
-  const theme = useSelector((state: any) => state.theme.theme);
-  let themeClass = '';
-  if (theme === 'dark') themeClass = 'theme-dark';
-  else if (theme === 'black') themeClass = 'theme-black';
-  // No class for light (default)
+  // Use theme class hook for consistent theming
+  const { themeClass } = useThemeClass();
 
   useLayoutEffect(() => {
     const el = tabRefs.current[activeTabId];

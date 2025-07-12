@@ -11,7 +11,7 @@ import GraphQLTabContentArea from './GraphQLTabContentArea';
 import GraphQLSecondaryTabBar from './GraphQLSecondaryTabBar';
 // import GraphQLHelpPanel from './GraphQLHelpPanel';
 import GraphQLRightPanel from './GraphQLRightPanel';
-import { useSelector } from 'react-redux';
+import useThemeClass from '../../hooks/useThemeClass';
 
 const MIN_RIGHT_WIDTH = 260;
 const MAX_RIGHT_WIDTH = 440;
@@ -36,12 +36,8 @@ const GraphQL: React.FC = () => {
   const dragStartX = useRef(0);
   const dragStartWidth = useRef(0);
 
-  // Theming logic
-  const theme = useSelector((state: any) => state.theme.theme);
-  let themeClass = '';
-  if (theme === 'dark') themeClass = 'theme-dark';
-  else if (theme === 'black') themeClass = 'theme-black';
-  // No class for light (default)
+  // Use theme class hook for consistent theming
+  const { themeClass } = useThemeClass();
 
   const switchTab = (id: string) => setActiveTabId(id);
   const addTab = () => {

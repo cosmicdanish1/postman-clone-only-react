@@ -6,7 +6,7 @@
 // Located at: src/pages/GraphQL/GraphQLVariablesEditor.tsx
 import React from 'react';
 import MonacoEditor from '@monaco-editor/react';
-import { useSelector } from 'react-redux';
+import useThemeClass from '../../hooks/useThemeClass';
 
 interface GraphQLVariablesEditorProps {
   variables: string | object;
@@ -23,11 +23,9 @@ const getMonacoTheme = (theme: string) => {
 };
 
 const GraphQLVariablesEditor: React.FC<GraphQLVariablesEditorProps> = ({ variables, onChange }) => {
-  const theme = useSelector((state: any) => state.theme.theme);
-  let themeClass = '';
-  if (theme === 'dark') themeClass = 'theme-dark';
-  else if (theme === 'black') themeClass = 'theme-black';
-  // No class for light (default)
+  // Use theme class hook for consistent theming
+  const { themeClass } = useThemeClass();
+  const theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
 
   let value: string;
   if (typeof variables === 'string') {

@@ -3,15 +3,9 @@
 // Imports: React, various tab components
 // Imported by: RestPage.tsx
 // Role: Renders the main request editor UI for the REST feature.
-// Located at: src/pages/Rest/RequestEditor.tsx
-// File: RequestEditor.tsx
-// Type: Component (request editor)
-// Imported by: RestPage.tsx
-// Role: Renders the main request editor UI for the REST feature.
 
 import React from 'react';
-import { useSelector } from 'react-redux';
-import { getThemeStyles } from '../../utils/getThemeStyles';
+import useThemeClass from '../../hooks/useThemeClass';
 
 interface RequestEditorProps {
   METHODS: string[];
@@ -37,9 +31,8 @@ interface RequestEditorProps {
 }
 
 const RequestEditor: React.FC<RequestEditorProps> = (props) => {
-  // ✅ Using useSelector correctly
-  const theme = useSelector((state: any) => state.theme.theme);
-  const accentColor = useSelector((state: any) => state.theme.accentColor);
+  // Using the theme class hook with accent color utilities
+  const { themeClass, textClass, borderClass, buttonBgClass, accentColorClass } = useThemeClass();
 
   const {
     METHODS,
@@ -64,41 +57,7 @@ const RequestEditor: React.FC<RequestEditorProps> = (props) => {
     saveRequestName,
   } = props;
 
-  // 🎨 Optional accent color if needed later
- 
-  
-
-  
-
-    const accentColors = [
-    { key: 'green', color: '#22c55e' },
-    { key: 'blue', color: '#2563eb' },
-    { key: 'cyan', color: '#06b6d4' },
-    { key: 'purple', color: '#7c3aed' },
-    { key: 'yellow', color: '#eab308' },
-    { key: 'orange', color: '#f59e42' },
-    { key: 'red', color: '#ef4444' },
-    { key: 'pink', color: '#ec4899' },
-  ];
-
-
-  const { themeClass,
-    textClass,
-    borderClass,
-  buttonBgClass } = getThemeStyles(theme);
-
-  // No class for light (default)
-
-
-
-
-
-
-
-
-
-
-const accentHex = accentColors.find(c => c.key === accentColor)?.color;
+  // accentHex is already defined above
 
   return (
     <div className="flex flex-col sm:flex-row items-stretch sm:items-center mb-4 gap-2 sm:gap-0">
@@ -153,16 +112,14 @@ const accentHex = accentColors.find(c => c.key === accentColor)?.color;
         {/* Send Buttons */}
         <div className="relative flex">
           <button
-            className="hover:bg-blue-700 text-white px-8 py-2 rounded-l-md font-semibold"
-            style={{ backgroundColor: accentHex }}
+            className={`text-white px-8 py-2 rounded-l-md font-semibold ${accentColorClass.bg} ${accentColorClass.hover}`}
             onClick={onSend}
           >
             Send
           </button>
           <button
-            className={`hover:bg-blue-700 text-white px-2 py-2 rounded-r-md font-semibold  ${borderClass} `}
+            className={`text-white px-2 py-2 rounded-r-md font-semibold ${borderClass} ${accentColorClass.bg} ${accentColorClass.hover}`}
             onClick={onSendMenuOpen}
-            style={{ backgroundColor: accentHex }}
             aria-label="Send options"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>

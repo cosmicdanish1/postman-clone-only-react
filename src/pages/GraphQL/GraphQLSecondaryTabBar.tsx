@@ -5,7 +5,7 @@
 // Role: Renders the secondary tab bar for switching between query, variables, headers, and authorization.
 // Located at: src/pages/GraphQL/GraphQLSecondaryTabBar.tsx
 import React from 'react';
-import { useSelector } from 'react-redux';
+import useThemeClass from '../../hooks/useThemeClass';
 
 interface GraphQLSecondaryTabBarProps {
   activeTab: string;
@@ -20,11 +20,8 @@ const tabs = [
 ];
 
 const GraphQLSecondaryTabBar: React.FC<GraphQLSecondaryTabBarProps> = ({ activeTab, onChange }) => {
-  const theme = useSelector((state: any) => state.theme.theme);
-  let themeClass = '';
-  if (theme === 'dark') themeClass = 'theme-dark';
-  else if (theme === 'black') themeClass = 'theme-black';
-  // No class for light (default)
+  // Use theme class hook for consistent theming
+  const { themeClass } = useThemeClass();
   return (
     <div className={`flex items-center gap-6 border-b border-border px-4 bg-bg text-text ${themeClass}`}>
       {tabs.map(tab => (

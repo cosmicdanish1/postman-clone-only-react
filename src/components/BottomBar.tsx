@@ -23,7 +23,7 @@ import useThemeClass from '../hooks/useThemeClass';
 const BottomBar: React.FC = () => {
   const dispatch = useDispatch();
   const expandNav = useSelector((state: RootState) => state.settings.expandNav);
-  const accentHex = useAccentColor();
+  const { current: accentHex } = useAccentColor();
   const { themeClass } = useThemeClass();
   const [showInterceptor, setShowInterceptor] = useState(false);
   const iconRef = useRef<HTMLButtonElement>(null);

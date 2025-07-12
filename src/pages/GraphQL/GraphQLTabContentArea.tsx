@@ -10,7 +10,7 @@ import GraphQLVariablesEditor from './GraphQLVariablesEditor';
 import HeadersTabContent from '../Rest/TabContentArea/HeadersTabContent';
 import SortableHeaderRow from '../../components/SortableHeaderRow';
 import AuthorizationTabContent from '../Rest/TabContentArea/AuthorizationTabContent';
-import { useSelector } from 'react-redux';
+import useThemeClass from '../../hooks/useThemeClass';
 
 interface GraphQLTabContentAreaProps {
   activeTabObj: any;
@@ -20,11 +20,8 @@ interface GraphQLTabContentAreaProps {
 
 const GraphQLTabContentArea: React.FC<GraphQLTabContentAreaProps> = ({ activeTabObj, activeTabId, updateTab }) => {
   const [editHeadersActive, setEditHeadersActive] = React.useState(false);
-  const theme = useSelector((state: any) => state.theme.theme);
-  let themeClass = '';
-  if (theme === 'dark') themeClass = 'theme-dark';
-  else if (theme === 'black') themeClass = 'theme-black';
-  // No class for light (default)
+  // Use theme class hook for consistent theming
+  const { themeClass } = useThemeClass();
   return (
     <div className={`flex flex-col flex-1 min-h-0 p-0 bg-bg text-text ${themeClass}`}>
       {activeTabObj.activeTab === 'headers' && (

@@ -6,7 +6,7 @@
 // Located at: src/pages/GraphQL/GraphQLQueryEditor.tsx
 import React from 'react';
 import MonacoEditor from '@monaco-editor/react';
-import { useSelector } from 'react-redux';
+import useThemeClass from '../../hooks/useThemeClass';
 
 interface GraphQLQueryEditorProps {
   query: string;
@@ -21,11 +21,9 @@ const getMonacoTheme = (theme: string) => {
 };
 
 const GraphQLQueryEditor: React.FC<GraphQLQueryEditorProps> = ({ query, onChange }) => {
-  const theme = useSelector((state: any) => state.theme.theme);
-  let themeClass = '';
-  if (theme === 'dark') themeClass = 'theme-dark';
-  else if (theme === 'black') themeClass = 'theme-black';
-  // No class for light (default)
+  // Use theme class hook for consistent theming
+  const { themeClass } = useThemeClass();
+  const theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
   return (
     <div className={`flex flex-col flex-1 min-h-0 bg-bg text-text ${themeClass}`}>
       {/* Query Toolbar */}

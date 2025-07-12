@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { useSelector } from 'react-redux';
+import useThemeClass from '../../hooks/useThemeClass';
 
 const icons = [
   // Book (active)
@@ -51,34 +51,10 @@ const GraphQLRightPanel: React.FC = () => {
   const startX = useRef(0);
   const startWidth = useRef(width);
 
-  // 🟡 Theme and Accent Color Setup
-  const theme = useSelector((state: any) => state.theme.theme);
-  const accentColor = useSelector((state: any) => state.theme.accentColor);
-
-  const accentColors = [
-    { key: 'green', color: '#22c55e' },
-    { key: 'blue', color: '#2563eb' },
-    { key: 'cyan', color: '#06b6d4' },
-    { key: 'purple', color: '#7c3aed' },
-    { key: 'yellow', color: '#eab308' },
-    { key: 'orange', color: '#f59e42' },
-    { key: 'red', color: '#ef4444' },
-    { key: 'pink', color: '#ec4899' },
-  ];
-
-  const accentHex = accentColors.find(c => c.key === accentColor)?.color;
-
-  // 🟡 Dynamic classes based on theme
-  let themeClass = '';
-  if (theme === 'dark') themeClass = 'theme-dark';
-  else if (theme === 'black') themeClass = 'theme-black';
-
-  let borderClass = 'border-l border-neutral-700';
-  if (theme === 'black') {
-    borderClass = 'border-l border-neutral-800';
-  } else if (theme === 'light') {
-    borderClass = 'border-l border-gray-200';
-  }
+  // Use theme class hook for consistent theming
+  const { themeClass, borderClass, accentColor } = useThemeClass();
+  
+  // Use the accent color directly from the theme
 
   const onMouseDown = (e: React.MouseEvent, edge: 'left' | 'right') => {
     setDragging(edge);
@@ -124,7 +100,7 @@ const GraphQLRightPanel: React.FC = () => {
           width: 4, // Much thinner drag handle
           height: '100%', 
           cursor: 'ew-resize', 
-          background: dragging === 'left' ? accentHex : 'transparent', 
+          background: dragging === 'left' ? accentColor : 'transparent', 
           zIndex: 41, 
           position: 'absolute', 
           left: 0, 
@@ -142,7 +118,7 @@ const GraphQLRightPanel: React.FC = () => {
             style={{
               width: '100%',
               height: '100%',
-              background: accentHex,
+              background: accentColor,
               opacity: dragging ? 1 : 0.6,
               transition: 'opacity 0.15s ease'
             }}

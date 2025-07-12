@@ -1,21 +1,50 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
+import useAccentColor from '../hooks/useAccentColor';
 
 const RestBottomActions: React.FC = () => {
   const theme = useSelector((state: any) => state.theme.theme);
+  const { current: accentColor } = useAccentColor();
+  
   const textClass =
     theme === 'light'
       ? 'text-black hover:text-gray-700'
       : 'text-white hover:text-gray-300';
+      
+  const accentStyle = {
+    '--accent-color': accentColor,
+    '--accent-hover': `${accentColor}e6`,
+  } as React.CSSProperties;
 
   return (
     <div className="w-full flex flex-col items-center justify-center pb-4">
       <div className="w-full flex flex-col items-center">
         <div className="flex flex-row flex-wrap gap-6 items-center justify-center w-full max-w-2xl py-4">
-          <div className={`flex items-center gap-2 text-sm ${textClass}`}>
-            <span>Send Request</span>
-            <kbd className={`px-2 py-1 rounded text-xs ${textClass}`}>Ctrl</kbd>
-            <kbd className={`px-2 py-1 rounded text-xs ${textClass}`}>↵</kbd>
+          <div className="flex items-center gap-2 text-sm">
+            <span 
+              className="font-medium" 
+              style={{ color: `var(--accent-color, ${accentColor})` }}
+            >
+              Send Request
+            </span>
+            <kbd 
+              className="px-2 py-1 rounded text-xs text-white"
+              style={{ 
+                backgroundColor: `var(--accent-color, ${accentColor})`,
+                borderColor: `var(--accent-color, ${accentColor})`
+              }}
+            >
+              Ctrl
+            </kbd>
+            <kbd 
+              className="px-2 py-1 rounded text-xs text-white"
+              style={{ 
+                backgroundColor: `var(--accent-color, ${accentColor})`,
+                borderColor: `var(--accent-color, ${accentColor})`
+              }}
+            >
+              ↵
+            </kbd>
           </div>
           <div className={`flex items-center gap-2 text-sm ${textClass}`}>
             <span>Keyboard shortcuts</span>

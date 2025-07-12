@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../store';
+import useAccentColor from './useAccentColor';
 
 export type Theme = 'light' | 'dark' | 'black' | 'system';
 
@@ -11,6 +12,7 @@ export type Theme = 'light' | 'dark' | 'black' | 'system';
  *   - theme: The current resolved theme ('light' | 'dark' | 'black')
  *   - isDarkMode: Boolean indicating if the current theme is dark
  *   - isSystemTheme: Boolean indicating if system theme is being used
+ *   - accentColor: The current accent color hex value
  *   - searchBarClass: Styles for search bars based on theme
  *   - textLightClass: Light text styles based on theme
  *   - textClass: Regular text styles based on theme
@@ -46,6 +48,9 @@ function useThemeClass() {
   
   // Determine the effective theme (resolves 'system' to actual theme)
   const effectiveTheme = theme === 'system' ? systemTheme : theme;
+  
+  // Get the accent color from the useAccentColor hook
+  const { current: accentColor } = useAccentColor();
   
   // Memoize all theme-based classes to prevent unnecessary recalculations
   const themeStyles = useMemo(() => {
@@ -83,6 +88,13 @@ function useThemeClass() {
         ? 'bg-gray-200 text-gray-800 border border-gray-300'
         : 'bg-[#1f1f1f] text-gray-400 border border-white/10';
 
+    const cardBgClass =
+      effectiveTheme === 'light'
+        ? 'bg-white'
+        : effectiveTheme === 'dark'
+        ? 'bg-neutral-800'
+        : 'bg-black';
+
     const appNameClass = effectiveTheme === 'light' ? 'text-black' : 'text-white';
 
     const borderClass =
@@ -100,17 +112,37 @@ function useThemeClass() {
       textLightClass,
       textClass,
       kbdClass,
+      cardBgClass,
       appNameClass,
       borderClass,
       buttonBgClass,
     };
   }, [effectiveTheme]);
   
+  // Generate dynamic accent color classes
+  // Note: We need to use the full color values here instead of dynamic classes
+  // to work with Tailwind's JIT compiler
+  const accentColorClass = {
+    // These will be used with style attribute for dynamic colors
+    style: {
+      '--accent-color': accentColor,
+      '--accent-hover': `${accentColor}e6`, // 90% opacity
+    },
+    // These classes can be used for other styling
+    text: 'text-[var(--accent-color)]',
+    bg: 'bg-[var(--accent-color)]',
+    border: 'border-[var(--accent-color)]',
+    hover: 'hover:bg-[var(--accent-hover)]',
+    focus: 'focus:ring-[var(--accent-color)]',
+  };
+
   return {
     ...themeStyles,
     theme: effectiveTheme,
     isDarkMode: effectiveTheme !== 'light',
     isSystemTheme: theme === 'system',
+    accentColor,
+    accentColorClass,
   };
 }
 

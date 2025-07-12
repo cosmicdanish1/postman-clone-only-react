@@ -9,7 +9,7 @@ import { DndContext, closestCenter } from '@dnd-kit/core';
 import { SortableContext, useSortable, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import CommunicationTab from './CommunicationTab';
-import { useSelector } from 'react-redux';
+import useThemeClass from '../../hooks/useThemeClass';
 
 const initialProtocols = [
   { id: 1, name: 'Protocol 1' },
@@ -73,28 +73,8 @@ const WebSocketPanel: React.FC = () => {
 }`);
   const [protocols, setProtocols] = useState(initialProtocols);
   const [nextId, setNextId] = useState(3);
-  const theme = useSelector((state: any) => state.theme.theme);
-  const accentColor = useSelector((state: any) => state.theme.accentColor);
-
-  const accentColors = [
-    { key: 'green', color: '#22c55e' },
-    { key: 'blue', color: '#2563eb' },
-    { key: 'cyan', color: '#06b6d4' },
-    { key: 'purple', color: '#7c3aed' },
-    { key: 'yellow', color: '#eab308' },
-    { key: 'orange', color: '#f59e42' },
-    { key: 'red', color: '#ef4444' },
-    { key: 'pink', color: '#ec4899' },
-  ];
-  const accentHex = accentColors.find(c => c.key === accentColor)?.color;
-
- 
-   // for example
-
-  let themeClass = '';
-  if (theme === 'dark') themeClass = 'theme-dark';
-  else if (theme === 'black') themeClass = 'theme-black';
-  // No class for light (default)
+  // Use theme class hook for consistent theming
+  const { themeClass, accentColor, accentColorClass } = useThemeClass();
 
   const handleDelete = (id: number) => {
     setProtocols(protocols.filter(p => p.id !== id));
@@ -123,8 +103,7 @@ const WebSocketPanel: React.FC = () => {
   };
 
 
-   const buttonBgClass =
-    theme === 'light' ? 'bg-[#F9FAFB]' : 'bg-[#1C1C1E]';
+   const buttonBgClass = 'bg-bg-secondary';
 
   return (
     <div className={`flex flex-col flex-1 bg-bg rounded p-4 mt-2 text-text ${themeClass}`}>
@@ -136,9 +115,11 @@ const WebSocketPanel: React.FC = () => {
           defaultValue="wss://echo-websocket.hoppscotch.io"
           style={{ minWidth: 0 }}
         />
-        <button className=" hover:bg-blue-700 text-white px-8 py-2 rounded font-semibold"
-        style={{ backgroundColor: accentHex }}
-        >Connect</button>
+        <button 
+          className={`px-8 py-2 rounded font-semibold text-white ${accentColorClass.bg} ${accentColorClass.hover} transition-colors`}
+        >
+          Connect
+        </button>
       </div>
       {/* Tabs */}
       <div className="flex gap-6  border-border mb-2">
@@ -149,7 +130,7 @@ const WebSocketPanel: React.FC = () => {
               : 'border-transparent text-gray-400 hover:text-text'
           }`}
           onClick={() => setActiveTab('communication')}
-          style={activeTab === 'communication' ? { borderColor: accentHex } : {}}
+          style={activeTab === 'communication' ? { borderColor: accentColor } : {}}
         >
           Communication
         </button>
@@ -160,7 +141,7 @@ const WebSocketPanel: React.FC = () => {
               : 'border-transparent text-gray-400 hover:text-text'
           }`}
           onClick={() => setActiveTab('protocols')}
-          style={activeTab === 'protocols' ? { borderColor: accentHex } : {}}
+          style={activeTab === 'protocols' ? { borderColor: accentColor } : {}}
         >
           Protocols
         </button>
