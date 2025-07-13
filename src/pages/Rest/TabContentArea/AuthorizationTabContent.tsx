@@ -9,17 +9,7 @@ import MonacoEditor from '@monaco-editor/react';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
-type AuthType =
-  | 'inherit'
-  | 'none'
-  | 'basic'
-  | 'digest'
-  | 'bearer'
-  | 'oauth2'
-  | 'apikey'
-  | 'aws'
-  | 'hawk'
-  | 'jwt';
+import type { AuthType } from '../../../types';
 
 interface AuthConfig {
   type: AuthType;
@@ -66,7 +56,15 @@ interface AuthConfig {
   jwtHeaders?: string;
 }
 
-const AuthorizationTabContent: React.FC = () => {
+interface AuthorizationTabContentProps {
+  authType: AuthType;
+  setAuthType: (type: AuthType) => void;
+}
+
+const AuthorizationTabContent: React.FC<AuthorizationTabContentProps> = ({ 
+  authType: propAuthType, 
+  setAuthType: propSetAuthType 
+}) => {
   const theme = useSelector((state: any) => state.theme.theme);
   const { t } = useTranslation();
   let themeClass = '';
@@ -74,7 +72,7 @@ const AuthorizationTabContent: React.FC = () => {
   else if (theme === 'black') themeClass = 'theme-black';
   // No class for light (default)
 
-  const [authType, setAuthType] = useState<AuthType>('none');
+  const [authType, setAuthType] = useState<AuthType>(propAuthType || 'none');
   const [authConfig, setAuthConfig] = useState<AuthConfig>({
     type: 'none'
   });
@@ -110,6 +108,18 @@ const AuthorizationTabContent: React.FC = () => {
     return () => document.removeEventListener('mousedown', handleClick);
   }, [dropdownOpen]);
 
+  // Sync local state with props
+  useEffect(() => {
+    if (propAuthType) {
+      setAuthType(propAuthType);
+    }
+  }, [propAuthType]);
+
+  const handleAuthTypeChange = (type: AuthType) => {
+    setAuthType(type);
+    propSetAuthType(type);
+  };
+
   const handleAuthConfigChange = (field: keyof AuthConfig, value: string) => {
     setAuthConfig(prev => ({ ...prev, [field]: value }));
   };
@@ -117,7 +127,7 @@ const AuthorizationTabContent: React.FC = () => {
   const renderAuthFields = () => {
     if (authType === 'inherit') {
       return (
-        <div className="flex flex-row w-full h-64  divide-x divide-neutral-800">
+        <div className="flex flex-row w-full min-h-[200px] divide-x divide-neutral-800">
           <div className="flex-1 flex items-start p-8">
             <span className="text-gray-200 text-base">
               {t('auth_save_inherit')}
@@ -143,7 +153,7 @@ const AuthorizationTabContent: React.FC = () => {
     switch (authType) {
       case 'bearer':
         return (
-          <div className="flex flex-row w-full  divide-x divide-neutral-800">
+          <div className="flex flex-row w-full min-h-[200px] divide-x divide-neutral-800">
             <div className="flex-1 flex flex-col justify-start p-8 gap-2">
               <input
                 className="w-full bg-transparent text-gray-200 border-0 border-b border-neutral-800 rounded-none px-0 py-3 focus:outline-none focus:ring-0 placeholder-gray-400"
@@ -173,7 +183,7 @@ const AuthorizationTabContent: React.FC = () => {
 
       case 'basic':
         return (
-          <div className="flex flex-row w-full h-64  divide-x divide-neutral-800">
+          <div className="flex flex-row w-full min-h-[200px] divide-x divide-neutral-800">
             <div className="flex-1 flex flex-col justify-start p-8 gap-2">
               <input
                 className="w-full bg-transparent text-gray-200 border-0 border-b border-neutral-800 rounded-none px-0 py-3 focus:outline-none focus:ring-0 placeholder-gray-400"
@@ -211,7 +221,7 @@ const AuthorizationTabContent: React.FC = () => {
 
       case 'apikey':
         return (
-          <div className="flex flex-row w-full  divide-x divide-neutral-800">
+          <div className="flex flex-row w-full min-h-[200px] divide-x divide-neutral-800">
             <div className="flex-1 flex flex-col justify-start p-8 gap-2">
               <input
                 className="w-full bg-transparent text-gray-200 border-0 border-b border-neutral-800 rounded-none px-0 py-3 focus:outline-none focus:ring-0 placeholder-gray-400"
@@ -258,7 +268,7 @@ const AuthorizationTabContent: React.FC = () => {
 
       case 'digest':
         return (
-          <div className="flex flex-row w-full  divide-x divide-neutral-800">
+          <div className="flex flex-row w-full min-h-[200px] divide-x divide-neutral-800">
             <div className="flex-1 flex flex-col justify-start p-8 gap-2">
               <input
                 className="w-full bg-transparent text-gray-200 border-0 border-b border-neutral-800 rounded-none px-0 py-3 focus:outline-none focus:ring-0 placeholder-gray-400"
@@ -355,7 +365,7 @@ const AuthorizationTabContent: React.FC = () => {
 
       case 'oauth2':
         return (
-          <div className="flex flex-row w-full  divide-x divide-neutral-800">
+          <div className="flex flex-row w-full min-h-[200px] divide-x divide-neutral-800">
             <div className="flex-1 flex flex-col justify-start p-8 gap-2">
               <input
                 className="w-full bg-transparent text-gray-200 border-0 border-b border-neutral-800 rounded-none px-0 py-3 focus:outline-none focus:ring-0 placeholder-gray-400"
@@ -458,7 +468,7 @@ const AuthorizationTabContent: React.FC = () => {
 
       case 'aws':
         return (
-          <div className="flex flex-row w-full  divide-x divide-neutral-800">
+          <div className="flex flex-row w-full min-h-[200px] divide-x divide-neutral-800">
             <div className="flex-1 flex flex-col justify-start p-8 gap-2">
               <input
                 className="w-full bg-transparent text-gray-200 border-0 border-b border-neutral-800 rounded-none px-0 py-3 focus:outline-none focus:ring-0 placeholder-gray-400"
@@ -530,7 +540,7 @@ const AuthorizationTabContent: React.FC = () => {
 
       case 'hawk':
         return (
-          <div className="flex flex-row w-full  divide-x divide-neutral-800">
+          <div className="flex flex-row w-full min-h-[200px] divide-x divide-neutral-800">
             <div className="flex-1 flex flex-col justify-start p-8 gap-2">
               <input
                 className="w-full bg-transparent text-gray-200 border-0 border-b border-neutral-800 rounded-none px-0 py-3 focus:outline-none focus:ring-0 placeholder-gray-400"
@@ -634,7 +644,7 @@ const AuthorizationTabContent: React.FC = () => {
 
       case 'jwt':
         return (
-          <div className="flex flex-row w-full  divide-x divide-neutral-800">
+          <div className="flex flex-row w-full min-h-[200px] divide-x divide-neutral-800">
             <div className="flex-1 flex flex-col justify-start p-8 gap-2">
               <div className="flex items-center border-b border-neutral-800 py-3">
                 <span className="text-gray-400 text-sm mr-4">{t('algorithm')}</span>
@@ -735,70 +745,89 @@ const AuthorizationTabContent: React.FC = () => {
   };
 
   return (
-    <div className={`w-full h-full bg-bg text-text ${themeClass}`}>
-      {/* Top bar */}
-      <div className="flex items-center justify-between px-4 h-10 border-b border-neutral-800 ">
-        <div className="flex items-center gap-4">
-          <span className="text-gray-400 text-sm">{t('authorization_type')}</span>
-          <div className="relative" ref={dropdownRef}>
-            <button
-              className="flex items-center gap-2   font-semibold px-2 py-1 rounded border  focus:outline-none min-w-[110px]"
-              onClick={() => setDropdownOpen(v => !v)}
-              type="button"
-            >
-              {authTypes.find(t => t.value === authType)?.label || ''}
-              <span className="material-icons text-base">arrow_drop_down</span>
-            </button>
-            {dropdownOpen && (
-              <div className="absolute left-0 mt-1 z-50 w-56  border border-neutral-800 rounded shadow-lg py-2">
-                {authTypes.map(type => (
-                  <label
-                    key={type.value}
-                    className={`flex items-center gap-3 px-4 py-2 cursor-pointer transition-colors select-none ${authType === type.value ? 'font-semibold text-white' : 'text-gray-300 hover:bg-neutral-800'}`}
-                  >
-                    <input
-                      type="radio"
-                      name="authTypeDropdown"
-                      value={type.value}
-                      checked={authType === type.value}
-                      onChange={() => {
-                        setAuthType(type.value as AuthType);
-                        setAuthConfig({ type: type.value as AuthType });
-                        setDropdownOpen(false);
-                      }}
-                      className="accent-blue-500"
-                    />
-                    <span className="text-base">{type.label}</span>
-                  </label>
-                ))}
+    <div className={`w-full h-full bg-bg text-text ${themeClass} flex flex-col`}>
+      {/* Fixed header */}
+      <div className="sticky top-0 z-10 bg-bg border-b border-neutral-800">
+        <div className="flex items-center px-4 h-12">
+          <div className="flex items-center w-full">
+            <div className="flex items-center gap-2">
+              <span className="text-gray-300 text-sm font-medium">Authorization</span>
+              <div className="relative" ref={dropdownRef}>
+                <button
+                  className="flex items-center gap-1 text-gray-200 hover:bg-neutral-800 px-3 py-1.5 rounded text-sm font-medium"
+                  onClick={() => setDropdownOpen(v => !v)}
+                  type="button"
+                >
+                  {authTypes.find(t => t.value === authType)?.label || 'Inherit'}
+                  <span className="material-icons text-lg">arrow_drop_down</span>
+                </button>
+                {dropdownOpen && (
+                  <div className="absolute left-0 mt-1 z-50 w-56 bg-neutral-800 border border-neutral-700 rounded shadow-lg py-1">
+                    {authTypes.map(type => (
+                      <div
+                        key={type.value}
+                        className={`px-3 py-2 cursor-pointer transition-colors select-none ${authType === type.value ? 'bg-blue-600 text-white' : 'text-gray-200 hover:bg-neutral-700'}`}
+                        onClick={() => {
+                          const newType = type.value as AuthType;
+                          handleAuthTypeChange(newType);
+                          setAuthConfig({ type: newType });
+                          setDropdownOpen(false);
+                        }}
+                      >
+                        <div className="flex items-center">
+                          <span className="text-sm">{type.label}</span>
+                          {authType === type.value && (
+                            <span className="ml-auto material-icons text-sm">check</span>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
-            )}
+            </div>
+            
+            <div className="ml-auto flex items-center gap-2">
+              <label className="flex items-center gap-1.5 cursor-pointer select-none px-3 py-1.5 rounded hover:bg-neutral-800">
+                <input
+                  type="checkbox"
+                  checked={enabled}
+                  onChange={e => setEnabled(e.target.checked)}
+                  className="accent-blue-500 w-4 h-4"
+                />
+                <span className="text-gray-200 text-sm">{t('enabled')}</span>
+              </label>
+              <button 
+                className="text-gray-400 hover:text-gray-200 p-1.5 rounded-full hover:bg-neutral-800" 
+                title={t('help')}
+              >
+                <span className="material-icons text-lg">help_outline</span>
+              </button>
+              <button 
+                className="text-gray-400 hover:text-red-500 p-1.5 rounded-full hover:bg-neutral-800" 
+                title={t('delete')}
+              >
+                <span className="material-icons text-lg">delete</span>
+              </button>
+            </div>
           </div>
         </div>
-        <div className="flex items-center gap-4">
-          <label className="flex items-center gap-1 cursor-pointer select-none">
-            <input
-              type="checkbox"
-              checked={enabled}
-              onChange={e => setEnabled(e.target.checked)}
-              className="accent-blue-500"
-            />
-            <span className="font-semibold text-gray-200 text-sm">{t('enabled')}</span>
-          </label>
-          <button className="text-gray-400 hover:text-gray-200" title={t('help')}>
-            <span className="material-icons text-base">help_outline</span>
-          </button>
-          <button className="text-gray-400 hover:text-red-500" title={t('delete')}>
-            <span className="material-icons text-base">delete</span>
-          </button>
+      </div>
+      
+      {/* Scrollable content area */}
+      <div className="flex-1 overflow-hidden">
+        <div className="h-full overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+          {enabled ? (
+            <div className="p-6">
+              {renderAuthFields()}
+            </div>
+          ) : (
+            <div className="h-full flex items-center justify-center text-gray-400">
+              Authorization is disabled
+            </div>
+          )}
         </div>
       </div>
-      {/* Auth fields below bar, only if enabled */}
-      {enabled && (
-        <div className="p-6">
-          {renderAuthFields()}
-        </div>
-      )}
     </div>
   );
 };

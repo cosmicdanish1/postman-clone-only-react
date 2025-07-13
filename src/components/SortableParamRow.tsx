@@ -10,6 +10,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { useSelector } from 'react-redux';
 import type { Parameter } from '../types';
 import { useTranslation } from 'react-i18next';
+import useThemeClass from '../hooks/useThemeClass';
 
 interface SortableParamRowProps {
   param: Parameter;
@@ -21,12 +22,8 @@ interface SortableParamRowProps {
 
 const SortableParamRow: React.FC<SortableParamRowProps> = ({ param, handleParamChange, handleDeleteParam, setFocusedRow, isOdd }) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: param.id });
-  const theme = useSelector((state: any) => state.theme.theme);
   const { t } = useTranslation();
-  let themeClass = '';
-  if (theme === 'dark') themeClass = 'theme-dark';
-  else if (theme === 'black') themeClass = 'theme-black';
-  // No class for light (default)
+  const { themeClass, textClass} = useThemeClass();
   return (
     <div
       ref={setNodeRef}
@@ -34,16 +31,15 @@ const SortableParamRow: React.FC<SortableParamRowProps> = ({ param, handleParamC
         transform: CSS.Transform.toString(transform),
         transition,
         opacity: isDragging ? 0.5 : 1,
-        background: isOdd ? 'var(--bg-secondary, #19191b)' : undefined,
         minHeight: '38px',
         display: 'grid',
         gridTemplateColumns: '32px 1fr 1fr 1fr auto',
-        borderBottom: '1px solid var(--border, #27272a)',
+        borderBottom: `1px solid ${themeClass === 'theme-black' ? '#2c2c2e' : themeClass === 'theme-dark' ? '#27272a' : '#e5e7eb'}`,
         paddingLeft: 0,
         paddingRight: 8,
         alignItems: 'center',
       }}
-      className={`px-2 group text-text ${themeClass}`}
+      className={`px-2 group ${textClass} ${isOdd ? (themeClass === 'theme-black' ? 'bg-[#1c1c1e]' : themeClass === 'theme-dark' ? 'bg-[#19191b]' : 'bg-gray-50') : 'bg-transparent'}`}
     >
       {/* Drag handle: 6-dot rectangle, only visible on hover */}
       <button
@@ -66,20 +62,20 @@ const SortableParamRow: React.FC<SortableParamRowProps> = ({ param, handleParamC
         </span>
       </button>
       <input
-        className="bg-transparent text-text px-2 py-1 outline-none w-full border-r border-border"
+        className={`bg-transparent ${textClass} px-2 py-1 outline-none w-full border-r `}
         value={param.key}
         placeholder={t('key')}
         onChange={e => handleParamChange(param.id, 'key', e.target.value)}
         onFocus={() => setFocusedRow(param.id)}
       />
       <input
-        className="bg-transparent text-text px-2 py-1 outline-none w-full border-r border-border"
+        className={`bg-transparent ${textClass} px-2 py-1 outline-none w-full border-r `}
         value={param.value}
         placeholder={t('value')}
         onChange={e => handleParamChange(param.id, 'value', e.target.value)}
       />
       <input
-        className="bg-transparent text-text px-2 py-1 outline-none w-full border-r border-border"
+        className={`bg-transparent ${textClass} px-2 py-1 outline-none w-full border-r `}
         value={param.description}
         placeholder={t('description')}
         onChange={e => handleParamChange(param.id, 'description', e.target.value)}

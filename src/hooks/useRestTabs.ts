@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { uuidv4 } from '../utils/helpers';
-import type { TabData } from '../types';
+import type { TabData, AuthType } from '../types';
 
 /*
  * Hook that owns all tab-related state and basic handlers for the REST page.
@@ -12,6 +12,7 @@ const defaultTabData = (): TabData => ({
   id: uuidv4(),
   method: 'GET',
   tabName: 'Untitled',
+  url: 'https://echo.hoppscotch.io',
   showModal: false,
   modalValue: 'Untitled',
   activeTab: 'parameters',
@@ -21,7 +22,7 @@ const defaultTabData = (): TabData => ({
     { id: uuidv4(), key: '', value: '', description: '', locked: false },
     { id: uuidv4(), key: 'content type', value: '', description: '', locked: true },
   ],
-  authorization: '',
+  authorization: 'none' as const,
   preRequest: '',
   postRequest: '',
   variables: [],
@@ -47,11 +48,22 @@ export interface UseRestTabs {
   switchTab: (id: string) => void;
   setMethod: (method: string) => void;
   setActiveTab: (tab: string) => void;
+  setAuthorization: (auth: AuthType) => void;
+  setUrl: (url: string) => void;
 }
 
 export const useRestTabs = (): UseRestTabs => {
   const [tabs, setTabs] = useState<TabData[]>([defaultTabData()]);
   const [activeTabId, setActiveTabId] = useState<string>(tabs[0].id);
+  
+  // Helper function to update the authorization for the active tab
+  const setAuthorization = useCallback((auth: AuthType) => {
+    setTabs(prevTabs => 
+      prevTabs.map(tab => 
+        tab.id === activeTabId ? { ...tab, authorization: auth } : tab
+      )
+    );
+  }, [activeTabId]);
 
   const activeTabObj = tabs.find((t) => t.id === activeTabId) ?? tabs[0];
 
@@ -63,6 +75,12 @@ export const useRestTabs = (): UseRestTabs => {
   const setMethod = (method: string) => {
     setTabs((prev) =>
       prev.map((tab) => (tab.id === activeTabId ? { ...tab, method } : tab)),
+    );
+  };
+
+  const setUrl = (url: string) => {
+    setTabs((prev) =>
+      prev.map((tab) => (tab.id === activeTabId ? { ...tab, url } : tab)),
     );
   };
 
@@ -82,5 +100,7 @@ export const useRestTabs = (): UseRestTabs => {
     switchTab,
     setMethod,
     setActiveTab,
-  };
+    setUrl,
+    setAuthorization,
+  } as const;
 };

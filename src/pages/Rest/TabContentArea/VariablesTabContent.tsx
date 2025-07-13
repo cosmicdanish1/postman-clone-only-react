@@ -62,13 +62,12 @@ const VariablesTabContent: React.FC<VariablesTabContentProps> = ({
             <div className="grid grid-cols-4 border-b " style={{minHeight: '3px', gridTemplateColumns: '32px 1fr 1fr 48px'}}>
               
             </div>
-            {variables.map((variable: any, idx: number) => (
+            {variables.map((variable: any) => (
               <SortableVariableRow
                 key={variable.id}
                 variable={variable}
                 handleVariableChange={handleVariableChange}
                 handleDeleteVariable={handleDeleteVariable}
-                isOdd={idx % 2 === 1}
               />
             ))}
           </div>

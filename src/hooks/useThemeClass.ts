@@ -97,6 +97,13 @@ function useThemeClass() {
 
     const appNameClass = effectiveTheme === 'light' ? 'text-black' : 'text-white';
 
+    // Thin border class for subtle separators
+    const thinBorderClass = effectiveTheme === 'light' 
+      ? 'border-gray-200' 
+      : effectiveTheme === 'dark' 
+        ? 'border-neutral-700' 
+        : 'border-neutral-800';
+
     const borderClass =
       effectiveTheme === 'black'
         ? 'border-b border-neutral-800'
@@ -105,6 +112,24 @@ function useThemeClass() {
         : 'border-b border-neutral-700';
 
     const buttonBgClass = effectiveTheme === 'light' ? 'bg-[#F9FAFB]' : 'bg-[#1C1C1E]';
+
+
+    const borderRightClass =
+  effectiveTheme === 'black'
+    ? 'border-r border-neutral-800'
+    : effectiveTheme === 'light'
+    ? 'border-r border-gray-200'
+    : 'border-r border-neutral-700';
+
+
+    const borderLeftClass =
+  effectiveTheme === 'black'
+    ? 'border-l border-neutral-800'
+    : effectiveTheme === 'light'
+    ? 'border-l border-gray-200'
+    : 'border-l border-neutral-700';
+
+
 
     return {
       themeClass,
@@ -115,7 +140,10 @@ function useThemeClass() {
       cardBgClass,
       appNameClass,
       borderClass,
+      thinBorderClass,
       buttonBgClass,
+      borderRightClass,
+      borderLeftClass,
     };
   }, [effectiveTheme]);
   
@@ -136,13 +164,43 @@ function useThemeClass() {
     focus: 'focus:ring-[var(--accent-color)]',
   };
 
+  // Generate scrollbar styles based on the current theme
+  const scrollbarStyles = `
+    /* For Webkit browsers (Chrome, Safari) */
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: ${effectiveTheme === 'light' ? '#f1f1f1' : effectiveTheme === 'dark' ? '#2a2a2a' : '#1a1a1a'};
+      border-radius: 3px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: ${effectiveTheme === 'light' ? '#c1c1c1' : '#555'};
+      border-radius: 3px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: ${effectiveTheme === 'light' ? '#a8a8a8' : '#777'};
+    }
+    /* For Firefox */
+    .custom-scrollbar {
+      scrollbar-width: thin;
+      scrollbar-color: ${effectiveTheme === 'light' 
+        ? '#c1c1c1 #f1f1f1' 
+        : effectiveTheme === 'dark' 
+          ? '#555 #2a2a2a' 
+          : '#666 #1a1a1a'};
+    }
+  `;
+
   return {
-    ...themeStyles,
+    ...themeStyles, // This already includes thinBorderClass
     theme: effectiveTheme,
     isDarkMode: effectiveTheme !== 'light',
     isSystemTheme: theme === 'system',
     accentColor,
     accentColorClass,
+    scrollbarStyles,
   };
 }
 

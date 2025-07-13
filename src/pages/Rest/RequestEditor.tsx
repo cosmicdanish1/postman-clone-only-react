@@ -6,6 +6,7 @@
 
 import React from 'react';
 import useThemeClass from '../../hooks/useThemeClass';
+import useAccentColor from '../../hooks/useAccentColor';
 
 interface RequestEditorProps {
   METHODS: string[];
@@ -31,9 +32,12 @@ interface RequestEditorProps {
 }
 
 const RequestEditor: React.FC<RequestEditorProps> = (props) => {
-  // Using the theme class hook with accent color utilities
-  const { themeClass, textClass, borderClass, buttonBgClass, accentColorClass } = useThemeClass();
+  // Using the theme and accent color hooks
+  const { themeClass, textClass, borderClass, buttonBgClass, borderRightClass, borderLeftClass } = useThemeClass();
+  const { current: accentColor } = useAccentColor();
 
+  const DEFAULT_URL = 'https://echo.hoppscotch.io';
+  
   const {
     METHODS,
     method,
@@ -42,7 +46,7 @@ const RequestEditor: React.FC<RequestEditorProps> = (props) => {
     setMethodDropdownOpen,
     methodDropdownRef,
     methodColors,
-    url,
+    url = '',
     setUrl,
     onSend,
     onSendMenuOpen,
@@ -60,14 +64,14 @@ const RequestEditor: React.FC<RequestEditorProps> = (props) => {
   // accentHex is already defined above
 
   return (
-    <div className="flex flex-col sm:flex-row items-stretch sm:items-center mb-4 gap-2 sm:gap-0">
+    <div className="flex flex-col sm:flex-row items-stretch sm:items-center mb-4 mt-2 gap-2 sm:gap-0">
       {/* Top row: Method + URL (always together) */}
-      <div className="flex flex-row flex-1 items-center gap-2">
+      <div className="flex flex-row flex-1 items-center ">
         {/* Method Dropdown */}
         <div className="relative" ref={methodDropdownRef}>
           <button
             type="button"
-            className={`${buttonBgClass} ${borderClass} font-bold px-2 py-1 h-9 rounded-l-sm  focus:outline-none flex items-center w-24 relative`}
+            className={`${buttonBgClass} ${borderRightClass} font-bold px-2 py-1 h-9 rounded-l-sm  ml-1 border-r focus:outline-none flex items-center w-24 relative`}
             style={{ color: methodColors[method] || '#737373'}}
             onClick={() => setMethodDropdownOpen(!methodDropdownOpen)}
           >
@@ -80,7 +84,7 @@ const RequestEditor: React.FC<RequestEditorProps> = (props) => {
           </button>
           {methodDropdownOpen && (
             <div
-              className={`${themeClass}  ${textClass} ${borderClass} ${buttonBgClass} absolute left-0 mt-1 w-32 max-h-64 rounded-md shadow-lg z-50 overflow-y-auto scrollbar-hide`}
+              className={`${themeClass}  ${textClass} ${borderClass} ${buttonBgClass} absolute left-0 mt-1 w-35 max-h-64 rounded-md shadow-lg z-50 overflow-y-auto scrollbar-hide`}
               style={{ top: '100%' }}
             >
               {METHODS.map(m => (
@@ -101,24 +105,59 @@ const RequestEditor: React.FC<RequestEditorProps> = (props) => {
         </div>
         {/* URL Input */}
         <input
-          className={` ${themeClass} ${buttonBgClass} flex-1 rounded-r-sm  px-4 py-2 h-9 text-white focus:outline-none `}
-          placeholder="https://echo.hoppscotc.io"
+          type="text"
+          className={`${themeClass} ${buttonBgClass} flex-1 rounded-r-sm px-4 py-2 h-9 text-white focus:outline-none focus:ring-2 focus:ring-blue-500`}
+          placeholder={DEFAULT_URL}
           value={url}
           onChange={e => setUrl(e.target.value)}
+          onBlur={e => {
+            const value = e.target.value.trim();
+            if (!value) {
+              setUrl('');
+            }
+          }}
+          onKeyDown={e => {
+            if (e.key === 'Enter') {
+              e.currentTarget.blur();
+              onSend();
+            }
+          }}
         />
       </div>
       {/* Button row: Send, Save, etc. (below input on mobile, inline on desktop) */}
-      <div className="flex flex-row gap-2 w-full sm:w-auto">
+      <div className="flex flex-row gap-2 ml-1 w-full sm:w-auto">
         {/* Send Buttons */}
         <div className="relative flex">
           <button
-            className={`text-white px-8 py-2 rounded-l-md font-semibold ${accentColorClass.bg} ${accentColorClass.hover}`}
+            className={`px-8 py-1 rounded-l-md  h-9 mt-[2px] font-semibold text-white transition-colors duration-200`}
+            style={{
+              backgroundColor: accentColor,
+              borderColor: accentColor,
+              '--accent-hover': `${accentColor}e6`,
+            } as React.CSSProperties}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = `${accentColor}e6`;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = accentColor;
+            }}
             onClick={onSend}
           >
             Send
           </button>
           <button
-            className={`text-white px-2 py-2 rounded-r-md font-semibold ${borderClass} ${accentColorClass.bg} ${accentColorClass.hover}`}
+            className={`px-2 py-2 rounded-r-md font-semibold h-9 mt-[2px] ${borderLeftClass} text-white transition-colors duration-200 ${borderClass}`}
+            style={{
+              backgroundColor: accentColor,
+              borderColor: accentColor,
+              '--accent-hover': `${accentColor}e6`,
+            } as React.CSSProperties}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = `${accentColor}e6`;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = accentColor;
+            }}
             onClick={onSendMenuOpen}
             aria-label="Send options"
           >
@@ -128,29 +167,61 @@ const RequestEditor: React.FC<RequestEditorProps> = (props) => {
           {sendMenuOpen && (
             <div
               ref={sendMenuRef}
-              className="absolute left-0 mt-2 w-56  rounded-xl shadow-2xl border border-zinc-800 z-50 p-2"
-              style={{ top: '100%' }}
+              className={`absolute left-0 mt-2 w-56 rounded-xl z-50 p-2 ${themeClass} ${buttonBgClass} ${borderClass}`}
+              style={{
+                top: '100%',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+              }}
             >
               <button
-                className="flex items-center w-full px-3 py-2 rounded hover:bg-zinc-800 text-zinc-200 gap-3"
+                className="flex items-center w-full px-3 py-2 rounded gap-3 transition-colors duration-200"
+                style={{
+                  color: 'var(--text-color)'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = 'var(--hover-bg-color)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                }}
                 onClick={onShowImportCurlModal}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6v6H9z"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"  viewBox="0 0 24 24" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6v6H9z"/></svg>
                 <span className="flex-1 text-left">Import cURL</span>
-                <span className="text-xs bg-zinc-800 px-2 py-0.5 rounded text-zinc-400">C</span>
+                <span className="text-xs px-2 py-0.5 rounded" style={{ backgroundColor: 'var(--hover-bg-color)' }}>C</span>
               </button>
               <button
-                className="flex items-center w-full px-3 py-2 rounded hover:bg-zinc-800 text-zinc-200 gap-3"
+                className="flex items-center w-full px-3 py-2 rounded gap-3 transition-colors duration-200"
+                style={{
+                  color: 'var(--text-color)'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = 'var(--hover-bg-color)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                }}
                 onClick={onShowGenerateCodeModal}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M16 18 22 12 16 6"/><path d="M8 6 2 12l6 6"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"  viewBox="0 0 24 24" stroke="currentColor"><path d="M16 18 22 12 16 6"/><path d="M8 6 2 12l6 6"/></svg>
                 <span className="flex-1 text-left">Show code</span>
-                <span className="text-xs bg-zinc-800 px-2 py-0.5 rounded text-zinc-400">S</span>
+                <span className="text-xs px-2 py-0.5 rounded" style={{ backgroundColor: 'var(--hover-bg-color)' }}>S</span>
               </button>
-              <button className="flex items-center w-full px-3 py-2 rounded hover:bg-zinc-800 text-zinc-200 gap-3">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M3 12h18"/><path d="M12 3v18"/></svg>
+              <button 
+                className="flex items-center w-full px-3 py-2 rounded gap-3 transition-colors duration-200"
+                style={{
+                  color: 'var(--text-color)'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = 'var(--hover-bg-color)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"  viewBox="0 0 24 24" stroke="currentColor"><path d="M3 12h18"/><path d="M12 3v18"/></svg>
                 <span className="flex-1 text-left">Clear all</span>
-                <span className="text-xs bg-zinc-800 px-2 py-0.5 rounded text-zinc-400">⌫</span>
+                <span className="text-xs px-2 py-0.5 rounded" style={{ backgroundColor: 'var(--hover-bg-color)' }}>⌫</span>
               </button>
             </div>
           )}

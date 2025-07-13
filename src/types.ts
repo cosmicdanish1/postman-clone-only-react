@@ -5,6 +5,19 @@
 // Role: Contains shared TypeScript types and interfaces used throughout the project.
 // Located at: src/types.ts
 
+// Define AuthType directly to avoid import issues
+export type AuthType = 
+  | 'inherit'
+  | 'none'
+  | 'basic'
+  | 'digest'
+  | 'bearer'
+  | 'oauth2'
+  | 'apikey'
+  | 'aws'
+  | 'hawk'
+  | 'jwt';
+
 // Types for HoppscotchClone and related components
 
 export interface Parameter {
@@ -34,13 +47,14 @@ export interface TabData {
   id: string;
   method: string;
   tabName: string;
+  url: string;  // Added url property
   showModal: boolean;
   modalValue: string;
   activeTab: string;
   parameters: Parameter[];
   body: string;
   headers: Header[];
-  authorization: string;
+  authorization: AuthType;
   preRequest: string;
   postRequest: string;
   variables: Variable[];

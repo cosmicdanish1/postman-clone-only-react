@@ -35,7 +35,19 @@ const HoppscotchClone: React.FC = () => {
   const { current: accentHex } = useAccentColor();
 
 
-  const { tabs, setTabs, activeTabId, setActiveTabId, activeTabObj, addTab, switchTab, setMethod, setActiveTab } = useRestTabs();
+  const { 
+    tabs, 
+    setTabs, 
+    activeTabId, 
+    setActiveTabId, 
+    activeTabObj, 
+    addTab, 
+    switchTab, 
+    setMethod, 
+    setUrl, 
+    setActiveTab,
+    setAuthorization 
+  } = useRestTabs();
   const [envDropdownOpen, setEnvDropdownOpen] = useState(false);
   const [envTab, setEnvTab] = useState<'personal' | 'workspace'>('personal');
   const handleSetEnvTab = (tab: string) => setEnvTab(tab as 'personal' | 'workspace');
@@ -85,6 +97,14 @@ const HoppscotchClone: React.FC = () => {
   };
   const handleDeleteParam = (id: string): void => {
     setQueryParams(prev => prev.length === 1 ? prev : prev.filter((p) => p.id !== id));
+  };
+
+  const handleDeleteAllParams = (): void => {
+    setQueryParams([{ id: uuidv4(), key: '', value: '', description: '' }]);
+  };
+
+  const handleAddParam = (): void => {
+    setQueryParams(prev => [...prev, { id: uuidv4(), key: '', value: '', description: '' }]);
   };
 
   // Drag and drop handlers for Query Parameters
@@ -439,10 +459,6 @@ const HoppscotchClone: React.FC = () => {
     }
   };
 
-  const [authorization, setAuthorization] = useState('');
-
-
-
   // State for resizable bottom sheet overlay
 
   const MIN_OVERLAY_HEIGHT = 80;
@@ -552,7 +568,7 @@ const HoppscotchClone: React.FC = () => {
 
       {/* Main layout below top bar */}
       <RestSplitPane right={<RestRightPanel />}>
-        <div className="flex flex-col flex-1 overflow-hidden">
+        <div className="flex flex-col h-full">
           {/* Top full-width bar */}
           <RequestEditor
             METHODS={METHODS}
@@ -562,9 +578,11 @@ const HoppscotchClone: React.FC = () => {
             setMethodDropdownOpen={setMethodDropdownOpen}
             methodDropdownRef={methodDropdownRef}
             methodColors={methodColors}
-            url={''}
-            setUrl={url => setTabs(tabs => tabs.map(tab => tab.id === activeTabId ? { ...tab, url } : tab))}
+            url={activeTabObj.url || ''}
+            setUrl={setUrl}
             onSend={() => {
+              // Handle send request with current URL and method
+              console.log('Sending request to:', activeTabObj.url, 'with method:', activeTabObj.method);
               // setShowInterceptorInPanel(false); // Removed as per edit hint
               // setTimeout(() => setShowInterceptorInPanel(true), 1000); // Removed as per edit hint
             }}
@@ -579,9 +597,10 @@ const HoppscotchClone: React.FC = () => {
             saveDropdownRef={saveDropdownRef}
             saveRequestName={saveRequestName}
           />
-          {/* Tabs */}
-          <div className="flex items-center gap-2 text-[14px]  mb-2 overflow-x-auto scrollbar-hide whitespace-nowrap">
-            {['parameters', 'body', 'headers', 'authorization', 'pre-request', 'post-request', 'variables'].map(tab => (
+          {/* Tabs - Fixed header */}
+          <div className="sticky top-0 z-10 bg-bg border-b border-neutral-800">
+            <div className="flex items-center gap-2 text-[14px] px-4 py-2 overflow-x-auto scrollbar-hide whitespace-nowrap">
+              {['parameters', 'body', 'headers', 'authorization', 'pre-request', 'post-request', 'variables'].map(tab => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -610,15 +629,21 @@ const HoppscotchClone: React.FC = () => {
                   />
                 )}
               </button>
-            ))}
+              ))}
+            </div>
           </div>
-          {/* Tab content area (example: Parameters) */}
-          {['parameters', 'body', 'headers', 'authorization', 'pre-request', 'post-request', 'variables'].includes(activeTabObj.activeTab) && (
+          
+          {/* Scrollable content area */}
+          <div className="flex-1 overflow-hidden">
+            <div className="h-full overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+              {['parameters', 'body', 'headers', 'authorization', 'pre-request', 'post-request', 'variables'].includes(activeTabObj.activeTab) && (
             <TabContentArea
               activeTab={activeTabObj.activeTab}
               queryParams={queryParams}
               handleParamChange={handleParamChange}
               handleDeleteParam={handleDeleteParam}
+              handleDeleteAllParams={handleDeleteAllParams}
+              handleAddParam={handleAddParam}
               handleDragEnd={handleDragEnd}
               SortableParamRow={SortableParamRow}
               contentType={contentType}
@@ -642,7 +667,7 @@ const HoppscotchClone: React.FC = () => {
               setTabs={setTabs}
               activeTabId={activeTabId}
               tabs={tabs}
-              authorization={authorization}
+              authorization={activeTabObj.authorization}
               setAuthorization={setAuthorization}
               // Pre-request tab props
               preRequestScript={preRequestScript}
@@ -663,7 +688,10 @@ const HoppscotchClone: React.FC = () => {
               handleVariableDragEnd={handleVariableDragEnd}
               SortableVariableRow={SortableVariableRow}
             />
-          )}
+              )}
+            </div>
+          </div>
+          
           {/* Overlay: resizable bottom sheet RestBottomActions */}
           <div
             className={themeClass}

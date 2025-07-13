@@ -9,11 +9,11 @@ import React from 'react';
 import ParametersTabContent from './ParametersTabContent';
 import BodyTabContent from './BodyTabContent';
 import HeadersTabContent from './HeadersTabContent';
+import type { AuthType } from '../../../types';
 import AuthorizationTabContent from './AuthorizationTabContent';
 import PreRequestTabContent from './PreRequestTabContent';
 import PostRequestTabContent from './PostRequestTabContent';
 import VariablesTabContent from './VariablesTabContent';
-import { useSelector } from 'react-redux';
 
 // This is a placeholder for the actual implementation.
 // The real implementation will require all props and handlers for each tab's content.
@@ -21,15 +21,17 @@ import { useSelector } from 'react-redux';
 
 interface TabContentAreaProps {
   activeTab: string;
-  // Parameters tab
+  // Parameters tab props
   queryParams: any[];
   handleParamChange: (id: string, field: string, value: string) => void;
   handleDeleteParam: (id: string) => void;
+  handleDeleteAllParams: () => void;
+  handleAddParam: () => void;
   handleDragEnd: (event: any) => void;
-  SortableParamRow: any;
-  // Body tab
+  SortableParamRow: React.ComponentType<any>;
+  // Body tab props
   contentType: string;
-  contentTypeOptions: any[];
+  contentTypeOptions: Array<{ label: string; value: string; isSection?: boolean }>;
   setContentType: (type: string) => void;
   dropdownOpen: boolean;
   setDropdownOpen: (open: boolean) => void;
@@ -37,56 +39,53 @@ interface TabContentAreaProps {
   setActiveTab: (tab: string) => void;
   rawBody: string;
   setRawBody: (body: string) => void;
-  // Headers tab
+  // Headers tab props
   headers: any[];
   handleHeaderChange: (id: string, field: string, value: string) => void;
+  uuidv4: () => string;
+  setTabs: (tabs: any[]) => void;
+  activeTabId: string;
+  tabs: any[];
   handleDeleteHeader: (id: string) => void;
   handleAddHeader: () => void;
   editHeadersActive: boolean;
   setEditHeadersActive: (v: (prev: boolean) => boolean) => void;
-  SortableHeaderRow: any;
-  uuidv4: () => string;
-  setTabs: any;
-  activeTabId: string;
-  tabs: any[];
-  authorization: string;
-  setAuthorization: (auth: string) => void;
-  // Pre-request tab
+  SortableHeaderRow: React.ComponentType<any>;
+  // Authorization tab props
+  authorization: AuthType;
+  setAuthorization: (auth: AuthType) => void;
+  // Pre-request tab props
   preRequestScript: string;
   setPreRequestScript: (script: string) => void;
   insertPreRequestSnippet: (snippet: string) => void;
   highlightPreRequestScript: (script: string) => React.ReactNode;
   preRequestDivRef: React.RefObject<HTMLDivElement>;
-  // Post-request tab
+  // Post-request tab props
   postRequestScript: string;
   setPostRequestScript: (script: string) => void;
   insertPostRequestSnippet: (snippet: string) => void;
   highlightPostRequestScript: (script: string) => React.ReactNode;
   postRequestDivRef: React.RefObject<HTMLDivElement>;
-  // Variables tab
+  // Variables tab props
   variables: any[];
   handleVariableChange: (id: string, field: string, value: string) => void;
   handleDeleteVariable: (id: string) => void;
   handleVariableDragEnd: (event: any) => void;
-  SortableVariableRow: any;
-  // ...add more as needed
+  SortableVariableRow: React.ComponentType<any>;
 }
 
 const TabContentArea: React.FC<TabContentAreaProps> = (props) => {
-  const theme = useSelector((state: any) => state.theme.theme);
-  let themeClass = '';
-  if (theme === 'dark') themeClass = 'theme-dark';
-  else if (theme === 'black') themeClass = 'theme-black';
-  // No class for light (default)
 
   if (props.activeTab === 'parameters') {
-    const { queryParams, handleParamChange, handleDeleteParam, handleDragEnd, SortableParamRow } = props;
+    const { queryParams, handleParamChange, handleDeleteParam, handleDeleteAllParams, handleAddParam, handleDragEnd, SortableParamRow } = props;
     return (
-      <div className={`w-full h-full bg-bg text-text ${themeClass}`}>
+      <div className="w-full h-full">
         <ParametersTabContent
           queryParams={queryParams}
           handleParamChange={handleParamChange}
           handleDeleteParam={handleDeleteParam}
+          handleDeleteAllParams={handleDeleteAllParams}
+          handleAddParam={handleAddParam}
           handleDragEnd={handleDragEnd}
           SortableParamRow={SortableParamRow}
         />
@@ -96,7 +95,7 @@ const TabContentArea: React.FC<TabContentAreaProps> = (props) => {
   if (props.activeTab === 'body') {
     const { contentType, contentTypeOptions, setContentType, dropdownOpen, setDropdownOpen, hideScrollbarStyle, setActiveTab, rawBody, setRawBody } = props;
     return (
-      <div className={`w-full h-full bg-bg text-text ${themeClass}`}>
+      <div className="w-full h-full">
         <BodyTabContent
           contentType={contentType}
           contentTypeOptions={contentTypeOptions}
@@ -114,7 +113,7 @@ const TabContentArea: React.FC<TabContentAreaProps> = (props) => {
   if (props.activeTab === 'headers') {
     const { headers, handleHeaderChange, handleDeleteHeader, handleAddHeader, editHeadersActive, setEditHeadersActive, SortableHeaderRow } = props;
     return (
-      <div className={`w-full h-full bg-bg text-text ${themeClass}`}>
+      <div className="w-full h-full">
         <HeadersTabContent
           headers={headers}
           handleHeaderChange={handleHeaderChange}
@@ -128,16 +127,20 @@ const TabContentArea: React.FC<TabContentAreaProps> = (props) => {
     );
   }
   if (props.activeTab === 'authorization') {
+    const { authorization, setAuthorization } = props;
     return (
-      <div className={`w-full h-full bg-bg text-text ${themeClass}`}>
-        <AuthorizationTabContent />
+      <div className="w-full h-full">
+        <AuthorizationTabContent 
+          authType={authorization} 
+          setAuthType={setAuthorization} 
+        />
       </div>
     );
   }
   if (props.activeTab === 'pre-request') {
     const { preRequestScript, setPreRequestScript, insertPreRequestSnippet } = props;
     return (
-      <div className={`w-full h-full bg-bg text-text ${themeClass}`}>
+      <div className="w-full h-full">
         <PreRequestTabContent
           preRequestScript={preRequestScript}
           setPreRequestScript={setPreRequestScript}
@@ -149,7 +152,7 @@ const TabContentArea: React.FC<TabContentAreaProps> = (props) => {
   if (props.activeTab === 'post-request') {
     const { postRequestScript, setPostRequestScript, insertPostRequestSnippet } = props;
     return (
-      <div className={`w-full h-full bg-bg text-text ${themeClass}`}>
+      <div className="w-full h-full">
         <PostRequestTabContent
           postRequestScript={postRequestScript}
           setPostRequestScript={setPostRequestScript}
@@ -161,7 +164,7 @@ const TabContentArea: React.FC<TabContentAreaProps> = (props) => {
   if (props.activeTab === 'variables') {
     const { variables, handleVariableChange, handleDeleteVariable, handleVariableDragEnd, SortableVariableRow } = props;
     return (
-      <div className={`w-full h-full bg-bg text-text ${themeClass}`}>
+      <div className="w-full h-full">
         <VariablesTabContent
           variables={variables}
           handleVariableChange={handleVariableChange}

@@ -6,15 +6,9 @@ const RestBottomActions: React.FC = () => {
   const theme = useSelector((state: any) => state.theme.theme);
   const { current: accentColor } = useAccentColor();
   
-  const textClass =
-    theme === 'light'
-      ? 'text-black hover:text-gray-700'
-      : 'text-white hover:text-gray-300';
-      
-  const accentStyle = {
-    '--accent-color': accentColor,
-    '--accent-hover': `${accentColor}e6`,
-  } as React.CSSProperties;
+  const textClass = theme === 'light' 
+    ? 'text-black hover:text-gray-700' 
+    : 'text-white hover:text-gray-300';
 
   return (
     <div className="w-full flex flex-col items-center justify-center pb-4">
@@ -23,15 +17,15 @@ const RestBottomActions: React.FC = () => {
           <div className="flex items-center gap-2 text-sm">
             <span 
               className="font-medium" 
-              style={{ color: `var(--accent-color, ${accentColor})` }}
+              style={{ color: accentColor }}
             >
               Send Request
             </span>
             <kbd 
               className="px-2 py-1 rounded text-xs text-white"
               style={{ 
-                backgroundColor: `var(--accent-color, ${accentColor})`,
-                borderColor: `var(--accent-color, ${accentColor})`
+                backgroundColor: accentColor,
+                borderColor: accentColor
               }}
             >
               Ctrl
@@ -39,8 +33,8 @@ const RestBottomActions: React.FC = () => {
             <kbd 
               className="px-2 py-1 rounded text-xs text-white"
               style={{ 
-                backgroundColor: `var(--accent-color, ${accentColor})`,
-                borderColor: `var(--accent-color, ${accentColor})`
+                backgroundColor: accentColor,
+                borderColor: accentColor
               }}
             >
               ↵
