@@ -8,6 +8,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { I18nextProvider } from 'react-i18next';
 import i18n from './i18n';
 import { SearchProvider } from './contexts/SearchContext';
+import { AppProviders } from './providers/AppProviders';
 
 import Layout from './components/Layout';
 import HoppscotchClone from './pages/Rest/RestPage';
@@ -23,25 +24,27 @@ import GraphQL from './pages/GraphQL/GraphQL';
 function App() {
   return (
     <I18nextProvider i18n={i18n}>
-      <SearchProvider>
-        <div className="scrollbar-hide">
-          <Router>
-            <NavBar />
-            <Layout>
-              <Routes>
-                <Route path="/" element={<HoppscotchClone />} />
-                <Route path="/collections" element={<Collections />} />
-                <Route path="/history" element={<History />} />
-                <Route path="/generate-code" element={<GenerateCode />} />
-                <Route path="/settings" element={<Settings />} />
-                <Route path="/realtime" element={<Realtime />} />
-                <Route path="/graphql" element={<GraphQL />} />
-              </Routes>
-            </Layout>
-            <BottomBar />
-          </Router>
-        </div>
-      </SearchProvider>
+      <AppProviders>
+        <SearchProvider>
+          <div className="scrollbar-hide">
+            <Router>
+              <NavBar />
+              <Layout>
+                <Routes>
+                  <Route path="/" element={<HoppscotchClone />} />
+                  <Route path="/collections" element={<Collections />} />
+                  <Route path="/history" element={<History />} />
+                  <Route path="/generate-code" element={<GenerateCode />} />
+                  <Route path="/settings" element={<Settings />} />
+                  <Route path="/realtime" element={<Realtime />} />
+                  <Route path="/graphql" element={<GraphQL />} />
+                </Routes>
+              </Layout>
+              <BottomBar />
+            </Router>
+          </div>
+        </SearchProvider>
+      </AppProviders>
     </I18nextProvider>
   );
 }
