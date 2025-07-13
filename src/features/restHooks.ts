@@ -80,7 +80,15 @@ export const useRequestActions = () => {
     },
     updateMethod: (method: string) => {
       if (activeTab) {
-        dispatch(updateTab({ id: activeTab.id, changes: { method } }));
+        console.log('Dispatching updateTab with method:', method); // Debug log
+        dispatch(updateTab({ 
+          id: activeTab.id, 
+          changes: { 
+            method,
+            updatedAt: new Date().toISOString(),
+            isDirty: true 
+          } 
+        }));
       }
     },
     updateHeaders: (headers: RequestHeader[]) => {

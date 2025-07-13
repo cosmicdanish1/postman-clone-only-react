@@ -5,26 +5,38 @@
 // Role: Connects RequestEditor to Redux store
 // Located at: src/pages/Rest/RequestEditorContainer.tsx
 
-import React, { useRef, useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import RequestEditor from './RequestEditor';
-import { useRest } from '../../features/RestProvider';
-import { METHODS } from '../../constants/httpMethods';
+import { 
+  useActiveTab, 
+  useTabActions, 
+  useRequestActions 
+} from '../../features/restHooks';
 import useThemeClass from '../../hooks/useThemeClass';
 import useAccentColor from '../../hooks/useAccentColor';
+import { METHODS } from '../../constants/httpMethods';
 
 const methodColors: Record<string, string> = {
-  GET: 'text-green-500',
-  POST: 'text-blue-500',
-  PUT: 'text-yellow-500',
-  PATCH: 'text-purple-500',
-  DELETE: 'text-red-500',
-  HEAD: 'text-pink-500',
-  OPTIONS: 'text-indigo-500',
+  GET: '#10B981',      // green-500
+  POST: '#3B82F6',     // blue-500
+  PUT: '#F59E0B',      // yellow-500
+  PATCH: '#8B5CF6',    // purple-500
+  DELETE: '#EF4444',   // red-500
+  HEAD: '#EC4899',     // pink-500
+  OPTIONS: '#6366F1',  // indigo-500
   // Add more methods as needed
 };
 
 const RequestEditorContainer: React.FC = () => {
-  const { activeTab, requestActions, tabActions } = useRest();
+  const activeTab = useActiveTab();
+  const tabActions = useTabActions();
+  const requestActions = useRequestActions();
+  
+  // Log active tab changes for debugging
+  useEffect(() => {
+    console.log('Active tab updated:', activeTab?.id, 'Method:', activeTab?.method);
+  }, [activeTab]);
+
   const { themeClass } = useThemeClass();
   const { current: accentColor } = useAccentColor();
 
@@ -69,12 +81,14 @@ const RequestEditorContainer: React.FC = () => {
   const currentTab = activeTab || defaultTab;
 
   // Handle method change
-  const handleMethodChange = (method: string) => {
-    requestActions.updateMethod(method);
+  const handleMethodChange = (newMethod: string) => {
+    console.log('Updating method to:', newMethod);
     if (activeTab) {
+      // Update the tab with the new method
       tabActions.updateTab(activeTab.id, { 
-        method,
-        isDirty: true 
+        method: newMethod,
+        isDirty: true,
+        updatedAt: new Date().toISOString()
       });
     }
   };

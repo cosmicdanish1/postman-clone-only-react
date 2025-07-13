@@ -75,13 +75,47 @@ const RequestEditor: React.FC<RequestEditorProps> = ({
   
   // Use themeClass from props if available, otherwise use from hook
   const effectiveThemeClass = themeClass || themeClassFromHook;
+  
+  // Local state to track the current method
+  const [currentMethod, setCurrentMethod] = React.useState(method || 'GET');
+  
+  // Update local state when prop changes
+  React.useEffect(() => {
+    if (method && method !== currentMethod) {
+      setCurrentMethod(method);
+    }
+  }, [method]);
 
   const handleMethodSelect = (selectedMethod: string) => {
-    setMethod(selectedMethod);
+    console.log('Selected method:', selectedMethod);
+    // Update local state immediately for better UX
+    setCurrentMethod(selectedMethod);
+    // Call the prop to update Redux
+    if (setMethod) {
+      setMethod(selectedMethod);
+    }
+    // Close the dropdown
     setMethodDropdownOpen(false);
   };
 
   const [localUrl, setLocalUrl] = React.useState(url || DEFAULT_URL);
+
+  // Close dropdown when clicking outside
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (methodDropdownRef.current && !methodDropdownRef.current.contains(event.target as Node)) {
+        setMethodDropdownOpen(false);
+      }
+    };
+
+    if (methodDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [methodDropdownOpen]);
 
   // Update local URL when prop changes
   React.useEffect(() => {
@@ -130,10 +164,15 @@ const RequestEditor: React.FC<RequestEditorProps> = ({
           <div className="relative">
             <button
               type="button"
-              className={`h-full flex items-center justify-between w-24 px-3 py-2 text-sm font-medium rounded-l-md ${methodColors[method] || 'text-gray-700'} ${buttonBgClass} border ${borderClass} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-${accentColor}`}
+              className={`h-full flex items-center justify-between w-24 px-3 py-2 text-sm font-medium rounded-l-md ${buttonBgClass} border ${borderClass} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-${accentColor} transition-colors`}
               onClick={() => setMethodDropdownOpen(!methodDropdownOpen)}
+              aria-expanded={methodDropdownOpen}
+              aria-haspopup="listbox"
+              style={{ color: methodColors[currentMethod] || 'inherit' }}
             >
-              <span className="flex-1 text-left">{method}</span>
+              <span className="flex-1 text-left font-medium">
+                {currentMethod}
+              </span>
               <svg className="w-4 h-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
@@ -155,7 +194,12 @@ const RequestEditor: React.FC<RequestEditorProps> = ({
                     <button
                       key={m}
                       type="button"
-                      className={`block w-full px-4 py-2 text-sm text-left ${methodColors[m] || textClass} hover:bg-opacity-10 hover:bg-gray-500 focus:outline-none focus:bg-opacity-10 focus:bg-gray-500`}
+                      className={`block w-full px-4 py-2 text-sm text-left ${
+                        m === currentMethod 
+                          ? 'bg-opacity-20 bg-gray-500' 
+                          : 'hover:bg-opacity-10 hover:bg-gray-500'
+                      } focus:outline-none focus:bg-opacity-10 focus:bg-gray-500`}
+                      style={{ color: methodColors[m] || 'inherit' }}
                       onClick={() => handleMethodSelect(m)}
                       role="menuitem"
                       tabIndex={-1}
@@ -185,7 +229,7 @@ const RequestEditor: React.FC<RequestEditorProps> = ({
         <div className="relative flex items-stretch" ref={sendMenuRef}>
           <button
             type="button"
-            className={`px-4 py-2 text-sm font-medium text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 ${!sendMenuOpen ? 'rounded-r-md' : 'rounded-r-none'}`}
+            className={`px-5 py-2 text-sm font-medium text-white rounded-l-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 ${!sendMenuOpen ? '' : ''}`}
             style={{
               backgroundColor: accentColor,
               '--accent-hover': `${accentColor}e6`,
