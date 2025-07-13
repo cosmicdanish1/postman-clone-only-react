@@ -1,5 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
+import { useRequestHistory } from '../../../features/useRequestHistory';
+import { formatDate } from '../../../utils/dateUtils';
 
 const ICON_SIZE = 20;
 
@@ -26,6 +28,36 @@ const History: React.FC = () => {
   const svgSrc = (THEME_SVGS as Record<string, string>)[theme] ?? THEME_SVGS.light;
   const textClass = theme === 'light' ? 'text-black' : 'text-white';
   const subTextClass = theme === 'light' ? 'text-gray-500' : 'text-gray-400';
+  
+  const { history, loading, error, refreshHistory } = useRequestHistory();
+  
+
+
+  if (loading) {
+    return (
+      <div className="p-4">
+        <div className="animate-pulse space-y-4">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-16 bg-gray-200 dark:bg-gray-700 rounded"></div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-4">
+        <div className="text-red-500 mb-4">Error loading history: {error}</div>
+        <button 
+          onClick={refreshHistory}
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-full w-full">
@@ -70,13 +102,57 @@ const History: React.FC = () => {
         </div>
       </div>
       {/* Empty state */}
-      <div className="flex flex-1 flex-col items-center justify-center">
-        <img src={svgSrc} alt="Empty history" className="w-40 h-40 mb-6 select-none pointer-events-none" draggable={false} />
-        <div className={`text-lg font-semibold mb-2 ${textClass}`}>History is empty</div>
-        <div className={`text-sm ${subTextClass}`}>You haven’t made any requests yet.</div>
+      <div className="flex flex-col h-full">
+        <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+          <h2 className="text-lg font-semibold">Request History</h2>
+          <button 
+            onClick={refreshHistory}
+            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+            title="Refresh"
+          >
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+            </svg>
+          </button>
+        </div>
+        
+        {history.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-full p-8">
+            <div className="w-16 h-16 mb-4">
+              <img src={svgSrc} alt="History" className="w-full h-full" />
+            </div>
+            <h2 className={`text-xl font-semibold mb-2 ${textClass}`}>No History Yet</h2>
+            <p className={`text-center mb-6 ${subTextClass} max-w-md`}>
+              Your request history will appear here. Send a request to see it in action.
+            </p>
+          </div>
+        ) : (
+          <div className="divide-y divide-gray-200 dark:divide-gray-700 overflow-y-auto flex-1">
+            {history.map((item) => (
+              <div 
+                key={item.id} 
+                className="p-4 hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors"
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <span className="font-medium text-sm text-blue-500">
+                    {item.method} {item.url}
+                  </span>
+                  <span className="text-xs text-gray-500">
+                    {formatDate(item.created_at)}
+                  </span>
+                </div>
+                <div className="flex items-center text-xs text-gray-500 space-x-2">
+                  <span>{item.month}/{item.day}/{item.year}</span>
+                  <span>•</span>
+                  <span>{item.time}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
-export default History; 
+export default History;
