@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import useThemeClass from '../../../hooks/useThemeClass';
 import Collections from './Collections';
 import History from './History';
@@ -51,86 +51,23 @@ const panelContent = {
 };
 type PanelTab = keyof typeof panelContent;
 
-const MIN_WIDTH = 260;
-const DEFAULT_WIDTH = 340;
-const MAX_WIDTH = 500; // Limited maximum width
-
 const RestRightPanel: React.FC = () => {
   // Use theme class hook for consistent theming
-  const { themeClass, borderClass, accentColor, accentColorClass } = useThemeClass();
+  const { themeClass, borderClass } = useThemeClass();
   
   const [activeTab, setActiveTab] = useState<PanelTab>('collections');
-  const [width, setWidth] = useState(DEFAULT_WIDTH);
-  const [dragging, setDragging] = useState<'left' | 'right' | null>(null);
-  const [hovered, setHovered] = useState(false);
-  const startX = useRef(0);
-  const startWidth = useRef(width);
-
-  const onMouseDown = (e: React.MouseEvent, edge: 'left' | 'right') => {
-    setDragging(edge);
-    startX.current = e.clientX;
-    startWidth.current = width;
-    document.addEventListener('mousemove', onMouseMove);
-    document.addEventListener('mouseup', onMouseUp);
-  };
-
-  const onMouseMove = (e: MouseEvent) => {
-    if (!dragging) return;
-    let newWidth = startWidth.current;
-    if (dragging === 'left') {
-      newWidth = startWidth.current - (e.clientX - startX.current);
-    } else if (dragging === 'right') {
-      newWidth = startWidth.current + (e.clientX - startX.current);
-    }
-    // Limited drag range - only allow small adjustments
-    newWidth = Math.max(MIN_WIDTH, Math.min(MAX_WIDTH, newWidth));
-    setWidth(newWidth);
-  };
-
-  const onMouseUp = () => {
-    setDragging(null);
-    document.removeEventListener('mousemove', onMouseMove);
-    document.removeEventListener('mouseup', onMouseUp);
-  };
 
   return (
     <div
-      className={`h-full bg-bg text-text shadow-inner z-30 ${themeClass} ${borderClass}`}
+      className={`h-full w-full bg-bg text-text shadow-inner z-30 ${themeClass} ${borderClass}`}
       style={{ 
-        zIndex: 40, 
-        width: width, 
-        minWidth: MIN_WIDTH, 
-        maxWidth: MAX_WIDTH, 
-        transition: dragging ? 'none' : 'width 0.15s', 
-        position: 'relative' 
+        zIndex: 40,
+        position: 'relative',
+        display: 'flex',
+        height: '100%',
+        minWidth: '300px' // Ensure minimum width
       }}
     >
-      {/* Thin left drag handle */}
-      <div
-        className={`h-full cursor-ew-resize z-[41] absolute left-0 top-0 transition-colors duration-150 ${dragging === 'left' ? accentColorClass.bg : 'bg-transparent'}`}
-        style={{ 
-          width: 4, // Much thinner drag handle
-        }}
-        onMouseDown={e => onMouseDown(e, 'left')}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        title="Resize panel"
-      >
-        {/* Thin accent line on hover/drag */}
-        {(hovered || dragging) && (
-          <div
-            style={{
-              width: '100%',
-              height: '100%',
-              background: accentColor,
-              opacity: dragging ? 1 : 0.6,
-              transition: 'opacity 0.15s ease'
-            }}
-          />
-        )}
-      </div>
-      
-      <div style={{ display: 'flex', height: '100%' }}>
         {/* Subsidebar */}
         <nav className={`w-14 h-full flex flex-col items-center py-4 gap-2 border-r ${borderClass} bg-bg`}>
           {navItems.map(item => (
@@ -146,7 +83,7 @@ const RestRightPanel: React.FC = () => {
               onClick={() => setActiveTab(item.key as PanelTab)}
               type="button"
             >
-              <span className={activeTab === item.key ? accentColorClass.text : ''}>
+              <span className={activeTab === item.key ? 'text-accent' : ''}>
                 {item.icon}
               </span>
             </button>
@@ -158,7 +95,6 @@ const RestRightPanel: React.FC = () => {
             {panelContent[activeTab]}
           </div>
         </div>
-      </div>
     </div>
   );
 };

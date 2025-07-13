@@ -23,7 +23,6 @@ import SortableHeaderRow from '../../components/SortableHeaderRow';
 import SortableVariableRow from '../../components/SortableVariableRow';
 import { METHODS, contentTypeOptions } from '../../constants';
 import RestRightPanel from './RightPanel/RestRightPanel';
-import RestBottomActions from '../../components/RestBottomActions';
 import RestSplitPane from './components/RestSplitPane';
 import { useOutsideClick } from '../../hooks/useOutsideClick';
 import useAccentColor from '../../hooks/useAccentColor';
@@ -464,33 +463,6 @@ const HoppscotchClone: React.FC = () => {
   const MIN_OVERLAY_HEIGHT = 80;
   const MAX_OVERLAY_HEIGHT = 400;
   const [overlayHeight, setOverlayHeight] = useState(180);
-  const [draggingOverlay, setDraggingOverlay] = useState(false);
-  const dragStartY = useRef(0);
-  const dragStartHeight = useRef(overlayHeight);
-
-  // Stable drag handlers using refs
-  const draggingOverlayRef = useRef(draggingOverlay);
-  draggingOverlayRef.current = draggingOverlay;
-
-  function onOverlayDragMouseMove(e: MouseEvent) {
-    if (!draggingOverlayRef.current) return;
-    const delta = dragStartY.current - e.clientY;
-    let newHeight = dragStartHeight.current + delta;
-    newHeight = Math.max(MIN_OVERLAY_HEIGHT, Math.min(MAX_OVERLAY_HEIGHT, newHeight));
-    setOverlayHeight(newHeight);
-  }
-  function onOverlayDragMouseUp() {
-    setDraggingOverlay(false);
-    document.removeEventListener('mousemove', onOverlayDragMouseMove);
-    document.removeEventListener('mouseup', onOverlayDragMouseUp);
-  }
-  function onOverlayDragMouseDown(e: React.MouseEvent) {
-    setDraggingOverlay(true);
-    dragStartY.current = e.clientY;
-    dragStartHeight.current = overlayHeight;
-    document.addEventListener('mousemove', onOverlayDragMouseMove);
-    document.addEventListener('mouseup', onOverlayDragMouseUp);
-  }
 
   // Add at the top of the component, after overlayHeight state:
   const [dragBarHover, setDragBarHover] = useState(false);
@@ -691,46 +663,7 @@ const HoppscotchClone: React.FC = () => {
               )}
             </div>
           </div>
-          
-          {/* Overlay: resizable bottom sheet RestBottomActions */}
-          <div
-            className={themeClass}
-            style={{
-              position: 'absolute',
-              left: 0,
-              right: 0,
-              bottom: 0,
-              height: overlayHeight,
-              zIndex: 50,
-              transition: draggingOverlay ? 'none' : 'height 0.15s',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'flex-start',
-              pointerEvents: 'auto',
-              userSelect: draggingOverlay ? 'none' : 'auto',
-            }}
-          >
-            {/* Drag handle at the top */}
-            <div
-              onMouseDown={onOverlayDragMouseDown}
-              onMouseEnter={() => setDragBarHover(true)}
-              onMouseLeave={() => setDragBarHover(false)}
-              style={{
-                height: dragBarHover ? 4 : 1,
-                cursor: 'ns-resize',
-                width: '100%',
-                margin: '0 0 12px 0',
-                borderRadius: 0,
-                background: dragBarHover ? accentHex : (draggingOverlay ? '#f472b6' : '#27272a'),
-                transition: 'background 0.15s',
-              }}
-              title="Resize panel"
-            ></div>
-            <div className="w-full flex-1 flex flex-col items-center justify-center">
-              <RestBottomActions />
-            </div>
-          </div>
+          {/* Bottom panel and drag line removed */}
         </div>
       </RestSplitPane>
     </div>
