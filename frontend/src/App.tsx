@@ -20,6 +20,7 @@ import NavBar from './components/NavBar';
 import BottomBar from './components/BottomBar';
 import Realtime from './pages/Realtime/Realtime';
 import GraphQL from './pages/GraphQL/GraphQL';
+import ConnectionTest from './components/ConnectionTest';
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
                   <Route path="/settings" element={<Settings />} />
                   <Route path="/realtime" element={<Realtime />} />
                   <Route path="/graphql" element={<GraphQL />} />
+                  <Route path="/test-connection" element={<ConnectionTest />} />
                 </Routes>
               </Layout>
               <BottomBar />
