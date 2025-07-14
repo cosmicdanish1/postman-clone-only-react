@@ -12,6 +12,7 @@ import {
   useTabActions, 
   useRequestActions 
 } from '../../features/restHooks';
+import { useRequestHistory } from '../../features/useRequestHistory';
 import useThemeClass from '../../hooks/useThemeClass';
 import useAccentColor from '../../hooks/useAccentColor';
 import { METHODS } from '../../constants/httpMethods';
@@ -104,9 +105,37 @@ const RequestEditorContainer: React.FC = () => {
     }
   };
 
+  // Get the saveRequest function from useRequestHistory hook
+  const { saveRequest } = useRequestHistory();
+
   // Handle send request
-  const handleSend = () => {
-    if (activeTab) {
+  const handleSend = async () => {
+    if (!activeTab) return;
+    
+    try {
+      // Save the request to history
+      const now = new Date();
+      const saveResult = await saveRequest({
+        method: activeTab.method || 'GET',
+        url: activeTab.url || '',
+        month: String(now.getMonth() + 1).padStart(2, '0'),
+        day: String(now.getDate()).padStart(2, '0'),
+        year: String(now.getFullYear()),
+        time: now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }),
+      });
+      
+      if (!saveResult.success) {
+        console.error('Failed to save request to history:', saveResult.error);
+        // Continue with the request even if saving to history fails
+      }
+      
+      // Send the request
+      requestActions.sendRequest();
+      tabActions.updateTab(activeTab.id, { isDirty: false });
+      
+    } catch (error) {
+      console.error('Error in handleSend:', error);
+      // Still try to send the request even if history save fails
       requestActions.sendRequest();
       tabActions.updateTab(activeTab.id, { isDirty: false });
     }

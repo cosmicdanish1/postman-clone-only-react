@@ -4,8 +4,9 @@
 // Imported by: RequestEditorContainer.tsx
 // Role: Renders the main request editor UI for the REST feature.
 
-import React from 'react';
+import React, { useState } from 'react';
 import useThemeClass from '../../hooks/useThemeClass';
+import { executeRequest, saveToHistory } from '../../services/apiClient';
 
 interface RequestEditorProps {
   METHODS: string[];
@@ -17,7 +18,7 @@ interface RequestEditorProps {
   methodColors: Record<string, string>;
   url: string;
   setUrl: (url: string) => void;
-  onSend: () => void;
+  onSend: (response: any) => void;
   onSendMenuOpen: () => void;
   sendMenuOpen: boolean;
   sendMenuRef: React.RefObject<HTMLDivElement | null>;
@@ -99,6 +100,58 @@ const RequestEditor: React.FC<RequestEditorProps> = ({
   };
 
   const [localUrl, setLocalUrl] = React.useState(url || DEFAULT_URL);
+  const [isSending, setIsSending] = useState(false);
+  const [requestError, setRequestError] = useState<string | null>(null);
+  
+  // Handle sending the request
+  const handleSend = async () => {
+    if (!localUrl) {
+      setRequestError('Please enter a URL');
+      return;
+    }
+    
+    setIsSending(true);
+    setRequestError(null);
+    
+    try {
+      const startTime = Date.now();
+      const response = await executeRequest({
+        method: method as any, // Type assertion since Axios expects specific methods
+        url: localUrl,
+        // Add headers, body, etc. from your request editor state
+      });
+      
+      const endTime = Date.now();
+      const responseTime = endTime - startTime;
+      
+      // Save to history if successful
+      if (response.success) {
+        await saveToHistory({
+          method,
+          url: localUrl,
+          status: response.status || 200,
+          statusText: response.statusText || 'OK',
+          responseTime,
+        });
+      }
+      
+      // Call the parent's onSend with the response
+      onSend(response);
+      
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to send request';
+      setRequestError(errorMessage);
+      console.error('Request failed:', error);
+      
+      // Still call onSend with error state
+      onSend({
+        success: false,
+        error: errorMessage,
+      });
+    } finally {
+      setIsSending(false);
+    }
+  };
 
   // Close dropdown when clicking outside
   React.useEffect(() => {
@@ -250,7 +303,8 @@ const RequestEditor: React.FC<RequestEditorProps> = ({
             Send
           </button>
           <button
-            className={`px-2 py-2 rounded-r-md font-semibold text-white transition-colors duration-200 ${sendMenuOpen ? 'bg-opacity-90' : ''}`}
+            disabled={isSending}
+            className={`px-2 py-2 rounded-r-md font-semibold text-white transition-colors duration-200 ${sendMenuOpen ? 'bg-opacity-90' : ''} ${isSending ? 'opacity-70 cursor-not-allowed' : ''}`}
             style={{
               backgroundColor: accentColor,
               '--accent-hover': `${accentColor}e6`,
