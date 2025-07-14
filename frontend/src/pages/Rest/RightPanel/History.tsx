@@ -33,13 +33,36 @@ const ICONS = {
 };
 
 const History: React.FC = () => {
-  const { history, loading, error, refreshHistory } = useRequestHistory();
+  const { 
+    history, 
+    loading, 
+    error, 
+    refreshHistory, 
+    clearHistory 
+  } = useRequestHistory();
   
   // Handle refresh button click
   const handleRefresh = useCallback(() => {
     console.log('Manual refresh triggered');
     refreshHistory().catch(console.error);
   }, [refreshHistory]);
+  
+  // Handle delete all button click
+  const handleDeleteAll = useCallback(async () => {
+    if (window.confirm('Are you sure you want to delete all history? This action cannot be undone.')) {
+      console.log('Deleting all history...');
+      try {
+        const result = await clearHistory();
+        if (result.success) {
+          console.log('Successfully deleted all history');
+        } else {
+          console.error('Failed to delete history:', result.error);
+        }
+      } catch (error) {
+        console.error('Error deleting history:', error);
+      }
+    }
+  }, [clearHistory]);
 
   // Handle history item click
   const handleItemClick = useCallback((item: HistoryItem) => {
@@ -89,6 +112,15 @@ const History: React.FC = () => {
         
         {/* Icons */}
         <div className="flex items-center gap-3">
+          <button 
+            onClick={handleDeleteAll}
+            disabled={loading}
+            className="p-1 text-red-500 hover:text-red-700 transition-colors"
+            title="Clear all history"
+          >
+            {ICONS.delete}
+          </button>
+          
           <button 
             onClick={handleRefresh} 
             className="p-1 hover:text-blue-500 transition-colors" 

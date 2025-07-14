@@ -30,6 +30,7 @@ interface ApiResponse<T = any> {
   data?: T;
   message?: string;
   error?: string;
+  count?: number;
 }
 
 export const apiService = {
@@ -105,33 +106,70 @@ export const apiService = {
 
   // Get request history
   async getHistory(): Promise<ListResponse<RequestHistoryData>> {
+    const requestUrl = `${API_BASE_URL}/history`;
+    
+    console.log('Fetching history from:', requestUrl);
+    
     try {
-      console.log('Making request to:', `${API_BASE_URL}/history`);
-      const response = await fetch(`${API_BASE_URL}/history`);
+      const response = await fetch(requestUrl, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+        },
+        credentials: 'include',
+      });
+
+      console.log('History response status:', response.status);
       
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('Error response from server:', errorText);
-        // For list responses, we'll return an empty list on error
-        return { items: [], count: 0 };
+        console.error('Error response:', errorText);
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const data = await response.json();
-      console.log('API Response:', data);
+      console.log('History data received:', data);
       
-      // Ensure we have a valid response format
-      if (data && Array.isArray(data.items) && typeof data.count === 'number') {
-        return data;
-      } else {
-        console.error('Unexpected response format:', data);
-        return { items: [], count: 0 };
-      }
-      
+      return {
+        items: data.items || [],
+        count: data.count || 0
+      };
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      console.error('Error fetching history:', errorMessage, error);
-      // Return empty list on error
-      return { items: [], count: 0 };
+      console.error('Error fetching history:', error);
+      throw error;
+    }
+  },
+  
+  // Clear all history
+  async clearHistory(): Promise<ApiResponse> {
+    const requestUrl = `${API_BASE_URL}/history`;
+    
+    console.log('Clearing history at:', requestUrl);
+    
+    try {
+      const response = await fetch(requestUrl, {
+        method: 'DELETE',
+        headers: {
+          'Accept': 'application/json',
+        },
+        credentials: 'include',
+      });
+
+      console.log('Clear history response status:', response.status);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Error response:', errorText);
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('Clear history response data:', data);
+      
+      return data;
+    } catch (error) {
+      console.error('Error clearing history:', error);
+      throw error;
     }
   }
 };

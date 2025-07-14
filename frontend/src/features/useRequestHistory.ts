@@ -102,11 +102,43 @@ export const useRequestHistory = () => {
     fetchHistory();
   }, [fetchHistory]);
 
+  // Clear all history
+  const clearHistory = useCallback(async (): Promise<{ success: boolean; error?: string }> => {
+    console.log('Clearing history...');
+    setLoading(true);
+    setError(null);
+    
+    try {
+      console.log('Sending clear history request...');
+      const response = await apiService.clearHistory();
+      console.log('Clear history response:', response);
+      
+      if (response && response.success) {
+        console.log('Successfully cleared history. Count:', response.count);
+        setHistory([]);
+        return { success: true };
+      } else {
+        const errorMsg = response?.error || 'Failed to clear history';
+        console.error('Clear history failed:', errorMsg);
+        setError(errorMsg);
+        return { success: false, error: errorMsg };
+      }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
+      console.error('Error clearing history:', errorMessage, err);
+      setError(errorMessage);
+      return { success: false, error: errorMessage };
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   return {
     history,
     loading,
     error,
     saveRequest,
-    refreshHistory: fetchHistory
+    refreshHistory: fetchHistory,
+    clearHistory
   };
 };
