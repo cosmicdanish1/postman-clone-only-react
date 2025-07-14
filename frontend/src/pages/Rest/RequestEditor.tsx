@@ -4,9 +4,13 @@
 // Imported by: RequestEditorContainer.tsx
 // Role: Renders the main request editor UI for the REST feature.
 
-import React, { useState } from 'react';
+import React, { useCallback } from 'react';
 import useThemeClass from '../../hooks/useThemeClass';
-import { executeRequest, saveToHistory } from '../../services/apiClient';
+
+interface RequestData {
+  method: string;
+  url: string;
+}
 
 interface RequestEditorProps {
   METHODS: string[];
@@ -18,7 +22,7 @@ interface RequestEditorProps {
   methodColors: Record<string, string>;
   url: string;
   setUrl: (url: string) => void;
-  onSend: (response: any) => void;
+  onSend: (data: RequestData) => void;
   onSendMenuOpen: () => void;
   sendMenuOpen: boolean;
   sendMenuRef: React.RefObject<HTMLDivElement | null>;
@@ -43,7 +47,7 @@ const RequestEditor: React.FC<RequestEditorProps> = ({
   setMethodDropdownOpen,
   methodDropdownRef,
   methodColors,
-  url = '',
+  url,
   setUrl,
   onSend,
   onSendMenuOpen,
@@ -57,7 +61,7 @@ const RequestEditor: React.FC<RequestEditorProps> = ({
   saveDropdownRef,
   saveRequestName = '',
   onSaveRequestNameChange = () => {},
-  onSave = () => {},
+  onSave,
   themeClass = '',
   accentColor = '',
 }) => {
@@ -100,58 +104,33 @@ const RequestEditor: React.FC<RequestEditorProps> = ({
   };
 
   const [localUrl, setLocalUrl] = React.useState(url || DEFAULT_URL);
-  const [isSending, setIsSending] = useState(false);
-  const [requestError, setRequestError] = useState<string | null>(null);
   
-  // Handle sending the request
-  const handleSend = async () => {
-    if (!localUrl) {
-      setRequestError('Please enter a URL');
-      return;
-    }
+  // Handle send button click
+  const handleSendButtonClick = useCallback(() => {
+    const targetUrl = localUrl.trim() || DEFAULT_URL;
+    setUrl(targetUrl);
     
-    setIsSending(true);
-    setRequestError(null);
+    const requestData = {
+      method: currentMethod,
+      url: targetUrl,
+    };
     
-    try {
-      const startTime = Date.now();
-      const response = await executeRequest({
-        method: method as any, // Type assertion since Axios expects specific methods
-        url: localUrl,
-        // Add headers, body, etc. from your request editor state
-      });
-      
-      const endTime = Date.now();
-      const responseTime = endTime - startTime;
-      
-      // Save to history if successful
-      if (response.success) {
-        await saveToHistory({
-          method,
-          url: localUrl,
-          status: response.status || 200,
-          statusText: response.statusText || 'OK',
-          responseTime,
-        });
-      }
-      
-      // Call the parent's onSend with the response
-      onSend(response);
-      
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to send request';
-      setRequestError(errorMessage);
-      console.error('Request failed:', error);
-      
-      // Still call onSend with error state
-      onSend({
-        success: false,
-        error: errorMessage,
-      });
-    } finally {
-      setIsSending(false);
-    }
-  };
+    console.log('=== FRONTEND: Sending request ===');
+    console.log('Data being sent:', JSON.stringify(requestData, null, 2));
+    console.log('Endpoint:', '/api/history');
+    
+    // Log the full fetch call for debugging
+    console.log('Fetch call details:', {
+      url: 'http://localhost:5000/api/history',
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(requestData)
+    });
+    
+    onSend(requestData);
+  }, [onSend, currentMethod, localUrl, setUrl]);
+
+
 
   // Close dropdown when clicking outside
   React.useEffect(() => {
@@ -178,17 +157,15 @@ const RequestEditor: React.FC<RequestEditorProps> = ({
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newUrl = e.target.value;
     setLocalUrl(newUrl);
-    setUrl(newUrl);
+    // Only update parent URL when user presses Enter or clicks Send
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      const targetUrl = localUrl || DEFAULT_URL;
-      setUrl(targetUrl);
-      alert(`Sending request to: ${targetUrl}`);
-      onSend();
+      e.preventDefault();
+      handleSendButtonClick();
     }
-  };
+  }, [handleSendButtonClick]);
 
   // Custom scrollbar styles
   const scrollbarStyles = {
@@ -293,18 +270,13 @@ const RequestEditor: React.FC<RequestEditorProps> = ({
             onMouseLeave={(e) => {
               e.currentTarget.style.backgroundColor = accentColor;
             }}
-            onClick={() => {
-              const targetUrl = localUrl || DEFAULT_URL;
-              alert(`Sending request to: ${targetUrl}`);
-              setUrl(targetUrl);
-              onSend();
-            }}
+            onClick={handleSendButtonClick}
           >
             Send
           </button>
           <button
-            disabled={isSending}
-            className={`px-2 py-2 rounded-r-md font-semibold text-white transition-colors duration-200 ${sendMenuOpen ? 'bg-opacity-90' : ''} ${isSending ? 'opacity-70 cursor-not-allowed' : ''}`}
+            disabled={false}
+            className={`px-2 py-2 rounded-r-md font-semibold text-white transition-colors duration-200 ${sendMenuOpen ? 'bg-opacity-90' : ''}`}
             style={{
               backgroundColor: accentColor,
               '--accent-hover': `${accentColor}e6`,
@@ -467,11 +439,11 @@ const RequestEditor: React.FC<RequestEditorProps> = ({
           onKeyDown={e => {
             if (e.key === 'Enter') {
               e.currentTarget.blur();
-              const handleSend = () => {
-                alert(`Sending request to: ${url || DEFAULT_URL}`);
-                onSend();
-              };
-              handleSend();
+              const targetUrl = url || DEFAULT_URL;
+              onSend({
+                method: method as any,
+                url: targetUrl,
+              });
             }
           }}
         />
@@ -495,9 +467,11 @@ const RequestEditor: React.FC<RequestEditorProps> = ({
             }}
             onClick={() => {
               const targetUrl = localUrl || DEFAULT_URL;
-              alert(`Sending request to: ${targetUrl}`);
               setUrl(targetUrl);
-              onSend();
+              onSend({
+                method: method as any,
+                url: targetUrl,
+              });
             }}
           >
             Send
@@ -620,3 +594,4 @@ const RequestEditor: React.FC<RequestEditorProps> = ({
 };
 
 export default RequestEditor;
+

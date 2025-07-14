@@ -1,5 +1,4 @@
 import React, { useCallback } from 'react';
-import { useSelector } from 'react-redux';
 import { useRequestHistory } from '../../../features/useRequestHistory';
 
 interface HistoryItem {
@@ -34,9 +33,6 @@ const ICONS = {
 };
 
 const History: React.FC = () => {
-  const theme = useSelector((state: { theme: { theme: string } }) => state.theme.theme);
-  const isDarkMode = theme === 'dark' || theme === 'black';
-  
   const { history, loading, error, refreshHistory } = useRequestHistory();
   
   // Handle refresh button click
@@ -49,22 +45,6 @@ const History: React.FC = () => {
   const handleItemClick = useCallback((item: HistoryItem) => {
     console.log('History item clicked:', item);
     // You can add logic to handle item click here
-  }, []);
-
-  // Test direct API call
-  const testDirectApi = useCallback(async () => {
-    console.log('Testing direct API call...');
-    try {
-      const response = await fetch('http://localhost:5000/api/history');
-      const data = await response.json();
-      console.log('Direct API response:', data);
-      
-      if (data?.items) {
-        console.log('First item from direct API:', data.items[0]);
-      }
-    } catch (err) {
-      console.error('Direct API error:', err);
-    }
   }, []);
 
   if (loading && history.length === 0) {
@@ -110,16 +90,9 @@ const History: React.FC = () => {
         {/* Icons */}
         <div className="flex items-center gap-3">
           <button 
-            onClick={testDirectApi}
-            className="px-2 py-1 text-xs bg-yellow-500 text-white rounded hover:bg-yellow-600"
-            title="Test API"
-          >
-            Test API
-          </button>
-          <button 
             onClick={handleRefresh} 
-            className="hover:text-blue-500 transition-colors" 
-            title="Refresh"
+            className="p-1 hover:text-blue-500 transition-colors" 
+            title={loading ? 'Refreshing...' : 'Refresh'}
             disabled={loading}
           >
             <svg 
@@ -134,9 +107,9 @@ const History: React.FC = () => {
               <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
             </svg>
           </button>
-          <button className="hover:text-blue-500 transition-colors" title="Help">{ICONS.help}</button>
-          <button className="hover:text-blue-500 transition-colors" title="Filter">{ICONS.filter}</button>
-          <button className="hover:text-red-500 transition-colors" title="Delete All">{ICONS.delete}</button>
+          <button className="p-1 hover:text-blue-500 transition-colors" title="Help">{ICONS.help}</button>
+          <button className="p-1 hover:text-blue-500 transition-colors" title="Filter">{ICONS.filter}</button>
+          <button className="p-1 hover:text-red-500 transition-colors" title="Delete All">{ICONS.delete}</button>
         </div>
       </div>
       

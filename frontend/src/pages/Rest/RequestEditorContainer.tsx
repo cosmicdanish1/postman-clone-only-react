@@ -109,29 +109,49 @@ const RequestEditorContainer: React.FC = () => {
   const { saveRequest } = useRequestHistory();
 
   // Handle send request
-  const handleSend = async () => {
+  const handleSend = async (requestData: { method: string; url: string }) => {
     if (!activeTab) return;
     
     try {
+      const method = requestData.method || 'GET';
+      const url = (requestData.url || '').trim();
+      
+      if (!url) {
+        console.error('URL is required');
+        return;
+      }
+      
+      // Update the tab with the latest URL and method first
+      tabActions.updateTab(activeTab.id, { 
+        method,
+        url,
+        isDirty: false 
+      });
+      
       // Save the request to history
       const now = new Date();
-      const saveResult = await saveRequest({
-        method: activeTab.method || 'GET',
-        url: activeTab.url || '',
+      const historyData = {
+        method,
+        url,
         month: String(now.getMonth() + 1).padStart(2, '0'),
         day: String(now.getDate()).padStart(2, '0'),
         year: String(now.getFullYear()),
-        time: now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }),
-      });
+        time: now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })
+      };
+      
+      console.log('Saving request to history:', historyData);
+
+      const saveResult = await saveRequest(historyData);
       
       if (!saveResult.success) {
         console.error('Failed to save request to history:', saveResult.error);
         // Continue with the request even if saving to history fails
+      } else {
+        console.log('Successfully saved request to history');
       }
       
-      // Send the request
+      // Send the actual request
       requestActions.sendRequest();
-      tabActions.updateTab(activeTab.id, { isDirty: false });
       
     } catch (error) {
       console.error('Error in handleSend:', error);
