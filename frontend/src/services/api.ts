@@ -37,6 +37,10 @@ export const apiService = {
   async saveRequest(historyData: Omit<RequestHistoryData, 'id' | 'created_at'>): Promise<ApiResponse<RequestHistoryData>> {
     const requestUrl = `${API_BASE_URL}/history`;
     
+    console.log('=== apiService.saveRequest called ===');
+    console.log('API_BASE_URL:', API_BASE_URL);
+    console.log('Request URL:', requestUrl);
+    
     // Add current date and time to the request
     const now = new Date();
     const requestData = {
@@ -48,59 +52,46 @@ export const apiService = {
       time: now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
     };
 
-    console.log('Sending request to:', requestUrl);
-    console.log('Request data:', requestData);
-
-    const requestOptions = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-      credentials: 'include' as const, // Important for cookies/CORS
-      body: JSON.stringify(requestData),
-    };
-
     console.log('=== FRONTEND: Sending Request ===');
     console.log('URL:', requestUrl);
     console.log('Method:', 'POST');
-    console.log('Headers:', JSON.stringify(requestOptions.headers, null, 2));
+    console.log('Headers:', JSON.stringify({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    }, null, 2));
     console.log('Body:', JSON.stringify(requestData, null, 2));
 
     try {
-      console.log('Sending fetch request...');
-      const response = await fetch(requestUrl, requestOptions);
-      
-      console.log('=== FRONTEND: Received Response ===');
-      console.log('Status:', response.status, response.statusText);
-      
-      // Log response headers
-      const headers: {[key: string]: string} = {};
-      response.headers.forEach((value, key) => {
-        headers[key] = value;
+      console.log('Making fetch request to:', requestUrl);
+      const response = await fetch(requestUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(requestData),
       });
-      console.log('Response Headers:', JSON.stringify(headers, null, 2));
-      
-      let responseData;
-      try {
-        responseData = await response.json();
-        console.log('Response Body:', JSON.stringify(responseData, null, 2));
-      } catch (e) {
-        console.error('Failed to parse JSON response:', e);
-        const text = await response.text();
-        console.log('Raw Response:', text);
-        throw new Error(`Invalid JSON response: ${text}`);
-      }
+
+      console.log('Response status:', response.status);
+      console.log('Response headers:', JSON.stringify(Object.fromEntries(response.headers.entries()), null, 2));
       
       if (!response.ok) {
-        console.error('Error response from server:', responseData);
-        return { 
-          success: false, 
-          error: responseData.message || `Server responded with status ${response.status}` 
-        };
+        const errorText = await response.text();
+        console.error('Error response:', errorText);
+        throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`);
+      }
+
+      let data;
+      try {
+        data = await response.json();
+        console.log('Response data:', data);
+      } catch (jsonError) {
+        console.error('Failed to parse JSON response:', jsonError);
+        throw new Error('Invalid JSON response from server');
       }
       
-      return { success: true, data: responseData };
+      return { success: true, data };
       
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';

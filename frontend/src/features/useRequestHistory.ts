@@ -66,6 +66,8 @@ export const useRequestHistory = () => {
 
   // Save a new request to history
   const saveRequest = useCallback(async (requestData: Omit<RequestHistoryData, 'id' | 'created_at'>) => {
+    console.log('=== useRequestHistory.saveRequest called with:', requestData);
+    
     try {
       const dataToSave = {
         ...requestData,
@@ -73,17 +75,23 @@ export const useRequestHistory = () => {
         created_at: new Date().toISOString()
       };
       
+      console.log('Calling apiService.saveRequest with:', dataToSave);
       const response = await apiService.saveRequest(dataToSave);
+      console.log('apiService.saveRequest response:', response);
       
       if (response.success) {
+        console.log('Request saved successfully, refreshing history...');
         // Refresh the history after saving
         await fetchHistory();
         return { success: true };
       } else {
-        throw new Error(response.error || 'Failed to save request');
+        const errorMsg = response.error || 'Failed to save request';
+        console.error('Error saving request:', errorMsg);
+        throw new Error(errorMsg);
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'An error occurred';
+      const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
+      console.error('Error in saveRequest:', errorMessage, err);
       setError(errorMessage);
       return { success: false, error: errorMessage };
     }

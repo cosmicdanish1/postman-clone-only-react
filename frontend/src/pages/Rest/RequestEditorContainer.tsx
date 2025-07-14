@@ -33,9 +33,44 @@ const RequestEditorContainer: React.FC = () => {
   const tabActions = useTabActions();
   const requestActions = useRequestActions();
   
-  // Log active tab changes for debugging
+  // Ensure there's always an active tab
   useEffect(() => {
-    console.log('Active tab updated:', activeTab?.id, 'Method:', activeTab?.method);
+    if (!activeTab) {
+      console.log('No active tab found, creating a new one...');
+      tabActions.addTab({
+        id: `tab-${Date.now()}`,
+        name: 'New Request',
+        method: 'GET',
+        url: 'https://echo.hoppscotch.io',
+        headers: [],
+        parameters: [],
+        body: {
+          raw: '',
+          formData: [],
+          urlEncoded: [],
+          binary: '',
+          graphQL: {
+            query: '',
+            variables: '{}'
+          }
+        },
+        auth: { type: 'none' },
+        response: {
+          status: 0,
+          statusText: '',
+          headers: {},
+          data: null,
+          time: 0,
+          size: 0
+        },
+        isSaving: false,
+        isDirty: false,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      });
+    } else {
+      console.log('Active tab:', activeTab.id, 'Method:', activeTab.method);
+    }
   }, [activeTab]);
 
   const { themeClass } = useThemeClass();
@@ -110,7 +145,12 @@ const RequestEditorContainer: React.FC = () => {
 
   // Handle send request
   const handleSend = async (requestData: { method: string; url: string }) => {
-    if (!activeTab) return;
+    console.log('=== handleSend called with:', requestData);
+    
+    if (!activeTab) {
+      console.error('No active tab');
+      return;
+    }
     
     try {
       const method = requestData.method || 'GET';
@@ -120,6 +160,8 @@ const RequestEditorContainer: React.FC = () => {
         console.error('URL is required');
         return;
       }
+      
+      console.log('Updating tab with method:', method, 'and URL:', url);
       
       // Update the tab with the latest URL and method first
       tabActions.updateTab(activeTab.id, { 
@@ -140,8 +182,10 @@ const RequestEditorContainer: React.FC = () => {
       };
       
       console.log('Saving request to history:', historyData);
+      console.log('Calling saveRequest with:', historyData);
 
       const saveResult = await saveRequest(historyData);
+      console.log('saveResult:', saveResult);
       
       if (!saveResult.success) {
         console.error('Failed to save request to history:', saveResult.error);
