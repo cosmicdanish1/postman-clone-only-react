@@ -316,6 +316,7 @@ const History: React.FC = () => {
                                   animation="fade"
                                   duration={200}
                                   interactive={true}
+                                  offset={[0, 10]}
                                 >
                                   <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
                                     {item.url || 'No URL'}

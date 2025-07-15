@@ -202,7 +202,7 @@ const RequestEditor: React.FC<RequestEditorProps> = ({
 
   return (
     <div className={`flex flex-col h-full ${effectiveThemeClass}`}>
-      <div className={`flex items-stretch p-2 ${borderClass} gap-2`}>
+      <div className={`flex items-stretch w-full ${borderClass} gap-2`}>
         {/* Error Popup */}
         {sendError && (
           <div className="fixed top-10 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50">
@@ -211,7 +211,7 @@ const RequestEditor: React.FC<RequestEditorProps> = ({
         )}
         
         {/* Method Dropdown */}
-        <div className="flex items-stretch" ref={methodDropdownRef}>
+        <div className="shrink-0 flex items-stretch" ref={methodDropdownRef}>
           <div className="relative">
             <button
               type="button"
@@ -266,23 +266,23 @@ const RequestEditor: React.FC<RequestEditorProps> = ({
         </div>
 
         {/* URL Input */}
-        <div className="flex-1">
+        <div className="flex-1 grow min-w-0">
           <input
             type="text"
             value={localUrl}
             onChange={handleUrlChange}
             onKeyDown={handleKeyDown}
             placeholder="Enter URL"
-            className={`flex-1 px-3 py-2 text-sm ${borderClass} border-l-0 focus:outline-none focus:ring-2 focus:ring-${accentColor} focus:ring-offset-2 ${textClass} transition-colors`}
+            className={`w-full px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-${accentColor} focus:ring-offset-2 ${textClass} transition-colors ${cardBgClass}`}
             aria-label="Request URL"
           />
         </div>
 
         {/* Send Button */}
-        <div className="relative flex items-stretch" ref={sendMenuRef}>
+        <div className="shrink-0 flex items-stretch" ref={sendMenuRef}>
           <button
             type="button"
-            className={`px-5 py-2 text-sm font-medium text-white rounded-l-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 ${!sendMenuOpen ? '' : ''}`}
+            className={`px-5 py-2 text-sm font-medium rounded-l-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 ${buttonBgClass}`}
             style={{
               backgroundColor: accentColor,
               '--accent-hover': `${accentColor}e6`,
@@ -299,7 +299,7 @@ const RequestEditor: React.FC<RequestEditorProps> = ({
           </button>
           <button
             disabled={false}
-            className={`px-2 py-2 rounded-r-md font-semibold text-white transition-colors duration-200 ${sendMenuOpen ? 'bg-opacity-90' : ''}`}
+            className={`px-2 py-2 rounded-r-md font-semibold transition-colors duration-200 ${buttonBgClass} ${sendMenuOpen ? 'bg-opacity-90' : ''}`}
             style={{
               backgroundColor: accentColor,
               '--accent-hover': `${accentColor}e6`,
