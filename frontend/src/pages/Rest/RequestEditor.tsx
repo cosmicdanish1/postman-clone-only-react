@@ -105,7 +105,7 @@ const RequestEditor: React.FC<RequestEditorProps> = ({
   };
 
   const [localUrl, setLocalUrl] = React.useState(url || DEFAULT_URL);
-  const [urlError, setUrlError] = useState<string>('');
+  const [sendError, setSendError] = useState<string>('');
   
   // Handle send button click
   const handleSendButtonClick = useCallback(() => {
@@ -113,11 +113,16 @@ const RequestEditor: React.FC<RequestEditorProps> = ({
     
     // Validate URL before sending
     if (!trimmedUrl || !isValidUrl(trimmedUrl)) {
-      setUrlError('Please enter a valid URL (must start with http:// or https://)');
+      setSendError('Please enter a valid URL (must start with http:// or https://)');
+      // Show error popup
+      setTimeout(() => {
+        setSendError('');
+      }, 3000); // Clear error after 3 seconds
       return;
     }
     
     setUrl(trimmedUrl);
+    setSendError(''); // Clear any previous error
     
     const requestData = {
       method: currentMethod,
@@ -166,14 +171,7 @@ const RequestEditor: React.FC<RequestEditorProps> = ({
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newUrl = e.target.value;
     setLocalUrl(newUrl);
-    
-    // Validate URL immediately
-    if (newUrl.trim()) {
-      const isValid = isValidUrl(newUrl);
-      setUrlError(isValid ? '' : 'Invalid URL format');
-    } else {
-      setUrlError('');
-    }
+    // No real-time validation
   };
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -205,6 +203,13 @@ const RequestEditor: React.FC<RequestEditorProps> = ({
   return (
     <div className={`flex flex-col h-full ${effectiveThemeClass}`}>
       <div className={`flex items-stretch p-2 ${borderClass} gap-2`}>
+        {/* Error Popup */}
+        {sendError && (
+          <div className="fixed top-10 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50">
+            <p className="text-sm">{sendError}</p>
+          </div>
+        )}
+        
         {/* Method Dropdown */}
         <div className="flex items-stretch" ref={methodDropdownRef}>
           <div className="relative">
@@ -214,7 +219,7 @@ const RequestEditor: React.FC<RequestEditorProps> = ({
               onClick={() => setMethodDropdownOpen(!methodDropdownOpen)}
               aria-expanded={methodDropdownOpen}
               aria-haspopup="listbox"
-              disabled={!!urlError}
+              disabled={!!sendError}
               style={{ color: methodColors[currentMethod] || 'inherit' }}
             >
               <span className="flex-1 text-left font-medium">
@@ -261,21 +266,16 @@ const RequestEditor: React.FC<RequestEditorProps> = ({
         </div>
 
         {/* URL Input */}
-        <div className="flex-1 relative">
+        <div className="flex-1">
           <input
             type="text"
             value={localUrl}
             onChange={handleUrlChange}
             onKeyDown={handleKeyDown}
             placeholder="Enter URL"
-            className={`flex-1 px-3 py-2 text-sm ${borderClass} border-l-0 focus:outline-none focus:ring-2 focus:ring-${accentColor} focus:ring-offset-2 ${textClass} transition-colors ${urlError ? 'border-red-500' : ''}`}
+            className={`flex-1 px-3 py-2 text-sm ${borderClass} border-l-0 focus:outline-none focus:ring-2 focus:ring-${accentColor} focus:ring-offset-2 ${textClass} transition-colors`}
             aria-label="Request URL"
           />
-          {urlError && (
-            <div className="absolute bottom-[-1.5rem] left-0 text-red-500 text-sm">
-              {urlError}
-            </div>
-          )}
         </div>
 
         {/* Send Button */}
