@@ -202,7 +202,7 @@ const RequestEditor: React.FC<RequestEditorProps> = ({
 
   return (
     <div className={`flex flex-col h-full ${effectiveThemeClass}`}>
-      <div className={`flex items-stretch w-full ${borderClass} gap-2`}>
+      <div className={`flex items-stretch w-full gap-2`}>
         {/* Error Popup */}
         {sendError && (
           <div className="fixed top-10 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50">
@@ -215,7 +215,7 @@ const RequestEditor: React.FC<RequestEditorProps> = ({
           <div className="relative">
             <button
               type="button"
-              className={`h-full flex items-center justify-between w-24 px-3 py-2 text-sm font-medium rounded-l-md ${buttonBgClass} border ${borderClass} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-${accentColor} transition-colors`}
+              className={`h-full flex items-center justify-between w-24 px-3 py-2 text-sm font-medium rounded-l-md ${buttonBgClass} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-${accentColor} transition-colors`}
               onClick={() => setMethodDropdownOpen(!methodDropdownOpen)}
               aria-expanded={methodDropdownOpen}
               aria-haspopup="listbox"
@@ -273,7 +273,7 @@ const RequestEditor: React.FC<RequestEditorProps> = ({
             onChange={handleUrlChange}
             onKeyDown={handleKeyDown}
             placeholder="Enter URL"
-            className={`w-full px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-${accentColor} focus:ring-offset-2 ${textClass} transition-colors ${cardBgClass}`}
+            className={`w-full px-3 py-2 text-sm ${textClass} transition-colors ${cardBgClass}`}
             aria-label="Request URL"
           />
         </div>
@@ -365,7 +365,7 @@ const RequestEditor: React.FC<RequestEditorProps> = ({
         <div className="relative flex items-stretch" ref={saveDropdownRef}>
           <button
             type="button"
-            className={`px-4 py-2 text-sm font-medium ${textClass} ${buttonBgClass} border ${borderClass} rounded-md hover:bg-opacity-90 transition-colors duration-200`}
+            className={`px-4 py-2 text-sm font-medium ${textClass} ${buttonBgClass} rounded-md hover:bg-opacity-90 transition-colors duration-200`}
             onClick={onShowSaveDropdown}
           >
             Save
