@@ -1,14 +1,11 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useRequestHistory } from '../../../features/useRequestHistory';
+import { getTimeAgo, formatDate, formatTime, groupHistoryByTime } from '../../../utils/timeUtils';
 
 interface HistoryItem {
   id: number;
   method: string;
   url: string;
-  month: string;
-  day: string;
-  year: string;
-  time: string;
   created_at: string;
   is_favorite: boolean;
 }
@@ -63,6 +60,19 @@ const History: React.FC = () => {
     deleteHistory, 
     toggleFavorite 
   } = useRequestHistory();
+
+  const [currentTime, setCurrentTime] = useState(Date.now());
+
+  useEffect(() => {
+    const update = () => {
+      setCurrentTime(Date.now());
+      requestAnimationFrame(update);
+    };
+    requestAnimationFrame(update);
+    return () => {
+      // Cleanup if needed
+    };
+  }, []);
   
   // Handle refresh button click
   const handleRefresh = useCallback(() => {
@@ -240,53 +250,62 @@ const History: React.FC = () => {
             <p className="text-sm text-gray-400 mt-1">Your request history will appear here</p>
           </div>
         ) : (
-          <div className="divide-y divide-gray-200 dark:divide-gray-700">
-            {history.map((item) => (
-              <div 
-                key={item.id}
-                onClick={() => handleItemClick(item)}
-                className="p-3 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition-colors relative"
-              >
-                <div className="flex items-start gap-3">
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getMethodColor(item.method)}`}>
-                    {item.method.toUpperCase()}
-                  </span>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                      {item.url || 'No URL'}
-                    </p>
-                    <div className="flex items-center mt-1 text-xs text-gray-500 dark:text-gray-400">
-                      <span>{item.time || '--:--'}</span>
-                      <span className="mx-1">•</span>
-                      <span>{`${item.day || '--'}/${item.month || '--'}/${item.year || '----'}`}</span>
+          <>
+            {Object.entries(groupHistoryByTime(history)).map(([timeGroup, items]) => (
+              <div key={timeGroup} className="space-y-2">
+                <div className="px-3 py-2 bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
+                  <h3 className="text-sm font-medium">{timeGroup}</h3>
+                </div>
+                <div className="divide-y divide-gray-200 dark:divide-gray-700">
+                  {items.map((item) => (
+                    <div 
+                      key={item.id}
+                      onClick={() => handleItemClick(item)}
+                      className="p-3 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition-colors relative"
+                    >
+                      <div className="flex items-start gap-3">
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getMethodColor(item.method)}`}>
+                          {item.method.toUpperCase()}
+                        </span>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                            {item.url || 'No URL'}
+                          </p>
+                          <div className="flex items-center mt-1 text-xs text-gray-500 dark:text-gray-400">
+                            <span>{formatTime(item.created_at)}</span>
+                            <span className="mx-1">•</span>
+                            <span>{formatDate(item.created_at)}</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 ml-2">
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleToggleFavorite(item);
+                            }}
+                            className={`p-1 ${item.is_favorite ? 'text-yellow-500' : 'text-gray-400 hover:text-yellow-500'} transition-colors`}
+                            title={item.is_favorite ? 'Remove from favorites' : 'Add to favorites'}
+                          >
+                            {ICONS.favorite}
+                          </button>
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteItem(item.id);
+                            }}
+                            className="p-1 text-red-500 hover:text-red-700 transition-colors"
+                            title="Delete request"
+                          >
+                            {ICONS.delete}
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-2 ml-2">
-                    <button 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleToggleFavorite(item);
-                      }}
-                      className={`p-1 ${item.is_favorite ? 'text-yellow-500' : 'text-gray-400 hover:text-yellow-500'} transition-colors`}
-                      title={item.is_favorite ? 'Remove from favorites' : 'Add to favorites'}
-                    >
-                      {ICONS.favorite}
-                    </button>
-                    <button 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeleteItem(item.id);
-                      }}
-                      className="p-1 text-red-500 hover:text-red-700 transition-colors"
-                      title="Delete request"
-                    >
-                      {ICONS.delete}
-                    </button>
-                  </div>
+                  ))}
                 </div>
               </div>
             ))}
-          </div>
+          </>
         )}
       </div>
       
