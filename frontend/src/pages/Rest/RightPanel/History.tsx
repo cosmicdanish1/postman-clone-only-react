@@ -32,6 +32,21 @@ const ICONS = {
   ),
 };
 
+const getMethodColor = (method: string): string => {
+  const methodColors: { [key: string]: string } = {
+    GET: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+    POST: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+    PUT: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+    DELETE: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+    PATCH: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
+    HEAD: 'bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200',
+    OPTIONS: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200'
+  };
+  return methodColors[method.toUpperCase()] || 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+};
+
+
+
 const History: React.FC = () => {
   const { 
     history, 
@@ -197,30 +212,24 @@ const History: React.FC = () => {
         ) : (
           <div className="divide-y divide-gray-200 dark:divide-gray-700">
             {history.map((item) => (
-              <div
-                key={`${item.id}-${item.created_at}`}
+              <div 
+                key={item.id}
                 onClick={() => handleItemClick(item)}
-                className="p-3 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
+                className="p-3 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition-colors"
               >
-                <div className="flex items-start">
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                    item.method === 'GET' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
-                    item.method === 'POST' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' :
-                    item.method === 'PUT' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
-                    item.method === 'DELETE' ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' :
-                    'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
-                  }`}>
-                    {item.method}
+                <div className="flex items-start gap-3">
+                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getMethodColor(item.method)}`}>
+                    {item.method.toUpperCase()}
                   </span>
-                </div>
-                <div className="mt-1">
-                  <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                    {item.url || 'No URL'}
-                  </p>
-                  <div className="flex items-center mt-1 text-xs text-gray-500 dark:text-gray-400">
-                    <span>{item.time || '--:--'}</span>
-                    <span className="mx-1">•</span>
-                    <span>{`${item.day || '--'}/${item.month || '--'}/${item.year || '----'}`}</span>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                      {item.url || 'No URL'}
+                    </p>
+                    <div className="flex items-center mt-1 text-xs text-gray-500 dark:text-gray-400">
+                      <span>{item.time || '--:--'}</span>
+                      <span className="mx-1">•</span>
+                      <span>{`${item.day || '--'}/${item.month || '--'}/${item.year || '----'}`}</span>
+                    </div>
                   </div>
                 </div>
               </div>
