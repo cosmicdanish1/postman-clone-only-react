@@ -62,6 +62,7 @@ const History: React.FC = () => {
   } = useRequestHistory();
 
   const [currentTime, setCurrentTime] = useState(Date.now());
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     const update = () => {
@@ -241,70 +242,100 @@ const History: React.FC = () => {
               Retry
             </button>
           </div>
-        ) : !history?.length ? (
-          <div className="flex flex-col items-center justify-center h-full p-4 text-center">
-            <svg className="w-12 h-12 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <p className="text-gray-500">No history yet</p>
-            <p className="text-sm text-gray-400 mt-1">Your request history will appear here</p>
-          </div>
         ) : (
           <>
-            {Object.entries(groupHistoryByTime(history)).map(([timeGroup, items]) => (
-              <div key={timeGroup} className="space-y-2">
-                <div className="px-3 py-2 bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
-                  <h3 className="text-sm font-medium">{timeGroup}</h3>
-                </div>
-                <div className="divide-y divide-gray-200 dark:divide-gray-700">
-                  {items.map((item) => (
-                    <div 
-                      key={item.id}
-                      onClick={() => handleItemClick(item)}
-                      className="p-3 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition-colors relative"
-                    >
-                      <div className="flex items-start gap-3">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getMethodColor(item.method)}`}>
-                          {item.method.toUpperCase()}
-                        </span>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                            {item.url || 'No URL'}
-                          </p>
-                          <div className="flex items-center mt-1 text-xs text-gray-500 dark:text-gray-400">
-                            <span>{formatTime(item.created_at)}</span>
-                            <span className="mx-1">•</span>
-                            <span>{formatDate(item.created_at)}</span>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 ml-2">
-                          <button 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleToggleFavorite(item);
-                            }}
-                            className={`p-1 ${item.is_favorite ? 'text-yellow-500' : 'text-gray-400 hover:text-yellow-500'} transition-colors`}
-                            title={item.is_favorite ? 'Remove from favorites' : 'Add to favorites'}
-                          >
-                            {ICONS.favorite}
-                          </button>
-                          <button 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDeleteItem(item.id);
-                            }}
-                            className="p-1 text-red-500 hover:text-red-700 transition-colors"
-                            title="Delete request"
-                          >
-                            {ICONS.delete}
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+            {history.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-full p-4 text-center">
+                <svg className="w-12 h-12 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <p className="text-gray-500">No history yet</p>
+                <p className="text-sm text-gray-400 mt-1">Your request history will appear here</p>
               </div>
-            ))}
+            ) : (
+              <div>
+                {Object.entries(groupHistoryByTime(history)).map(([timeGroup, items]) => (
+                  <div key={timeGroup} className="space-y-2">
+                    <button 
+                      onClick={() => {
+                        setExpandedGroups(prev => {
+                          const newSet = new Set(prev);
+                          if (newSet.has(timeGroup)) {
+                            newSet.delete(timeGroup);
+                          } else {
+                            newSet.add(timeGroup);
+                          }
+                          return newSet;
+                        });
+                      }}
+                      className="w-full flex items-center justify-between px-3 py-2 bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                    >
+                      <div className="flex items-center">
+                        <svg 
+                          className={`w-4 h-4 ${expandedGroups.has(timeGroup) ? 'rotate-90' : ''} transition-transform`} 
+                          fill="none" 
+                          stroke="currentColor" 
+                          viewBox="0 0 24 24"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                        <h3 className="text-sm font-medium ml-2">{timeGroup}</h3>
+                      </div>
+                      <span className="text-xs text-gray-500 dark:text-gray-400">{items.length} items</span>
+                    </button>
+                    {expandedGroups.has(timeGroup) && (
+                      <div className="divide-y divide-gray-200 dark:divide-gray-700">
+                        {items.map((item) => (
+                          <div 
+                            key={item.id}
+                            onClick={() => handleItemClick(item)}
+                            className="p-3 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition-colors relative"
+                          >
+                            <div className="flex items-start gap-3">
+                              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getMethodColor(item.method)}`}>
+                                {item.method.toUpperCase()}
+                              </span>
+                              <div className="flex-1">
+                                <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                                  {item.url || 'No URL'}
+                                </p>
+                                <div className="flex items-center mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                  <span>{formatTime(item.created_at)}</span>
+                                  <span className="mx-1">•</span>
+                                  <span>{formatDate(item.created_at)}</span>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-2 ml-2">
+                                <button 
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleToggleFavorite(item);
+                                  }}
+                                  className={`p-1 ${item.is_favorite ? 'text-yellow-500' : 'text-gray-400 hover:text-yellow-500'} transition-colors`}
+                                  title={item.is_favorite ? 'Remove from favorites' : 'Add to favorites'}
+                                >
+                                  {ICONS.favorite}
+                                </button>
+                                <button 
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDeleteItem(item.id);
+                                  }}
+                                  className="p-1 text-red-500 hover:text-red-700 transition-colors"
+                                  title="Delete request"
+                                >
+                                  {ICONS.delete}
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
           </>
         )}
       </div>
