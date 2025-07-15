@@ -4,8 +4,9 @@
 // Imported by: RequestEditorContainer.tsx
 // Role: Renders the main request editor UI for the REST feature.
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import useThemeClass from '../../hooks/useThemeClass';
+import { isValidUrl } from '../../utils/helpers';
 
 interface RequestData {
   method: string;
@@ -104,15 +105,23 @@ const RequestEditor: React.FC<RequestEditorProps> = ({
   };
 
   const [localUrl, setLocalUrl] = React.useState(url || DEFAULT_URL);
+  const [urlError, setUrlError] = useState<string>('');
   
   // Handle send button click
   const handleSendButtonClick = useCallback(() => {
-    const targetUrl = localUrl.trim() || DEFAULT_URL;
-    setUrl(targetUrl);
+    const trimmedUrl = localUrl.trim();
+    
+    // Validate URL before sending
+    if (!trimmedUrl || !isValidUrl(trimmedUrl)) {
+      setUrlError('Please enter a valid URL (must start with http:// or https://)');
+      return;
+    }
+    
+    setUrl(trimmedUrl);
     
     const requestData = {
       method: currentMethod,
-      url: targetUrl,
+      url: trimmedUrl,
     };
     
     console.log('=== FRONTEND: Sending request ===');
@@ -157,7 +166,14 @@ const RequestEditor: React.FC<RequestEditorProps> = ({
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newUrl = e.target.value;
     setLocalUrl(newUrl);
-    // Only update parent URL when user presses Enter or clicks Send
+    
+    // Validate URL immediately
+    if (newUrl.trim()) {
+      const isValid = isValidUrl(newUrl);
+      setUrlError(isValid ? '' : 'Invalid URL format');
+    } else {
+      setUrlError('');
+    }
   };
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -198,6 +214,7 @@ const RequestEditor: React.FC<RequestEditorProps> = ({
               onClick={() => setMethodDropdownOpen(!methodDropdownOpen)}
               aria-expanded={methodDropdownOpen}
               aria-haspopup="listbox"
+              disabled={!!urlError}
               style={{ color: methodColors[currentMethod] || 'inherit' }}
             >
               <span className="flex-1 text-left font-medium">
@@ -244,15 +261,21 @@ const RequestEditor: React.FC<RequestEditorProps> = ({
         </div>
 
         {/* URL Input */}
-        <div className="flex-1 flex">
+        <div className="flex-1 relative">
           <input
             type="text"
-            className={`flex-1 min-w-0 px-3 py-2 text-sm border-t border-b border-r-0 border-l-0 ${borderClass} focus:ring-2 focus:ring-${accentColor} focus:border-transparent focus:outline-none ${textClass} ${cardBgClass}`}
-            placeholder="Enter request URL"
             value={localUrl}
             onChange={handleUrlChange}
             onKeyDown={handleKeyDown}
+            placeholder="Enter URL"
+            className={`flex-1 px-3 py-2 text-sm ${borderClass} border-l-0 focus:outline-none focus:ring-2 focus:ring-${accentColor} focus:ring-offset-2 ${textClass} transition-colors ${urlError ? 'border-red-500' : ''}`}
+            aria-label="Request URL"
           />
+          {urlError && (
+            <div className="absolute bottom-[-1.5rem] left-0 text-red-500 text-sm">
+              {urlError}
+            </div>
+          )}
         </div>
 
         {/* Send Button */}

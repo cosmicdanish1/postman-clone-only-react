@@ -1,16 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { apiService } from '../services/api';
-
-export interface RequestHistoryData {
-  id: number;
-  method: string;
-  url: string;
-  month: string;
-  day: string;
-  year: string;
-  time: string;
-  created_at: string;
-}
+import { apiService, type RequestHistoryData, type SaveHistoryResult } from '../services/api';
 
 interface FetchHistoryResult {
   success: boolean;
@@ -44,63 +33,76 @@ export const useRequestHistory = () => {
             day: item.day || String(createdAt.getDate()).padStart(2, '0'),
             year: item.year || String(createdAt.getFullYear()),
             time: item.time || createdAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            created_at: item.created_at || createdAt.toISOString()
+            created_at: item.created_at || createdAt.toISOString(),
+            is_favorite: item.is_favorite || false
           };
         });
 
         setHistory(transformedItems);
-        return { success: true, count: transformedItems.length };
+        return { success: true, count: response.count };
       } else {
-        const errorMsg = 'Invalid response format';
-        setError(errorMsg);
-        return { success: false, error: errorMsg };
+        setHistory([]);
+        return { success: true, count: 0 };
       }
-    } catch (err) {
-      const errorMsg = err instanceof Error ? err.message : 'Failed to fetch history';
-      setError(errorMsg);
-      return { success: false, error: errorMsg };
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch history';
+      console.error('Error fetching history:', errorMessage);
+      setError(errorMessage);
+      return { success: false, error: errorMessage };
     } finally {
       setLoading(false);
     }
   }, []);
 
-  // Save a new request to history
-  const saveRequest = useCallback(async (requestData: Omit<RequestHistoryData, 'id' | 'created_at'>) => {
-    console.log('=== useRequestHistory.saveRequest called with:', requestData);
+  // Save request to history
+  const saveRequest = useCallback(async (requestData: Omit<RequestHistoryData, 'id' | 'created_at'>): Promise<SaveHistoryResult> => {
+    console.log('Saving request to history:', requestData);
+    setLoading(true);
+    setError(null);
     
     try {
-      const dataToSave = {
-        ...requestData,
-        id: 0,
-        created_at: new Date().toISOString()
-      };
+      const response = await apiService.saveRequest(requestData);
+      console.log('Save history response:', response);
       
-      console.log('Calling apiService.saveRequest with:', dataToSave);
-      const response = await apiService.saveRequest(dataToSave);
-      console.log('apiService.saveRequest response:', response);
-      
-      if (response.success) {
-        console.log('Request saved successfully, refreshing history...');
-        // Refresh the history after saving
+      if (response && response.success) {
         await fetchHistory();
-        return { success: true };
+        return { success: true, id: response.data?.id };
       } else {
-        const errorMsg = response.error || 'Failed to save request';
-        console.error('Error saving request:', errorMsg);
-        throw new Error(errorMsg);
+        const errorMsg = response?.error || 'Failed to save history';
+        setError(errorMsg);
+        return { success: false, error: errorMsg };
       }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
-      console.error('Error in saveRequest:', errorMessage, err);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+      console.error('Error saving history:', errorMessage);
       setError(errorMessage);
       return { success: false, error: errorMessage };
+    } finally {
+      setLoading(false);
     }
   }, [fetchHistory]);
 
-  // Initial fetch
-  useEffect(() => {
-    fetchHistory();
-  }, [fetchHistory]);
+  // Delete a single history item
+  const deleteHistory = useCallback(async (id: number): Promise<void> => {
+    try {
+      await apiService.deleteHistory(id);
+      setHistory(prev => prev.filter(item => item.id !== id));
+    } catch (error) {
+      console.error('Error deleting history item:', error);
+    }
+  }, []);
+
+  // Toggle favorite status
+  const toggleFavorite = useCallback(async (id: number): Promise<void> => {
+    try {
+      await apiService.toggleFavorite(id);
+      setHistory(prev => prev.map(item => 
+        item.id === id ? { ...item, is_favorite: !item.is_favorite } : item
+      ));
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+    }
+  }, []);
 
   // Clear all history
   const clearHistory = useCallback(async (): Promise<{ success: boolean; error?: string }> => {
@@ -109,17 +111,14 @@ export const useRequestHistory = () => {
     setError(null);
     
     try {
-      console.log('Sending clear history request...');
       const response = await apiService.clearHistory();
       console.log('Clear history response:', response);
       
       if (response && response.success) {
-        console.log('Successfully cleared history. Count:', response.count);
         setHistory([]);
         return { success: true };
       } else {
         const errorMsg = response?.error || 'Failed to clear history';
-        console.error('Clear history failed:', errorMsg);
         setError(errorMsg);
         return { success: false, error: errorMsg };
       }
@@ -133,12 +132,19 @@ export const useRequestHistory = () => {
     }
   }, []);
 
+  // Initial fetch
+  useEffect(() => {
+    fetchHistory();
+  }, [fetchHistory]);
+
   return {
     history,
     loading,
     error,
     saveRequest,
     refreshHistory: fetchHistory,
-    clearHistory
+    clearHistory,
+    deleteHistory,
+    toggleFavorite
   };
 };

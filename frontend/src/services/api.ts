@@ -16,12 +16,20 @@ export interface RequestHistoryData {
   year: string;
   time: string;
   created_at: string;
+  is_favorite: boolean;
 }
 
 // Response type for list endpoints
-interface ListResponse<T> {
+export interface ListResponse<T> {
   items: T[];
   count: number;
+}
+
+// Response type for save operations
+export interface SaveHistoryResult {
+  success: boolean;
+  id?: number;
+  error?: string;
 }
 
 // Response type for API operations
@@ -71,36 +79,25 @@ export const apiService = {
           'Accept': 'application/json',
         },
         credentials: 'include',
-        body: JSON.stringify(requestData),
+        body: JSON.stringify(requestData)
       });
 
-      console.log('Response status:', response.status);
-      console.log('Response headers:', JSON.stringify(Object.fromEntries(response.headers.entries()), null, 2));
+      console.log('Request sent to:', requestUrl);
+      console.log('Request body:', requestData);
       
       if (!response.ok) {
         const errorText = await response.text();
         console.error('Error response:', errorText);
-        throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`);
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      let data;
-      try {
-        data = await response.json();
-        console.log('Response data:', data);
-      } catch (jsonError) {
-        console.error('Failed to parse JSON response:', jsonError);
-        throw new Error('Invalid JSON response from server');
-      }
+      const data = await response.json();
+      console.log('Response data:', data);
       
-      return { success: true, data };
-      
+      return data;
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      console.error('Error saving request:', errorMessage, error);
-      return { 
-        success: false, 
-        error: `Failed to save request: ${errorMessage}`
-      };
+      console.error('Error saving request:', error);
+      throw error;
     }
   },
 
@@ -140,6 +137,64 @@ export const apiService = {
     }
   },
   
+  // Delete a single history item
+  async deleteHistory(id: number): Promise<ApiResponse> {
+    const requestUrl = `${API_BASE_URL}/history/${id}`;
+    
+    try {
+      const response = await fetch(requestUrl, {
+        method: 'DELETE',
+        headers: {
+          'Accept': 'application/json',
+        },
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Error response:', errorText);
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('Delete history response:', data);
+      
+      return data;
+    } catch (error) {
+      console.error('Error deleting history item:', error);
+      throw error;
+    }
+  },
+
+  // Toggle favorite status
+  async toggleFavorite(id: number): Promise<ApiResponse> {
+    const requestUrl = `${API_BASE_URL}/history/${id}/favorite`;
+    
+    try {
+      const response = await fetch(requestUrl, {
+        method: 'PATCH',
+        headers: {
+          'Accept': 'application/json',
+        },
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Error response:', errorText);
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('Toggle favorite response:', data);
+      
+      return data;
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+      throw error;
+    }
+  },
+
   // Clear all history
   async clearHistory(): Promise<ApiResponse> {
     const requestUrl = `${API_BASE_URL}/history`;

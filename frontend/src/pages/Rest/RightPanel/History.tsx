@@ -10,6 +10,7 @@ interface HistoryItem {
   year: string;
   time: string;
   created_at: string;
+  is_favorite: boolean;
 }
 
 const ICON_SIZE = 20;
@@ -28,6 +29,11 @@ const ICONS = {
   delete: (
     <svg width={ICON_SIZE} height={ICON_SIZE} fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" d="M6 7h12M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3m2 0v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V7h12Z"/>
+    </svg>
+  ),
+  favorite: (
+    <svg width={ICON_SIZE} height={ICON_SIZE} fill="currentColor" viewBox="0 0 24 24">
+      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
     </svg>
   ),
 };
@@ -53,7 +59,9 @@ const History: React.FC = () => {
     loading, 
     error, 
     refreshHistory, 
-    clearHistory 
+    clearHistory, 
+    deleteHistory, 
+    toggleFavorite 
   } = useRequestHistory();
   
   // Handle refresh button click
@@ -78,6 +86,28 @@ const History: React.FC = () => {
       }
     }
   }, [clearHistory]);
+
+  // Handle individual history item delete
+  const handleDeleteItem = useCallback(async (itemId: number) => {
+    if (window.confirm('Are you sure you want to delete this request?')) {
+      try {
+        await deleteHistory(itemId);
+        refreshHistory();
+      } catch (error) {
+        console.error('Error deleting request:', error);
+      }
+    }
+  }, [deleteHistory, refreshHistory]);
+
+  // Handle favorite toggle
+  const handleToggleFavorite = useCallback(async (item: HistoryItem) => {
+    try {
+      await toggleFavorite(item.id);
+      refreshHistory();
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+    }
+  }, [toggleFavorite, refreshHistory]);
 
   // Handle history item click
   const handleItemClick = useCallback((item: HistoryItem) => {
@@ -215,7 +245,7 @@ const History: React.FC = () => {
               <div 
                 key={item.id}
                 onClick={() => handleItemClick(item)}
-                className="p-3 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition-colors"
+                className="p-3 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition-colors relative"
               >
                 <div className="flex items-start gap-3">
                   <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getMethodColor(item.method)}`}>
@@ -230,6 +260,28 @@ const History: React.FC = () => {
                       <span className="mx-1">•</span>
                       <span>{`${item.day || '--'}/${item.month || '--'}/${item.year || '----'}`}</span>
                     </div>
+                  </div>
+                  <div className="flex items-center gap-2 ml-2">
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleToggleFavorite(item);
+                      }}
+                      className={`p-1 ${item.is_favorite ? 'text-yellow-500' : 'text-gray-400 hover:text-yellow-500'} transition-colors`}
+                      title={item.is_favorite ? 'Remove from favorites' : 'Add to favorites'}
+                    >
+                      {ICONS.favorite}
+                    </button>
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteItem(item.id);
+                      }}
+                      className="p-1 text-red-500 hover:text-red-700 transition-colors"
+                      title="Delete request"
+                    >
+                      {ICONS.delete}
+                    </button>
                   </div>
                 </div>
               </div>
