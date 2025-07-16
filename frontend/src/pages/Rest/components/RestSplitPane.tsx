@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import useThemeClass from '../../../hooks/useThemeClass';
+import useAccentColor from '../../../hooks/useAccentColor';
 
 interface RestSplitPaneProps {
   /** Main editor area (left) */
@@ -14,6 +15,7 @@ const DEFAULT_PANEL_WIDTH = 380; // Default width in pixels (initial size)
 
 const RestSplitPane: React.FC<RestSplitPaneProps> = ({ children, right }) => {
   const { borderClass } = useThemeClass();
+  const { current: accentColor } = useAccentColor();
   
   // Calculate the default and min sizes in percentage based on viewport width
   const { defaultSize, minSize } = useMemo(() => {
@@ -43,25 +45,38 @@ const RestSplitPane: React.FC<RestSplitPaneProps> = ({ children, right }) => {
 
         {/* Resize handle */}
         <PanelResizeHandle 
+          id="resize-handle"
           className={`
-            w-3 
+            w-1.5
             relative
-            hover:bg-pink-400/50 
-            active:bg-pink-500/70 
             transition-colors 
             cursor-col-resize 
             flex items-center justify-center
             ${borderClass}
-            group
             z-10
             hidden sm:flex
           `}
+          style={{
+            backgroundColor: 'transparent',
+            transition: 'background-color 150ms ease-in-out'
+          }}
         >
           <div 
-            className="w-0.5 h-8 bg-pink-400 group-hover:bg-pink-500 rounded-full transition-colors"
-            style={{ pointerEvents: 'none' }}
+            className="w-1 h-12 transition-colors"
+            style={{ 
+              pointerEvents: 'none',
+              backgroundColor: 'transparent',
+              height: '70rem',
+              transition: 'background-color 150ms ease-in-out'
+            }}
           />
         </PanelResizeHandle>
+        <style>{`
+          #resize-handle:hover > div {
+            background-color: ${accentColor} !important;
+            opacity: 0.7;
+          }
+        `}</style>
         
         {/* Right panel */}
         <Panel 

@@ -17,6 +17,8 @@ export const ACCENT_COLOR_MAP = {
   pink: '#ec4899',
 } as const;
 
+
+
 export type AccentKey = keyof typeof ACCENT_COLOR_MAP;
 
 export const DEFAULT_ACCENT_COLOR: AccentKey = 'blue';
@@ -34,7 +36,6 @@ function getAccentColor(key: AccentKey = DEFAULT_ACCENT_COLOR): string {
  * Hook that provides accent color functionality
  * @returns An object containing:
  *   - current: The current accent color hex
- *   - currentKey: The current accent color key
  *   - get: Function to get a specific accent color by key
  *   - colors: Array of all available accent colors with their keys and hex values
  *   - keys: Array of all available accent color keys
@@ -47,7 +48,7 @@ function useAccentColor() {
     return getAccentColor(accentKey);
   }, [accentKey]);
   
-  // Get all available accent colors with their keys and values
+  // Memoize the colors array to prevent unnecessary recreations
   const colors = useMemo(() => {
     return Object.entries(ACCENT_COLOR_MAP).map(([key, value]) => ({
       key: key as AccentKey,
@@ -55,19 +56,16 @@ function useAccentColor() {
     }));
   }, []);
   
-  // Get all available accent color keys
-  const keys = useMemo(() => Object.keys(ACCENT_COLOR_MAP) as AccentKey[], []);
+  // Memoize the keys array
+  const keys = useMemo(() => {
+    return Object.keys(ACCENT_COLOR_MAP) as AccentKey[];
+  }, []);
   
   return {
-    // Current accent color hex value
     current: currentColor,
-    // Current accent color key
     currentKey: accentKey,
-    // Function to get a specific accent color by key
     get: getAccentColor,
-    // All available accent colors with their keys and values
     colors,
-    // All available accent color keys
     keys,
   };
 }

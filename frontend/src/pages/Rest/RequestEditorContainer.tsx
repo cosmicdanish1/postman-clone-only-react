@@ -170,38 +170,41 @@ const RequestEditorContainer: React.FC = () => {
         isDirty: false 
       });
       
-      // Save the request to history
-      const now = new Date();
-      const historyData = {
-        method,
-        url,
-        month: String(now.getMonth() + 1).padStart(2, '0'),
-        day: String(now.getDate()).padStart(2, '0'),
-        year: String(now.getFullYear()),
-        time: now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })
-      };
-      
-      console.log('Saving request to history:', historyData);
-      console.log('Calling saveRequest with:', historyData);
-
-      const saveResult = await saveRequest(historyData);
-      console.log('saveResult:', saveResult);
-      
-      if (!saveResult.success) {
-        console.error('Failed to save request to history:', saveResult.error);
-        // Continue with the request even if saving to history fails
-      } else {
-        console.log('Successfully saved request to history');
+      try {
+        // First, try to send the actual request
+        await requestActions.sendRequest();
+        
+        // Only save to history if the request was successful
+        const now = new Date();
+        const historyData = {
+          method,
+          url,
+          month: String(now.getMonth() + 1).padStart(2, '0'),
+          day: String(now.getDate()).padStart(2, '0'),
+          year: String(now.getFullYear()),
+          time: now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }),
+          is_favorite: false // Add the missing required field
+        };
+        
+        console.log('Saving successful request to history:', historyData);
+        const saveResult = await saveRequest(historyData);
+        
+        if (!saveResult.success) {
+          console.error('Failed to save request to history:', saveResult.error);
+        } else {
+          console.log('Successfully saved request to history');
+        }
+        
+      } catch (error) {
+        console.error('Request failed, not saving to history:', error);
+        // Re-throw to be caught by the outer catch block
+        throw error;
       }
-      
-      // Send the actual request
-      requestActions.sendRequest();
       
     } catch (error) {
       console.error('Error in handleSend:', error);
-      // Still try to send the request even if history save fails
-      requestActions.sendRequest();
       tabActions.updateTab(activeTab.id, { isDirty: false });
+      // Optionally show error to user here
     }
   };
 

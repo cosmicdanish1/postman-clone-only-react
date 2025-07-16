@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useRequestHistory } from '../../../features/useRequestHistory';
-import { getTimeAgo, formatDate, formatTime, groupHistoryByTime } from '../../../utils/timeUtils';
+import { formatDate, formatTime, groupHistoryByTime } from '../../../utils/timeUtils';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
 
@@ -39,15 +39,15 @@ const ICONS = {
 
 const getMethodColor = (method: string): string => {
   const methodColors: { [key: string]: string } = {
-    GET: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-    POST: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-    PUT: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-    DELETE: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
-    PATCH: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
-    HEAD: 'bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200',
-    OPTIONS: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200'
+    GET: 'text-green-500',
+    POST: 'text-blue-500',
+    PUT: 'text-yellow-500',
+    DELETE: 'text-red-500',
+    PATCH: 'text-purple-500',
+    HEAD: 'text-pink-500',
+    OPTIONS: 'text-indigo-500'
   };
-  return methodColors[method.toUpperCase()] || 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+  return methodColors[method.toUpperCase()] || ' text-gray-800';
 };
 
 
@@ -170,16 +170,18 @@ const History: React.FC = () => {
   return (
     <div className="flex flex-col h-full w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
       {/* Top bar */}
-      <div className="flex items-center justify-between px-6 py-3 border-b border-gray-200 dark:border-gray-700">
+      <div className="flex items-center justify-between px-6 py-3 ">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-sm font-medium">
           <span>Personal Workspace</span>
-          <span className="text-gray-400">/</span>
+          
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 -2 27 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right-icon lucide-chevron-right"><path d="m9 18 6-6-6-6"/></svg>
+          
           <span>History</span>
         </div>
         
         {/* Icons */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <button 
             onClick={handleDeleteAll}
             disabled={loading}
@@ -209,17 +211,17 @@ const History: React.FC = () => {
           </button>
           <button className="p-1 hover:text-blue-500 transition-colors" title="Help">{ICONS.help}</button>
           <button className="p-1 hover:text-blue-500 transition-colors" title="Filter">{ICONS.filter}</button>
-          <button className="p-1 hover:text-red-500 transition-colors" title="Delete All">{ICONS.delete}</button>
+          
         </div>
       </div>
       
       {/* Search bar */}
-      <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
+      <div className="px-4 py-2 ">
         <div className="relative">
           <input
             type="text"
             placeholder="Search history..."
-            className="w-full pl-8 pr-4 py-2 text-sm rounded border border-gray-300 dark:border-gray-600 bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full pl-8 pr-4 py-2 text-sm rounded bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
           <svg
             className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400"
@@ -241,7 +243,7 @@ const History: React.FC = () => {
       <div className="flex-1 overflow-y-auto">
         {loading && !history.length ? (
           <div className="flex flex-col items-center justify-center h-full p-4">
-            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mb-2"></div>
+            <div className="animate-spin rounded-full h-8 w-8   mb-2"></div>
             <p className="text-sm text-gray-500">Loading history...</p>
           </div>
         ) : error ? (
@@ -382,7 +384,7 @@ const History: React.FC = () => {
       
       {/* Debug info - visible only in development */}
       {process.env.NODE_ENV === 'development' && (
-        <div className="p-2 text-xs text-gray-500 border-t border-gray-200 dark:border-gray-700">
+        <div className="p-2 text-xs text-gray-500">
           <div>Items: {history?.length || 0}</div>
           <div>Status: {loading ? 'Loading...' : error ? 'Error' : 'Ready'}</div>
         </div>
