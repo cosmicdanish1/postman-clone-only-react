@@ -143,7 +143,7 @@ const History: React.FC = () => {
       <div className="p-4">
         <div className="animate-pulse space-y-4">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-16 bg-gray-200 dark:bg-gray-700 rounded"></div>
+            <div key={i} className="h-16  rounded"></div>
           ))}
         </div>
       </div>
@@ -282,7 +282,7 @@ const History: React.FC = () => {
                           return newSet;
                         });
                       }}
-                      className="w-full flex items-center justify-between px-3 py-2 bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                      className="w-full flex items-center justify-between px-3 py-2  text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                     >
                       <div className="flex items-center">
                         <svg 
@@ -303,7 +303,7 @@ const History: React.FC = () => {
                           <div 
                             key={item.id}
                             onClick={() => handleItemClick(item)}
-                            className="p-3 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer transition-colors relative group"
+                            className="p-3  cursor-pointer transition-colors relative group"
                           >
                             <div className="flex items-start gap-3">
                               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getMethodColor(item.method)}`}>
