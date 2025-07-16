@@ -12,7 +12,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import ShortcutsPanel from './ShortcutsPanel';
 import HelpMenu from './HelpMenu';
 import { useTranslation } from 'react-i18next';
-import useAccentColor from '../hooks/useAccentColor';
+
 import useThemeClass from '../hooks/useThemeClass';
 
 /**
@@ -23,7 +23,7 @@ import useThemeClass from '../hooks/useThemeClass';
 const BottomBar: React.FC = () => {
   const dispatch = useDispatch();
   const expandNav = useSelector((state: RootState) => state.settings.expandNav);
-  const { current: accentHex } = useAccentColor();
+ 
   const { themeClass } = useThemeClass();
   const [showInterceptor, setShowInterceptor] = useState(false);
   const iconRef = useRef<HTMLButtonElement>(null);
@@ -69,7 +69,7 @@ const BottomBar: React.FC = () => {
   }, [helpMenuOpen]);
 
   return (
-    <footer className={`fixed bottom-0 left-0 right-0 h-8 bg-bg text-text flex items-center justify-between px-3 select-none hidden sm:flex ${themeClass}`} style={{ zIndex: 50, borderTop: `1px solid ${accentHex}` }}>
+    <footer className={`fixed bottom-0 left-0 right-0 h-8 bg-bg text-text flex items-center justify-between px-3 select-none hidden sm:flex ${themeClass}`} style={{ zIndex: 50, borderTop: `1px solid ` }}>
     {/* Left side icons */}
       <div className="flex items-center space-x-4 text-gray-400 relative">
         <button 

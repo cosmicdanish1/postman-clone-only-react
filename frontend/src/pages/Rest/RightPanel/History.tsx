@@ -86,56 +86,60 @@ const History: React.FC = () => {
       // Cleanup if needed
     };
   }, []);
-  
-  // Handle refresh button click
-  const handleRefresh = useCallback(() => {
-    console.log('Manual refresh triggered');
-    refreshHistory().catch(console.error);
-  }, [refreshHistory]);
-  
-  // Handle delete all button click
-  const handleDeleteAll = useCallback(async () => {
-    if (window.confirm('Are you sure you want to delete all history? This action cannot be undone.')) {
-      console.log('Deleting all history...');
+
+  // Set up auto-refresh
+  useEffect(() => {
+    // Initial load
+    const loadHistory = async () => {
       try {
-        const result = await clearHistory();
-        if (result.success) {
-          console.log('Successfully deleted all history');
-        } else {
-          console.error('Failed to delete history:', result.error);
-        }
+        await refreshHistory();
+      } catch (error) {
+        console.error('Error refreshing history:', error);
+      }
+    };
+    
+    loadHistory();
+    
+    // Set up auto-refresh every 30 seconds
+    const intervalId = setInterval(loadHistory, 30000);
+    
+    // Clean up interval on component unmount
+    return () => clearInterval(intervalId);
+  }, [refreshHistory]);
+
+  const handleDeleteAll = useCallback(async () => {
+    if (window.confirm('Are you sure you want to delete all history?')) {
+      try {
+        await clearHistory();
+        // No need to manually refresh as the history state will update automatically
       } catch (error) {
         console.error('Error deleting history:', error);
       }
     }
   }, [clearHistory]);
 
-  // Handle individual history item delete
   const handleDeleteItem = useCallback(async (itemId: number) => {
     if (window.confirm('Are you sure you want to delete this request?')) {
       try {
         await deleteHistory(itemId);
-        refreshHistory();
+        // No need to manually refresh as the history state will update automatically
       } catch (error) {
         console.error('Error deleting request:', error);
       }
     }
-  }, [deleteHistory, refreshHistory]);
+  }, [deleteHistory]);
 
-  // Handle favorite toggle
   const handleToggleFavorite = useCallback(async (item: HistoryItem) => {
     try {
       await toggleFavorite(item.id);
-      refreshHistory();
+      // No need to manually refresh as the history state will update automatically
     } catch (error) {
       console.error('Error toggling favorite:', error);
     }
-  }, [toggleFavorite, refreshHistory]);
+  }, [toggleFavorite]);
 
-  // Handle history item click
   const handleItemClick = useCallback((item: HistoryItem) => {
     console.log('History item clicked:', item);
-    // You can add logic to handle item click here
   }, []);
 
   if (loading && history.length === 0) {
@@ -154,15 +158,6 @@ const History: React.FC = () => {
     return (
       <div className="p-4">
         <div className="text-red-500 mb-4">Error loading history: {error}</div>
-        <button 
-          onClick={handleRefresh}
-          disabled={loading}
-          className={`px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors ${
-            loading ? 'opacity-70 cursor-not-allowed' : ''
-          }`}
-        >
-          {loading ? 'Retrying...' : 'Retry'}
-        </button>
       </div>
     );
   }
@@ -175,7 +170,7 @@ const History: React.FC = () => {
         <div className="flex items-center gap-2 text-sm font-medium">
           <span>Personal Workspace</span>
           
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 -2 27 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right-icon lucide-chevron-right"><path d="m9 18 6-6-6-6"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 -2 27 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-chevron-right-icon lucide-chevron-right"><path d="m9 18 6-6-6-6"/></svg>
           
           <span>History</span>
         </div>
@@ -189,25 +184,6 @@ const History: React.FC = () => {
             title="Clear all history"
           >
             {ICONS.delete}
-          </button>
-          
-          <button 
-            onClick={handleRefresh} 
-            className="p-1 hover:text-blue-500 transition-colors" 
-            title={loading ? 'Refreshing...' : 'Refresh'}
-            disabled={loading}
-          >
-            <svg 
-              width={ICON_SIZE} 
-              height={ICON_SIZE} 
-              fill="none" 
-              stroke="currentColor" 
-              strokeWidth={1.5} 
-              viewBox="0 0 24 24"
-              className={`${loading ? 'animate-spin' : ''}`}
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
-            </svg>
           </button>
           <button className="p-1 hover:text-blue-500 transition-colors" title="Help">{ICONS.help}</button>
           <button className="p-1 hover:text-blue-500 transition-colors" title="Filter">{ICONS.filter}</button>
@@ -249,12 +225,6 @@ const History: React.FC = () => {
         ) : error ? (
           <div className="p-4 text-center">
             <p className="text-red-500 mb-2">Error: {error}</p>
-            <button
-              onClick={handleRefresh}
-              className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm"
-            >
-              Retry
-            </button>
           </div>
         ) : (
           <>
