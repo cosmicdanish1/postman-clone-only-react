@@ -11,6 +11,7 @@ import HTTP_METHOD_COLORS from '../../constants/httpMethodColors';
 import RequestEditorContainer from './RequestEditorContainer';
 import TabContentArea from './TabContentArea/TabContentArea';
 import RestRightPanel from './RightPanel/RestRightPanel';
+import HistoryToTabsContext from './RightPanel/HistoryToTabsContext';
 import RestSplitPane from './components/RestSplitPane';
 import BottomSplitPane from './components/BottomSplitPane';
 import BottomPanel from './components/BottomPanel';
@@ -176,10 +177,35 @@ function HoppscotchClone() {
     }
   };
 
+  // Function to open a new tab with method and url from history
+  const openTabFromHistory = React.useCallback(({ url, method }: { url: string; method: string }) => {
+    setTabs(prevTabs => {
+      // Create a new tab with the given method and url
+      const newTab = {
+        ...prevTabs[0],
+        id: uuidv4(),
+        method: method.toUpperCase(),
+        url,
+        tabName: url,
+        isLoading: false,
+        responseStatus: null,
+        responseStatusText: '',
+        responseHeaders: [],
+        responseBody: '',
+        responseTime: null,
+        responseSize: null,
+        responseError: null,
+      };
+      setActiveTabId(newTab.id);
+      return [...prevTabs, newTab];
+    });
+  }, [setTabs, setActiveTabId]);
+
   return (
-    <div className={`flex flex-col h-full w-full ${themeClass} bg-bg text-text`}>
-      <div className="flex-1 flex flex-col h-full overflow-hidden">
-        <RestSplitPane right={<RestRightPanel />}>
+    <HistoryToTabsContext.Provider value={openTabFromHistory}>
+      <div className={`flex flex-col h-full w-full ${themeClass} bg-bg text-text`}>
+        <div className="flex-1 flex flex-col h-full overflow-hidden">
+          <RestSplitPane right={<RestRightPanel />}>
           <div className="flex flex-col h-full w-full overflow-hidden">
             <RestTabsHeader
               tabs={tabs}
@@ -302,7 +328,7 @@ function HoppscotchClone() {
         </RestSplitPane>
       </div>
     </div>
-
+    </HistoryToTabsContext.Provider>
   );
 };
 

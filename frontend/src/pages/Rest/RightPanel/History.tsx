@@ -3,6 +3,7 @@ import { useRequestHistory } from '../../../features/useRequestHistory';
 import { formatDate, formatTime, groupHistoryByTime } from '../../../utils/timeUtils';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
+import { useHistoryToTabs } from './HistoryToTabsContext';
 
 interface HistoryItem {
   id: number;
@@ -138,9 +139,13 @@ const History: React.FC = () => {
     }
   }, [toggleFavorite]);
 
+  const openTabFromHistory = useHistoryToTabs();
+
   const handleItemClick = useCallback((item: HistoryItem) => {
-    console.log('History item clicked:', item);
-  }, []);
+    if (openTabFromHistory) {
+      openTabFromHistory({ url: item.url, method: item.method });
+    }
+  }, [openTabFromHistory]);
 
   if (loading && history.length === 0) {
     return (

@@ -9,6 +9,7 @@ import React, { useState, useRef } from 'react';
 import RequestEditor from './RequestEditor';
 import useThemeClass from '../../hooks/useThemeClass';
 import useAccentColor from '../../hooks/useAccentColor';
+import { useRequestHistory } from '../../features/useRequestHistory';
 import { METHODS } from '../../constants/httpMethods';
 import HTTP_METHOD_COLORS from '../../constants/httpMethodColors';
 
@@ -65,6 +66,8 @@ const RequestEditorContainer: React.FC<RequestEditorContainerProps> = ({ tab, up
 
 
   // Handle send request
+  const { saveRequest, refreshHistory } = useRequestHistory();
+
   const handleSend = async (requestData: { method: string; url: string }) => {
     console.log('=== handleSend called with:', requestData);
     if (!tab) {
@@ -85,7 +88,19 @@ const RequestEditorContainer: React.FC<RequestEditorContainerProps> = ({ tab, up
         isDirty: false,
         updatedAt: new Date().toISOString(),
       });
-      // Optionally: trigger send logic here if needed
+      // Save to history and refresh
+      const now = new Date();
+      const historyData = {
+        method,
+        url,
+        month: String(now.getMonth() + 1).padStart(2, '0'),
+        day: String(now.getDate()).padStart(2, '0'),
+        year: String(now.getFullYear()),
+        time: now.toTimeString().slice(0, 8),
+        is_favorite: false,
+      };
+      await saveRequest(historyData);
+      await refreshHistory();
     } catch (error) {
       console.error('Error in handleSend:', error);
       updateTab(tab.id, { isDirty: false });
