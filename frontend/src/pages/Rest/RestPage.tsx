@@ -7,10 +7,13 @@
 import React, { useState, useRef } from 'react';
 import { useRestTabs } from '../../hooks/useRestTabs';
 import RestTabsHeader from './components/RestTabsHeader';
+import HTTP_METHOD_COLORS from '../../constants/httpMethodColors';
 import RequestEditorContainer from './RequestEditorContainer';
 import TabContentArea from './TabContentArea/TabContentArea';
 import RestRightPanel from './RightPanel/RestRightPanel';
 import RestSplitPane from './components/RestSplitPane';
+import BottomSplitPane from './components/BottomSplitPane';
+import BottomPanel from './components/BottomPanel';
 
 import { v4 as uuidv4 } from 'uuid';
 import type { Parameter, Variable } from '../../types';
@@ -194,18 +197,7 @@ function HoppscotchClone() {
                 });
               }}
               canClose={tabs.length > 1}
-              methodColors={{
-                GET: '#10B981',
-                POST: '#E3AE09',
-                PUT: '#0EA4E8',
-                PATCH: '#8B5CF6',
-                DELETE: '#F43F5E',
-                HEAD: '#14B8A6',
-                OPTIONS: '#4F51AD',
-                CONNECT: '#737373',
-                TRACE: '#737373',
-                CUSTOM: '#737373',
-              }}
+              methodColors={HTTP_METHOD_COLORS}
               envDropdownOpen={false}
               setEnvDropdownOpen={() => {}}
               showVarsPopover={false}
@@ -215,7 +207,10 @@ function HoppscotchClone() {
               setEnvTab={() => {}}
             />
             <div className="h-16">
-              <RequestEditorContainer />
+              <RequestEditorContainer
+  tab={activeTabObj}
+  updateTab={(id, changes) => setTabs(tabs => tabs.map(tab => tab.id === id ? { ...tab, ...changes } : tab))}
+/>
             </div>
             {/* Tabs - Fixed header */}
             <div className="sticky top-0 z-10 bg-bg border-b border-neutral-800 w-full">
@@ -236,10 +231,12 @@ function HoppscotchClone() {
                 ))}
               </div>
             </div>
-            {/* Scrollable content area */}
+            {/* Scrollable content area with resizable bottom panel */}
             <div className="flex-1 overflow-hidden">
-              <div className="h-full overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                <TabContentArea
+              <BottomSplitPane
+                top={
+                  <div className="h-full overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                    <TabContentArea
                   activeTab={activeTabObj.activeTab}
                   // Parameters tab props
                   queryParams={queryParams}
@@ -292,8 +289,14 @@ function HoppscotchClone() {
                   handleDeleteVariable={handleDeleteVariable}
                   handleVariableDragEnd={handleVariableDragEnd}
                   SortableVariableRow={SortableVariableRow}
-                />
-              </div>
+                    />
+                  </div>
+                }
+                bottom={<BottomPanel />}
+                defaultBottomSize={30}
+                minBottomSize={10}
+                maxBottomSize={50}
+              />
             </div>
           </div>
         </RestSplitPane>

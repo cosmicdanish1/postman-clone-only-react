@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import EditEnvironmentModal from './modals/EditEnvironmentModal';
 import { useTranslation } from 'react-i18next';
 import useThemeClass from '../hooks/useThemeClass';
+import useAccentColor from '../hooks/useAccentColor';
 
 interface Tab {
   id: string;
@@ -63,8 +64,8 @@ const TabsBar: React.FC<TabsBarProps> = ({
 
   // Get theme classes and accent color utilities from useThemeClass
   const { t } = useTranslation();
-  const { themeClass, buttonBgClass, accentColor, accentColorClass } = useThemeClass();
-  const accentHex = accentColor; // Keep for backward compatibility
+  const { themeClass, buttonBgClass, accentColorClass } = useThemeClass();
+  const { current: accentHex } = useAccentColor();
 
   // Click-away handler for popover
 
@@ -155,16 +156,21 @@ const TabsBar: React.FC<TabsBarProps> = ({
             {tabs.map((tab) => (
               <div
                 key={tab.id}
-                className={`group relative flex items-center h-11   px-0 cursor-pointer select-none font-bold transition-all duration-200 ${tab.id === activeTabId ? '' : 'opacity-60'} ${themeClass}`}
+                className={`group relative flex items-center h-11 px-0 cursor-pointer select-none font-bold transition-all duration-200 ${tab.id === activeTabId ? '' : 'opacity-60'} ${themeClass}`}
                 onClick={() => onSwitchTab(tab.id)}
               >
-                {/* Highlight active tab */}
+                {/* Animated accent top bar for active tab */}
                 {tab.id === activeTabId && (
-                  <div className="absolute left-0 top-0 w-full  h-[2px]" style={{zIndex: 2,  backgroundColor: accentHex }} />
+                  <motion.div
+                    layoutId="active-tab-underline"
+                    className="absolute left-0 top-0 w-full"
+                    style={{ height: 3, backgroundColor: accentHex, borderTopLeftRadius: 6, borderTopRightRadius: 6, zIndex: 2 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 35 }}
+                  />
                 )}
-                <div className="flex items-center w-48 overflow-hidden  z-10 px-6">
+                <div className="flex items-center w-48 overflow-hidden z-10 px-6">
                   <span
-                    className="font-medium text-[13px]  mr-2 whitespace-nowrap"
+                    className="font-medium text-[13px] mr-2 whitespace-nowrap"
                     style={{ color: methodColors[tab.method] || '#737373' }}
                   >
                     {tab.method}

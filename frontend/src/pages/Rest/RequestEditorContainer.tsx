@@ -5,74 +5,21 @@
 // Role: Connects RequestEditor to Redux store
 // Located at: src/pages/Rest/RequestEditorContainer.tsx
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import RequestEditor from './RequestEditor';
-import { 
-  useActiveTab, 
-  useTabActions, 
-  useRequestActions 
-} from '../../features/restHooks';
-import { useRequestHistory } from '../../features/useRequestHistory';
 import useThemeClass from '../../hooks/useThemeClass';
 import useAccentColor from '../../hooks/useAccentColor';
 import { METHODS } from '../../constants/httpMethods';
+import HTTP_METHOD_COLORS from '../../constants/httpMethodColors';
 
-const methodColors: Record<string, string> = {
-  GET: '#10B981',      // green-500
-  POST: '#3B82F6',     // blue-500
-  PUT: '#F59E0B',      // yellow-500
-  PATCH: '#8B5CF6',    // purple-500
-  DELETE: '#EF4444',   // red-500
-  HEAD: '#EC4899',     // pink-500
-  OPTIONS: '#6366F1',  // indigo-500
-  // Add more methods as needed
-};
 
-const RequestEditorContainer: React.FC = () => {
-  const activeTab = useActiveTab();
-  const tabActions = useTabActions();
-  const requestActions = useRequestActions();
-  
-  // Ensure there's always an active tab
-  useEffect(() => {
-    if (!activeTab) {
-      console.log('No active tab found, creating a new one...');
-      tabActions.addTab({
-        id: `tab-${Date.now()}`,
-        name: 'New Request',
-        method: 'GET',
-        url: 'https://echo.hoppscotch.io',
-        headers: [],
-        parameters: [],
-        body: {
-          raw: '',
-          formData: [],
-          urlEncoded: [],
-          binary: '',
-          graphQL: {
-            query: '',
-            variables: '{}'
-          }
-        },
-        auth: { type: 'none' },
-        response: {
-          status: 0,
-          statusText: '',
-          headers: {},
-          data: null,
-          time: 0,
-          size: 0
-        },
-        isSaving: false,
-        isDirty: false,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      });
-    } else {
-      console.log('Active tab:', activeTab.id, 'Method:', activeTab.method);
-    }
-  }, [activeTab]);
 
+interface RequestEditorContainerProps {
+  tab: any;
+  updateTab: (id: string, changes: Partial<any>) => void;
+}
+
+const RequestEditorContainer: React.FC<RequestEditorContainerProps> = ({ tab, updateTab }) => {
   const { themeClass } = useThemeClass();
   const { current: accentColor } = useAccentColor();
 
@@ -87,133 +34,72 @@ const RequestEditorContainer: React.FC = () => {
   const [showSaveDropdown, setShowSaveDropdown] = useState(false);
   const [saveRequestName, setSaveRequestName] = useState('');
   
-  // Create a default tab if none exists
-  const defaultTab = {
-    id: 'default-tab',
-    method: 'GET',
-    url: 'https://echo.hoppscotch.io',
-    name: 'New Request',
-    description: '',
-    headers: [],
-    queryParams: [],
-    body: {
-      mode: 'none',
-      raw: '',
-      formData: [],
-      urlEncoded: [],
-      binary: '',
-      graphQL: {
-        query: '',
-        variables: '{}',
-      },
-    },
-    auth: { type: 'none' },
-    isDirty: false,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
 
-  // Use activeTab or defaultTab if activeTab is null
-  const currentTab = activeTab || defaultTab;
+
+  // Use tab prop directly
+  const currentTab = tab;
 
   // Handle method change
   const handleMethodChange = (newMethod: string) => {
     console.log('Updating method to:', newMethod);
-    if (activeTab) {
-      // Update the tab with the new method
-      tabActions.updateTab(activeTab.id, { 
+    if (tab) {
+      updateTab(tab.id, {
         method: newMethod,
         isDirty: true,
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
       });
     }
   };
 
   // Handle URL change
   const handleUrlChange = (url: string) => {
-    requestActions.updateUrl(url);
-    if (activeTab) {
-      tabActions.updateTab(activeTab.id, { 
+    if (tab) {
+      updateTab(tab.id, {
         url,
-        isDirty: true 
+        isDirty: true,
+        updatedAt: new Date().toISOString(),
       });
     }
   };
 
-  // Get the saveRequest function from useRequestHistory hook
-  const { saveRequest } = useRequestHistory();
+
 
   // Handle send request
   const handleSend = async (requestData: { method: string; url: string }) => {
     console.log('=== handleSend called with:', requestData);
-    
-    if (!activeTab) {
+    if (!tab) {
       console.error('No active tab');
       return;
     }
-    
     try {
       const method = requestData.method || 'GET';
       const url = (requestData.url || '').trim();
-      
       if (!url) {
         console.error('URL is required');
         return;
       }
-      
       console.log('Updating tab with method:', method, 'and URL:', url);
-      
-      // Update the tab with the latest URL and method first
-      tabActions.updateTab(activeTab.id, { 
+      updateTab(tab.id, {
         method,
         url,
-        isDirty: false 
+        isDirty: false,
+        updatedAt: new Date().toISOString(),
       });
-      
-      try {
-        // First, try to send the actual request
-        await requestActions.sendRequest();
-        
-        // Only save to history if the request was successful
-        const now = new Date();
-        const historyData = {
-          method,
-          url,
-          month: String(now.getMonth() + 1).padStart(2, '0'),
-          day: String(now.getDate()).padStart(2, '0'),
-          year: String(now.getFullYear()),
-          time: now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }),
-          is_favorite: false // Add the missing required field
-        };
-        
-        console.log('Saving successful request to history:', historyData);
-        const saveResult = await saveRequest(historyData);
-        
-        if (!saveResult.success) {
-          console.error('Failed to save request to history:', saveResult.error);
-        } else {
-          console.log('Successfully saved request to history');
-        }
-        
-      } catch (error) {
-        console.error('Request failed, not saving to history:', error);
-        // Re-throw to be caught by the outer catch block
-        throw error;
-      }
-      
+      // Optionally: trigger send logic here if needed
     } catch (error) {
       console.error('Error in handleSend:', error);
-      tabActions.updateTab(activeTab.id, { isDirty: false });
+      updateTab(tab.id, { isDirty: false });
       // Optionally show error to user here
     }
   };
 
   // Handle save request
   const handleSave = () => {
-    if (saveRequestName.trim() && activeTab) {
-      tabActions.updateTab(activeTab.id, { 
+    if (saveRequestName.trim() && tab) {
+      updateTab(tab.id, {
         name: saveRequestName.trim(),
-        isDirty: false 
+        isDirty: false,
+        updatedAt: new Date().toISOString(),
       });
       setSaveRequestName('');
       setShowSaveDropdown(false);
@@ -234,7 +120,7 @@ const RequestEditorContainer: React.FC = () => {
     methodDropdownOpen,
     setMethodDropdownOpen,
     methodDropdownRef,
-    methodColors,
+    methodColors: HTTP_METHOD_COLORS,
     url: currentTab.url,
     setUrl: handleUrlChange,
     onSend: handleSend,
