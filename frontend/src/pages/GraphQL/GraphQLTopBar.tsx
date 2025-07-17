@@ -6,10 +6,16 @@
 // Located at: src/pages/GraphQL/GraphQLTopBar.tsx
 import React, { useState } from 'react';
 import useThemeClass from '../../hooks/useThemeClass';
+import useAccentColor from '../../hooks/useAccentColor';
 
-const GraphQLTopBar: React.FC = () => {
-  const [endpoint, setEndpoint] = useState('https://echo.hoppscotch.io/graphql');
-  const { themeClass, accentColorClass } = useThemeClass();
+interface GraphQLTopBarProps {
+  endpoint: string;
+  setEndpoint: (val: string) => void;
+}
+
+const GraphQLTopBar: React.FC<GraphQLTopBarProps> = ({ endpoint, setEndpoint }) => {
+  const { themeClass } = useThemeClass();
+  const { current: accentColor } = useAccentColor();
 
   return (
     <div className={`flex items-center gap-4 p-4 border-b border-border bg-bg text-text ${themeClass}`}>
@@ -19,8 +25,9 @@ const GraphQLTopBar: React.FC = () => {
         value={endpoint}
         onChange={e => setEndpoint(e.target.value)}
       />
-      <button 
-        className={`px-8 py-2 rounded font-semibold text-white ${accentColorClass.bg} ${accentColorClass.hover} transition-opacity`}
+      <button
+        className="px-8 py-2 rounded font-semibold text-white transition-opacity"
+        style={{ backgroundColor: accentColor, boxShadow: `0 2px 8px 0 ${accentColor}33` }}
       >
         Connect
       </button>
@@ -28,4 +35,4 @@ const GraphQLTopBar: React.FC = () => {
   );
 };
 
-export default GraphQLTopBar; 
+export default GraphQLTopBar;

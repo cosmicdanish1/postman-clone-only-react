@@ -69,7 +69,7 @@ const RestRightPanel: React.FC = () => {
       }}
     >
         {/* Subsidebar */}
-        <nav className={`w-14 h-full flex flex-col items-center py-4 gap-2 border-r ${borderClass} bg-bg`}>
+        <nav className={`w-14 h-full flex flex-col items-center py-4 gap-2 border ${borderClass} bg-bg`}>
           {navItems.map(item => (
             <button
               key={item.key}

@@ -41,6 +41,11 @@ interface ApiResponse<T = any> {
   count?: number;
 }
 
+export interface GraphQLEndpointHistoryData {
+  id: number;
+  url: string;
+}
+
 export const apiService = {
   // Save request to history
   async saveRequest(historyData: Omit<RequestHistoryData, 'id' | 'created_at'>): Promise<ApiResponse<RequestHistoryData>> {
@@ -224,6 +229,75 @@ export const apiService = {
       return data;
     } catch (error) {
       console.error('Error clearing history:', error);
+      throw error;
+    }
+  },
+
+  // Save GraphQL endpoint to history
+  async saveGraphQLEndpointHistory(data: { url: string }): Promise<ApiResponse<GraphQLEndpointHistoryData>> {
+    const requestUrl = `${API_BASE_URL}/graphql-endpoints`;
+    try {
+      const response = await fetch(requestUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(data)
+      });
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error saving GraphQL endpoint history:', error);
+      throw error;
+    }
+  },
+
+  // Get GraphQL endpoint history
+  async getGraphQLEndpointHistory(): Promise<GraphQLEndpointHistoryData[]> {
+    const requestUrl = `${API_BASE_URL}/graphql-endpoints`;
+    try {
+      const response = await fetch(requestUrl, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+        },
+        credentials: 'include',
+      });
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
+      }
+      const data = await response.json();
+      return data.data || [];
+    } catch (error) {
+      console.error('Error fetching GraphQL endpoint history:', error);
+      throw error;
+    }
+  },
+
+  // Delete a single GraphQL endpoint+query history item
+  async deleteGraphQLEndpointHistory(id: number): Promise<ApiResponse> {
+    const requestUrl = `${API_BASE_URL}/graphql-endpoints/${id}`;
+    try {
+      const response = await fetch(requestUrl, {
+        method: 'DELETE',
+        headers: {
+          'Accept': 'application/json',
+        },
+        credentials: 'include',
+      });
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error deleting GraphQL endpoint history item:', error);
       throw error;
     }
   }

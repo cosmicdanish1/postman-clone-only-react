@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import useThemeClass from '../../hooks/useThemeClass';
+import { GraphQLHistoryPanel } from './GraphQLHistoryPanel';
 
 const icons = [
   // Book (active)
@@ -30,13 +31,6 @@ const icons = [
       <polyline points="12 6 12 12 16 14" />
     </svg>
   ),
-];
-
-const panelContents = [
-  <div className="text-gray-400 text-center mt-8">GraphQL Schema Panel</div>,
-  <div className="text-gray-400 text-center mt-8">GraphQL Explorer Panel</div>,
-  <div className="text-gray-400 text-center mt-8">GraphQL Collections Panel</div>,
-  <div className="text-gray-400 text-center mt-8">GraphQL History Panel</div>,
 ];
 
 const MIN_WIDTH = 260;
@@ -81,6 +75,12 @@ const GraphQLRightPanel: React.FC = () => {
     setDragging(null);
     document.removeEventListener('mousemove', onMouseMove);
     document.removeEventListener('mouseup', onMouseUp);
+  };
+
+  // Open a new tab from history (emit a custom event)
+  const handleHistorySelect = (item: { url: string; query: string }) => {
+    const event = new CustomEvent('open-graphql-history-tab', { detail: item });
+    window.dispatchEvent(event);
   };
 
   return (
@@ -146,7 +146,10 @@ const GraphQLRightPanel: React.FC = () => {
       </div>
       {/* Main right panel content area, changes with activeIdx */}
       <div className="flex-1 p-4 overflow-y-auto bg-bg">
-        {panelContents[activeIdx]}
+        {activeIdx === 0 && <div className="text-gray-400 text-center mt-8">GraphQL Schema Panel</div>}
+        {activeIdx === 1 && <div className="text-gray-400 text-center mt-8">GraphQL Explorer Panel</div>}
+        {activeIdx === 2 && <div className="text-gray-400 text-center mt-8">GraphQL Collections Panel</div>}
+        {activeIdx === 3 && <GraphQLHistoryPanel onSelect={handleHistorySelect} />}
       </div>
     </div>
   );
