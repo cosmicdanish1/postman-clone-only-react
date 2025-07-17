@@ -14,6 +14,22 @@ const BottomPanel: React.FC = () => {
 
   return (
     <div className={`h-full w-full bg-bg text-text shadow-inner z-30 ${themeClass} ${borderClass}`} style={{ position: 'relative', minHeight: '100px' }}>
+      {/* Status bar */}
+      <div className="flex items-center h-8 px-4 text-xs border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 gap-6">
+        <div>
+          <span className="font-semibold">Status:</span>
+          <span className="text-green-400 ml-1">200 • OK</span>
+        </div>
+        <div>
+          <span className="font-semibold">Time:</span>
+          <span className="text-cyan-400 ml-1">722 ms</span>
+        </div>
+        <div>
+          <span className="font-semibold">Size:</span>
+          <span className="text-lime-400 ml-1">2.41 KB</span>
+        </div>
+      </div>
+      
       {/* Tabs header */}
       <nav className={`flex items-center h-10 border-b ${borderClass} bg-bg px-4 gap-2`}>
         {bottomPanelTabs.map(tab => (

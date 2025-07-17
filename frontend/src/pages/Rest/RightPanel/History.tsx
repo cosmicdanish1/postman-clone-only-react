@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useRequestHistory } from '../../../features/useRequestHistory';
 import { formatDate, formatTime, groupHistoryByTime } from '../../../utils/timeUtils';
+import { getFavorites, toggleFavorite as toggleFavoriteInStorage, isFavorite as checkIsFavorite } from '../../../utils/favorites';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
 import { useHistoryToTabs } from './HistoryToTabsContext';
@@ -51,20 +52,51 @@ const getMethodColor = (method: string): string => {
   return methodColors[method.toUpperCase()] || ' text-gray-800';
 };
 
-
+type FilterType = 'all' | 'starred';
 
 const History: React.FC = () => {
   const { 
     history, 
     loading, 
     error, 
-    refreshHistory, 
-    clearHistory, 
     deleteHistory, 
-    toggleFavorite 
+    clearHistory,
+    refreshHistory
   } = useRequestHistory();
+  
+  // Initialize with favorites from localStorage
+  const [favorites, setFavorites] = useState<Set<number>>(new Set());
 
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
+  const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+  const [activeFilter, setActiveFilter] = useState<FilterType>('all');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Load favorites on component mount
+  useEffect(() => {
+    setFavorites(getFavorites());
+  }, []);
+
+  const filteredHistory = useCallback((items: HistoryItem[]) => {
+    let result = [...items];
+    
+    // Apply filter (All/Starred)
+    if (activeFilter === 'starred') {
+      result = result.filter(item => favorites.has(item.id));
+    }
+    
+    // Apply search query if any
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      result = result.filter(item => 
+        item.url.toLowerCase().includes(query) || 
+        item.method.toLowerCase().includes(query) ||
+        (item.url + ' ' + item.method).toLowerCase().includes(query)
+      );
+    }
+    
+    return result;
+  }, [activeFilter, favorites, searchQuery]);
 
   useEffect(() => {
     if (history) {
@@ -120,14 +152,24 @@ const History: React.FC = () => {
     }
   }, [deleteHistory]);
 
-  const handleToggleFavorite = useCallback(async (item: HistoryItem) => {
+  const handleToggleFavorite = useCallback((e: React.MouseEvent, item: HistoryItem) => {
+    e.stopPropagation();
     try {
-      await toggleFavorite(item.id);
-      // No need to manually refresh as the history state will update automatically
+      // Toggle favorite in local storage and update state
+      const newFavorites = toggleFavoriteInStorage(item.id);
+      setFavorites(newFavorites);
+      
+      // If we're in 'starred only' mode and unstarring the last item, switch back to 'all' view
+      if (activeFilter === 'starred' && !newFavorites.has(item.id)) {
+        const remainingFavorites = Array.from(newFavorites);
+        if (remainingFavorites.length === 0) {
+          setActiveFilter('all');
+        }
+      }
     } catch (error) {
-      console.error('Error toggling favorite:', error);
+      console.error('Error toggling favorite status:', error);
     }
-  }, [toggleFavorite]);
+  }, [activeFilter]);
 
   const openTabFromHistory = useHistoryToTabs();
 
@@ -160,42 +202,23 @@ const History: React.FC = () => {
   return (
     <div className="flex flex-col h-full w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
       {/* Top bar */}
-      <div className="flex items-center justify-between px-6 py-3 ">
+      <div className="flex items-center justify-between px-6 py-3">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-sm font-medium">
           <span>Personal Workspace</span>
-          
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 -2 27 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-chevron-right-icon lucide-chevron-right"><path d="m9 18 6-6-6-6"/></svg>
-          
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 -2 27 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-right-icon lucide-chevron-right">
+            <path d="m9 18 6-6-6-6"/>
+          </svg>
           <span>History</span>
-        </div>
-        
-        {/* Icons */}
-        <div className="flex items-center gap-2">
-          <button 
-            onClick={handleDeleteAll}
-            disabled={loading}
-            className="p-1 text-red-500 hover:text-red-700 transition-colors"
-            title="Clear all history"
-          >
-            {ICONS.delete}
-          </button>
-          <button className="p-1 hover:text-blue-500 transition-colors" title="Help">{ICONS.help}</button>
-          <button className="p-1 hover:text-blue-500 transition-colors" title="Filter">{ICONS.filter}</button>
-          
         </div>
       </div>
       
-      {/* Search bar */}
-      <div className="px-4 py-2 ">
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="Search history..."
-            className="w-full pl-8 pr-4 py-2 text-sm rounded bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
+      {/* Search bar with icons */}
+      <div className="px-4 py-2">
+        <div className="relative flex items-center">
+          {/* Search icon */}
           <svg
-            className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400"
+            className="absolute left-2.5 h-4 w-4 text-gray-400"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -207,6 +230,98 @@ const History: React.FC = () => {
               d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
             />
           </svg>
+          
+          {/* Search input */}
+          <input
+            type="text"
+            placeholder="Search history..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="flex-1 pl-8 pr-24 py-2 text-sm bg-transparent focus:outline-none"
+          />
+          
+          {/* Icons container */}
+          <div className="absolute right-0 flex items-center h-full px-2 space-x-2">
+            <div className="relative">
+              <Tippy content="Filter">
+                <button 
+                  className={`p-1 transition-colors ${
+                    activeFilter === 'starred' 
+                      ? 'text-blue-500 dark:text-blue-400' 
+                      : 'text-gray-500 hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400'
+                  }`}
+                  onClick={() => setShowFilterDropdown(!showFilterDropdown)}
+                >
+                  {ICONS.filter}
+                </button>
+              </Tippy>
+              
+              {/* Filter Dropdown with Radio Buttons */}
+              {showFilterDropdown && (
+                <div 
+                  className="absolute right-0 mt-1 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg z-10 border border-gray-200 dark:border-gray-700 p-2"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="space-y-2">
+                    <label className="flex items-center space-x-2 p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+                      <input
+                        type="radio"
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                        checked={activeFilter === 'all'}
+                        onChange={() => {
+                          setActiveFilter('all');
+                          setShowFilterDropdown(false);
+                        }}
+                      />
+                      <div className="flex items-center">
+                        <svg className="w-4 h-4 mr-2 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
+                        </svg>
+                        <span className="text-sm text-gray-700 dark:text-gray-300">All Items</span>
+                      </div>
+                    </label>
+                    
+                    <label className="flex items-center space-x-2 p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+                      <input
+                        type="radio"
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                        checked={activeFilter === 'starred'}
+                        onChange={() => {
+                          setActiveFilter('starred');
+                          setShowFilterDropdown(false);
+                        }}
+                      />
+                      <div className="flex items-center">
+                        <svg className="w-4 h-4 mr-2 text-yellow-500" fill={activeFilter === 'starred' ? 'currentColor' : 'none'} viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                        </svg>
+                        <span className="text-sm text-gray-700 dark:text-gray-300">Starred Only</span>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            <Tippy content="Help">
+              <button 
+                className="p-1 text-gray-500 hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400 transition-colors"
+                onClick={() => {/* Add help functionality */}}
+              >
+                {ICONS.help}
+              </button>
+            </Tippy>
+            
+            <Tippy content="Clear all history">
+              <button 
+                className="p-1 text-gray-500 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-500 transition-colors"
+                onClick={handleDeleteAll}
+                disabled={loading}
+              >
+                {ICONS.delete}
+              </button>
+            </Tippy>
+          </div>
         </div>
       </div>
 
@@ -231,9 +346,17 @@ const History: React.FC = () => {
                 <p className="text-gray-500">No history yet</p>
                 <p className="text-sm text-gray-400 mt-1">Your request history will appear here</p>
               </div>
+            ) : filteredHistory(history).length === 0 ? (
+              <div className="flex flex-col items-center justify-center p-4 text-center">
+                <svg className="w-12 h-12 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <p className="text-gray-500">No results found</p>
+                <p className="text-sm text-gray-400 mt-1">Try a different search term</p>
+              </div>
             ) : (
               <div>
-                {Object.entries(groupHistoryByTime(history)).map(([timeGroup, items]) => (
+                {Object.entries(groupHistoryByTime(filteredHistory(history))).map(([timeGroup, items]) => (
                   <div key={timeGroup} className="space-y-2">
                     <button 
                       onClick={() => {
@@ -301,14 +424,22 @@ const History: React.FC = () => {
                                   interactive={true}
                                 >
                                   <button 
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleToggleFavorite(item);
-                                    }}
-                                    className={`p-1 ${item.is_favorite ? 'text-yellow-500' : 'text-gray-400 hover:text-yellow-500'} transition-colors`}
+                                    onClick={(e) => handleToggleFavorite(e, item)}
+                                    className={`p-1 ${favorites.has(item.id) ? 'text-yellow-500' : 'text-gray-400 hover:text-yellow-500'} transition-colors`}
+                                    aria-label={favorites.has(item.id) ? 'Remove from favorites' : 'Add to favorites'}
                                   >
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                                    <svg 
+                                      className="w-4 h-4" 
+                                      fill={favorites.has(item.id) ? 'currentColor' : 'none'} 
+                                      stroke="currentColor" 
+                                      viewBox="0 0 24 24"
+                                      strokeWidth={favorites.has(item.id) ? 0 : 1.5}
+                                    >
+                                      <path 
+                                        strokeLinecap="round" 
+                                        strokeLinejoin="round" 
+                                        d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" 
+                                      />
                                     </svg>
                                   </button>
                                 </Tippy>
