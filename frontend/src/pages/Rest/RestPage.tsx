@@ -4,7 +4,8 @@
 // Imported by: App.tsx (via route)
 // Role: Main entry point for the REST feature, renders the REST request/UI.
 // Located at: src/pages/Rest/RestPage.tsx
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
+import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import { useRequestHistory } from '../../features/useRequestHistory';
 import { useRestTabs } from '../../hooks/useRestTabs';
 import RestTabsHeader from './components/RestTabsHeader';
@@ -349,79 +350,82 @@ function HoppscotchClone() {
                 ))}
               </div>
             </div>
-            {/* Scrollable content area with resizable bottom panel */}
+            {/* Main content area with resizable panels */}
             <div className="flex-1 overflow-hidden">
-              <BottomSplitPane
-                top={
+              <PanelGroup direction="vertical">
+                {/* Main content panel */}
+                <Panel defaultSize={70} minSize={25} className="overflow-hidden">
                   <div className="h-full overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                     <TabContentArea
-                  activeTab={activeTabObj.activeTab}
-                  // Parameters tab props
-                  queryParams={queryParams}
-                  handleParamChange={handleParamChange}
-                  handleDeleteParam={handleDeleteParam}
-                  handleDeleteAllParams={handleDeleteAllParams}
-                  handleAddParam={handleAddParam}
-                  handleDragEnd={handleDragEnd}
-                  SortableParamRow={SortableParamRow}
-                  // Body tab props
-                  contentType={contentType}
-                  contentTypeOptions={contentTypeOptions}
-                  setContentType={setContentType}
-                  dropdownOpen={dropdownOpen}
-                  setDropdownOpen={setDropdownOpen}
-                  hideScrollbarStyle={{}}
-                  setActiveTab={setActiveTab}
-                  rawBody={rawBody}
-                  setRawBody={setRawBody}
-                  // Headers tab props
-                  headers={activeTabObj.headers || []}
-                  handleHeaderChange={handleHeaderChange}
-                  uuidv4={uuidv4}
-                  setTabs={() => {}}
-                  activeTabId={activeTabObj.id}
-                  tabs={[]}
-                  handleDeleteHeader={handleDeleteHeader}
-                  handleAddHeader={handleAddHeader}
-                  editHeadersActive={false}
-                  setEditHeadersActive={() => {}}
-                  SortableHeaderRow={SortableHeaderRow}
-                  // Authorization tab props
-                  authorization={activeTabObj.authorization || { type: 'no-auth' }}
-                  setAuthorization={setAuthorization}
-                  // Pre-request tab props
-                  preRequestScript={preRequestScript}
-                  setPreRequestScript={setPreRequestScript}
-                  insertPreRequestSnippet={insertPreRequestSnippet}
-                  highlightPreRequestScript={highlightPreRequestScript}
-                  preRequestDivRef={preRequestDivRef}
-                  // Post-request tab props
-                  postRequestScript={postRequestScript}
-                  setPostRequestScript={setPostRequestScript}
-                  insertPostRequestSnippet={insertPostRequestSnippet}
-                  highlightPostRequestScript={highlightPostRequestScript}
-                  postRequestDivRef={postRequestDivRef}
-                  // Variables tab props
-                  variables={variables}
-                  handleVariableChange={handleVariableChange}
-                  handleDeleteVariable={handleDeleteVariable}
-                  handleVariableDragEnd={handleVariableDragEnd}
-                  SortableVariableRow={SortableVariableRow}
+                      activeTab={activeTabObj.activeTab}
+                      // Parameters tab props
+                      queryParams={queryParams}
+                      handleParamChange={handleParamChange}
+                      handleDeleteParam={handleDeleteParam}
+                      handleDeleteAllParams={handleDeleteAllParams}
+                      handleAddParam={handleAddParam}
+                      handleDragEnd={handleDragEnd}
+                      SortableParamRow={SortableParamRow}
+                      // Body tab props
+                      contentType={contentType}
+                      contentTypeOptions={contentTypeOptions}
+                      setContentType={setContentType}
+                      dropdownOpen={dropdownOpen}
+                      setDropdownOpen={setDropdownOpen}
+                      hideScrollbarStyle={{}}
+                      setActiveTab={setActiveTab}
+                      rawBody={rawBody}
+                      setRawBody={setRawBody}
+                      // Headers tab props
+                      headers={activeTabObj.headers || []}
+                      handleHeaderChange={handleHeaderChange}
+                      uuidv4={uuidv4}
+                      setTabs={() => {}}
+                      activeTabId={activeTabObj.id}
+                      tabs={[]}
+                      handleDeleteHeader={handleDeleteHeader}
+                      handleAddHeader={handleAddHeader}
+                      editHeadersActive={false}
+                      setEditHeadersActive={() => {}}
+                      SortableHeaderRow={SortableHeaderRow}
+                      // Authorization tab props
+                      authorization={activeTabObj.authorization || { type: 'no-auth' }}
+                      setAuthorization={setAuthorization}
+                      // Pre-request tab props
+                      preRequestScript={preRequestScript}
+                      setPreRequestScript={setPreRequestScript}
+                      insertPreRequestSnippet={insertPreRequestSnippet}
+                      highlightPreRequestScript={highlightPreRequestScript}
+                      preRequestDivRef={preRequestDivRef}
+                      // Post-request tab props
+                      postRequestScript={postRequestScript}
+                      setPostRequestScript={setPostRequestScript}
+                      insertPostRequestSnippet={insertPostRequestSnippet}
+                      highlightPostRequestScript={highlightPostRequestScript}
+                      postRequestDivRef={postRequestDivRef}
+                      // Variables tab props
+                      variables={variables}
+                      handleVariableChange={handleVariableChange}
+                      handleDeleteVariable={handleDeleteVariable}
+                      handleVariableDragEnd={handleVariableDragEnd}
+                      SortableVariableRow={SortableVariableRow}
                     />
                   </div>
-                }
-                bottom={
+                </Panel>
+
+                {/* Resize handle */}
+                <PanelResizeHandle className="h-1.5 w-full cursor-row-resize bg-transparent hover:bg-blue-400/30 transition-colors" />
+
+                {/* Bottom panel */}
+                <Panel defaultSize={30} minSize={10} maxSize={75} className="flex flex-col bg-bg">
                   <BottomPanel 
                     requestTime={requestStats.time}
                     responseSize={requestStats.size}
                     statusCode={requestStats.statusCode}
                     statusText={requestStats.statusText}
                   />
-                }
-                defaultBottomSize={30}
-                minBottomSize={10}
-                maxBottomSize={50}
-              />
+                </Panel>
+              </PanelGroup>
             </div>
           </div>
         </RestSplitPane>

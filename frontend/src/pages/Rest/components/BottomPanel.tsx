@@ -25,10 +25,10 @@ const BottomPanel: React.FC<BottomPanelProps> = ({
   statusText = null,
 }) => {
   const { themeClass, borderClass } = useThemeClass();
-  const [activeTab, setActiveTab] = useState<BottomPanelTab>('console');
+  const [activeTab, setActiveTab] = useState<BottomPanelTab>('json');
 
   return (
-    <div className={`h-full w-full bg-bg text-text shadow-inner z-30 ${themeClass} ${borderClass}`} style={{ position: 'relative', minHeight: '100px' }}>
+    <div className={`w-full h-full bg-bg text-text shadow-inner z-30 ${themeClass} ${borderClass} flex flex-col`}>
       {/* Status bar */}
       <div className="flex items-center h-8 px-4 text-xs border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 gap-6">
         {statusCode !== null && statusText !== null && (
