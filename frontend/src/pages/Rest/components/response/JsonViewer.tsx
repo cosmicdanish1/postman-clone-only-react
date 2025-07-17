@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { FiFilter, FiDownload, FiSave, FiCopy, FiMoreVertical } from 'react-icons/fi';
+import { FiFilter, FiDownload, FiSave, FiCopy } from 'react-icons/fi';
 import Editor from '@monaco-editor/react';
 
 interface JsonViewerProps {
@@ -13,6 +13,8 @@ const JsonViewer: React.FC<JsonViewerProps> = ({
   loading = false,
   error = null
 }) => {
+  const isDark = document.documentElement.classList.contains('dark');
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full text-gray-500">
@@ -70,84 +72,58 @@ const JsonViewer: React.FC<JsonViewerProps> = ({
     }
   }, [displayData]);
 
-  // Handle editor mount
-  const handleEditorDidMount = (editor: any, monaco: any) => {
-    // Configure JSON validation and schema if needed
-    monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
-      validate: true,
-      schemas: [],
-      enableSchemaRequest: true,
-    });
 
-    // Update editor font settings
-    monaco.editor.defineTheme('customTheme', {
-      base: document.documentElement.classList.contains('dark') ? 'vs-dark' : 'vs',
-      inherit: true,
-      rules: [
-        { token: '', foreground: '000000', fontStyle: 'bold' },
-      ],
-      colors: {}
-    });
-    
-    monaco.editor.setTheme('customTheme');
-  };
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col bg-white dark:bg-gray-800">
       {/* Top bar with title and action buttons */}
-      <div className="flex-shrink-0 flex items-center justify-between border-b border-gray-200 dark:border-gray-700 px-4 py-2">
-        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Response Body</span>
+      <div className="flex-shrink-0 flex items-center justify-between border-b border-gray-200 dark:border-gray-700 px-4 py-2 bg-gray-50 dark:bg-gray-800">
+        <span className="text-sm font-medium text-gray-900 dark:text-gray-100">Response Body</span>
         <div className="flex items-center space-x-3">
-          <button className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700">
+          <button className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300">
             <FiFilter className="w-4 h-4" />
           </button>
-          <button className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700">
+          <button className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300">
             <FiDownload className="w-4 h-4" />
           </button>
-          <button className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700">
+          <button className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300">
             <FiSave className="w-4 h-4" />
           </button>
           <button 
-            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
+            className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300"
             onClick={() => {
               navigator.clipboard.writeText(jsonString);
             }}
           >
             <FiCopy className="w-4 h-4" />
           </button>
-          <button className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700">
-            <FiMoreVertical className="w-4 h-4" />
-          </button>
         </div>
       </div>
       
       {/* Monaco Editor for JSON */}
-      <div className="flex-1 overflow-hidden h-0">
+      <div className="flex-1" style={{ height: '400px' }}>
         <Editor
           height="100%"
           defaultLanguage="json"
           value={jsonString}
-          theme="customTheme"
+          theme={isDark ? 'vs-dark' : 'light'}
           options={{
             readOnly: true,
+            automaticLayout: true,
             minimap: { enabled: false },
             scrollBeyondLastLine: false,
             fontSize: 13,
-            fontWeight: '600',  // Make text bolder
             wordWrap: 'on',
-            automaticLayout: true,
-            folding: true,
             lineNumbers: 'off',
             renderWhitespace: 'none',
-            renderLineHighlight: 'none',
             fontFamily: 'Menlo, Monaco, "Courier New", monospace',
             scrollbar: {
               vertical: 'hidden',
               horizontal: 'hidden',
-              handleMouseWheel: true,
             },
+            overviewRulerLanes: 0,
+            hideCursorInOverviewRuler: true,
           }}
-          onMount={handleEditorDidMount}
         />
       </div>
     </div>

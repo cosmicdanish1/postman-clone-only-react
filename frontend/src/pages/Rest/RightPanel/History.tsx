@@ -1,10 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useRequestHistory } from '../../../features/useRequestHistory';
 import { formatDate, formatTime, groupHistoryByTime } from '../../../utils/timeUtils';
-import { getFavorites, toggleFavorite as toggleFavoriteInStorage, isFavorite as checkIsFavorite } from '../../../utils/favorites';
+import { getFavorites, toggleFavorite as toggleFavoriteInStorage } from '../../../utils/favorites';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
 import { useHistoryToTabs } from './HistoryToTabsContext';
+import useThemeClass from '../../../hooks/useThemeClass';
 
 interface HistoryItem {
   id: number;
@@ -55,6 +56,7 @@ const getMethodColor = (method: string): string => {
 type FilterType = 'all' | 'starred';
 
 const History: React.FC = () => {
+  const { themeClass, borderClass } = useThemeClass();
   const { 
     history, 
     loading, 
@@ -181,7 +183,7 @@ const History: React.FC = () => {
 
   if (loading && history.length === 0) {
     return (
-      <div className="p-4">
+      <div className={`p-4 ${themeClass}`}>
         <div className="animate-pulse space-y-4">
           {[1, 2, 3].map((i) => (
             <div key={i} className="h-16  rounded"></div>
@@ -193,16 +195,16 @@ const History: React.FC = () => {
 
   if (error) {
     return (
-      <div className="p-4">
+      <div className={`p-4 ${themeClass}`}>
         <div className="text-red-500 mb-4">Error loading history: {error}</div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-full w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
+    <div className={`flex flex-col h-full w-full ${themeClass}`}>
       {/* Top bar */}
-      <div className="flex items-center justify-between px-6 py-3">
+      <div className={`flex items-center justify-between px-6 py-3 border-b ${borderClass}`}>
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-sm font-medium">
           <span>Personal Workspace</span>
@@ -214,7 +216,7 @@ const History: React.FC = () => {
       </div>
       
       {/* Search bar with icons */}
-      <div className="px-4 py-2">
+      <div className={`px-4 py-2 border-b ${borderClass}`}>
         <div className="relative flex items-center">
           {/* Search icon */}
           <svg
@@ -326,7 +328,7 @@ const History: React.FC = () => {
       </div>
 
       {/* History list */}
-      <div className="flex-1 overflow-y-auto">
+      <div className={`flex-1 overflow-y-auto ${themeClass}`}>
         {loading && !history.length ? (
           <div className="flex flex-col items-center justify-center h-full p-4">
             <div className="animate-spin rounded-full h-8 w-8   mb-2"></div>
@@ -370,7 +372,7 @@ const History: React.FC = () => {
                           return newSet;
                         });
                       }}
-                      className="w-full flex items-center justify-between px-3 py-2  text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                      className={`w-full flex items-center justify-between px-3 py-2 hover:bg-opacity-10 hover:bg-white transition-colors ${themeClass}`}
                     >
                       <div className="flex items-center">
                         <svg 
@@ -386,12 +388,12 @@ const History: React.FC = () => {
                       <span className="text-xs text-gray-500 dark:text-gray-400">{items.length} items</span>
                     </button>
                     {expandedGroups.has(timeGroup) && (
-                      <div className="divide-y divide-gray-200 dark:divide-gray-700">
+                      <div className="space-y-1">
                         {items.map((item) => (
                           <div 
                             key={item.id}
                             onClick={() => handleItemClick(item)}
-                            className="p-3  cursor-pointer transition-colors relative group"
+                            className={`p-3 cursor-pointer transition-colors relative group hover:bg-opacity-10 hover:bg-white ${themeClass}`}
                           >
                             <div className="flex items-start gap-3">
                               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getMethodColor(item.method)}`}>
@@ -408,7 +410,7 @@ const History: React.FC = () => {
                                   interactive={true}
                                   offset={[0, 10]}
                                 >
-                                  <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                                  <p className="text-sm font-medium truncate ${textClass}">
                                     {item.url || 'No URL'}
                                   </p>
                                 </Tippy>

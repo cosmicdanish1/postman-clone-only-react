@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import useThemeClass from '../../../hooks/useThemeClass';
 import JsonViewer from './response/JsonViewer';
+import RawViewer from './response/RawViewer';
+import HeadersViewer from './response/HeadersViewer';
 
 const bottomPanelTabs = [
   { key: 'json', label: 'JSON' },
@@ -26,11 +28,75 @@ const BottomPanel: React.FC<BottomPanelProps> = ({
 }) => {
   const { themeClass, borderClass } = useThemeClass();
   const [activeTab, setActiveTab] = useState<BottomPanelTab>('json');
+  const [hasRequestBeenMade, setHasRequestBeenMade] = useState(false);
+  
+  // Show tabs if we have any response data
+  const shouldShowTabs = hasRequestBeenMade || requestTime !== null;
+  
+  // Sample empty response data
+  const responseData = {
+    method: 'GET',
+    args: {},
+    data: '',
+    headers: {},
+    path: '/',
+    isBase64Encoded: false
+  };
+  
+  // Update hasRequestBeenMade when we receive response data
+  React.useEffect(() => {
+    if (requestTime !== null) {
+      setHasRequestBeenMade(true);
+    }
+  }, [requestTime]);
+
+  if (!shouldShowTabs) {
+    return (
+      <div className={`w-full h-full bg-bg text-text shadow-inner z-30 ${themeClass} ${borderClass} flex flex-col items-center justify-center`}>
+        <div className="w-full max-w-md">
+          <div className="flex items-center justify-between text-gray-400 px-32  py-2">
+            <span>Send Request</span>
+            <span className="text-sm bg-[#F3F4F6] border border-gray-300 rounded px-2 py-0.5 text-gray-800">Ctrl ↵</span>
+            <span className="text-sm bg-[#F3F4F6] border border-gray-300 rounded px-2 py-0.5 ml-2 text-gray-800">↵</span>
+          </div>
+
+          <div className="flex items-center justify-between text-gray-400 px-32 py-2">
+            <span>Keyboard shortcuts</span>
+            <span className="text-sm bg-[#F3F4F6] border border-gray-300 rounded px-2 py-0.5 text-gray-800">Ctrl</span>
+            <span className="text-sm bg-[#F3F4F6] border border-gray-300 rounded px-2 ml-2 py-0.5 text-gray-800">/</span>
+          </div>
+
+          <div className="flex items-center justify-between text-gray-400 px-32 py-2">
+            <span>Search & command menu</span>
+            <span className="text-sm bg-[#F3F4F6] border border-gray-300 rounded px-2 py-0.5 text-gray-800">Ctrl</span>
+            
+            <span className="text-sm bg-[#F3F4F6] border border-gray-300 rounded px-2 ml-2 py-0.5 text-gray-800">K</span>
+          </div>
+
+          <div className="flex items-center justify-between text-gray-400 px-28 py-2">
+            <span>Help menu</span>
+            <span className="text-sm bg-[#F3F4F6] border border-gray-300 rounded px-2 py-0.5 text-gray-800">?</span>
+          </div>
+
+          <div className="mt-4 text-center">
+            <a 
+              href="https://docs.hoppscotch.io/documentation/features/rest-api-testing#response"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block border border-gray-600 px-4 py-2 rounded text-gray-400"
+            >
+              Documentation ↗
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className={`w-full h-full bg-bg text-text shadow-inner z-30 ${themeClass} ${borderClass} flex flex-col`}>
+    <div className={`w-full h-full bg-bg text-text shadow-inner z-30 flex flex-col ${themeClass}`}>
       {/* Status bar */}
-      <div className="flex items-center h-8 px-4 text-xs border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 gap-6">
+      <div className={`flex items-center h-8 px-4 text-xs border-b gap-6 ${borderClass} ${themeClass} bg-opacity-50`}>
         {statusCode !== null && statusText !== null && (
           <div>
             <span className="font-semibold">Status:</span>
@@ -54,8 +120,8 @@ const BottomPanel: React.FC<BottomPanelProps> = ({
       </div>
       
       {/* Tabs header */}
-      <nav className={`flex items-center h-10 border-b ${borderClass} bg-bg px-4 gap-2`}>
-        {bottomPanelTabs.map(tab => (
+      <nav className={`flex items-center h-10 border-b px-4 gap-2 ${borderClass} ${themeClass} bg-opacity-50`}>
+        {bottomPanelTabs.map((tab) => (
           <button
             key={tab.key}
             aria-label={tab.label}
@@ -66,35 +132,23 @@ const BottomPanel: React.FC<BottomPanelProps> = ({
           </button>
         ))}
       </nav>
-      {/* Content */}
-      <div className="flex-1 overflow-auto p-4 text-gray-400">
-        {activeTab === 'json' && (
-          <JsonViewer />
-        )}
-        
-        {activeTab === 'raw' && (
-          <div className="whitespace-pre-wrap font-mono text-sm">
-            {/* Raw response content will go here */}
-            Raw response content will be displayed here
-          </div>
-        )}
-        
+      {/* Tab content */}
+      <div className="flex-1 overflow-auto">
+        {activeTab === 'json' && <JsonViewer />}
+        {activeTab === 'raw' && <RawViewer data={responseData} />}
         {activeTab === 'headers' && (
-          <div className="text-sm">
-            {/* Headers will be listed here */}
-            <div className="grid grid-cols-2 gap-x-4 gap-y-1">
-              <div className="font-medium">Content-Type:</div>
-              <div>application/json</div>
-              <div className="font-medium">Date:</div>
-              <div>{new Date().toUTCString()}</div>
-              <div className="font-medium">Status:</div>
-              <div>200 OK</div>
-            </div>
-          </div>
+          <HeadersViewer 
+            headers={{
+              ...responseData.headers,
+              'content-type': 'application/json',
+              'date': new Date().toUTCString()
+            }} 
+            className="h-full"
+          />
         )}
         
         {activeTab === 'test-results' && (
-          <div className="text-sm">
+          <div className={`text-sm ${themeClass}`}>
             {/* Test results will be listed here */}
             <div className="mb-2">
               <div className="flex items-center text-green-400">
