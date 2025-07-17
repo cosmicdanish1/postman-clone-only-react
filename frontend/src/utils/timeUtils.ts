@@ -1,66 +1,39 @@
-import { format, startOfDay, startOfWeek, startOfMonth, startOfYear } from 'date-fns';
+// Utility functions for time formatting and grouping history by time
+
+export function isValidUrl(url: string): boolean {
+  try {
+    new URL(url);
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 export const getTimeAgo = (createdAt: string): string => {
   const now = new Date();
   const created = new Date(createdAt);
-  const diff = now.getTime() - created.getTime();
+  const diff = Math.floor((now.getTime() - created.getTime()) / 1000);
 
-  const seconds = Math.floor(diff / 1000);
-  const minutes = Math.floor(seconds / 60);
-  const hours = Math.floor(minutes / 60);
-  const days = Math.floor(hours / 24);
-  const weeks = Math.floor(days / 7);
-  const months = Math.floor(days / 30);
-  const years = Math.floor(months / 12);
-
-  if (seconds < 30) return 'Just now';
-  if (seconds < 60) return '1 minute ago';
-  if (minutes < 60) return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
-  if (hours < 24) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
-  if (days < 2) return 'Yesterday';
-  if (days < 7) return `${days} day${days > 1 ? 's' : ''} ago`;
-  if (weeks < 4) return `${weeks} week${weeks > 1 ? 's' : ''} ago`;
-  if (months < 12) return `${months} month${months > 1 ? 's' : ''} ago`;
-  return `${years} year${years > 1 ? 's' : ''} ago`;
+  if (diff < 60) return `${diff}s ago`;
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+  return `${Math.floor(diff / 86400)}d ago`;
 };
 
 export const formatTime = (time: string): string => {
-  return format(new Date(time), 'h:mm a');
+  const date = new Date(time);
+  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 };
 
 export const formatDate = (date: string): string => {
-  return format(new Date(date), 'MMM d, yyyy');
+  return new Date(date).toLocaleDateString();
 };
 
-export const groupHistoryByTime = (history: HistoryItem[]): {
-  [key: string]: HistoryItem[];
-} => {
-  const grouped: { [key: string]: HistoryItem[] } = {};
-  
-  history.forEach(item => {
-    const created = new Date(item.created_at);
-    const now = new Date();
-    const diff = now.getTime() - created.getTime();
-    
-    let groupKey = '';
-    
-    if (diff < 3600000) { // 1 hour
-      groupKey = 'Just now';
-    } else if (diff < 86400000) { // 24 hours
-      const hours = Math.floor(diff / 3600000);
-      groupKey = `${hours} hour${hours > 1 ? 's' : ''} ago`;
-    } else if (diff < 172800000) { // 48 hours
-      groupKey = 'Yesterday';
-    } else {
-      const days = Math.floor(diff / 86400000);
-      groupKey = `${days} day${days > 1 ? 's' : ''} ago`;
-    }
-    
-    if (!grouped[groupKey]) {
-      grouped[groupKey] = [];
-    }
-    grouped[groupKey].push(item);
-  });
-  
-  return grouped;
+export const groupHistoryByTime = (history: any[]): { [key: string]: any[] } => {
+  return history.reduce((groups: { [key: string]: any[] }, item) => {
+    const date = formatDate(item.created_at);
+    if (!groups[date]) groups[date] = [];
+    groups[date].push(item);
+    return groups;
+  }, {});
 };

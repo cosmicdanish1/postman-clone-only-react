@@ -6,7 +6,7 @@
 
 import React, { useCallback, useState } from 'react';
 import useThemeClass from '../../hooks/useThemeClass';
-import { isValidUrl } from '../../utils/helpers';
+import { isValidUrl } from '../../utils/timeUtils';
 
 interface RequestData {
   method: string;

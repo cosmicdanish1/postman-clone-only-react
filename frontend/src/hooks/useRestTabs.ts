@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { uuidv4 } from '../utils/helpers';
+import { v4 as uuidv4 } from 'uuid';
 import type { TabData, AuthType } from '../types';
 
 /*
