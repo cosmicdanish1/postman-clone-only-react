@@ -64,7 +64,6 @@ const History: React.FC = () => {
     toggleFavorite 
   } = useRequestHistory();
 
-  const [currentTime, setCurrentTime] = useState(Date.now());
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
 
   useEffect(() => {
@@ -77,16 +76,7 @@ const History: React.FC = () => {
     }
   }, [history]);
 
-  useEffect(() => {
-    const update = () => {
-      setCurrentTime(Date.now());
-      requestAnimationFrame(update);
-    };
-    requestAnimationFrame(update);
-    return () => {
-      // Cleanup if needed
-    };
-  }, []);
+
 
   // Set up auto-refresh
   useEffect(() => {
