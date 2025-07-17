@@ -18,9 +18,10 @@ import HTTP_METHOD_COLORS from '../../constants/httpMethodColors';
 interface RequestEditorContainerProps {
   tab: any;
   updateTab: (id: string, changes: Partial<any>) => void;
+  onSend?: (requestData: { method: string; url: string }) => Promise<void>;
 }
 
-const RequestEditorContainer: React.FC<RequestEditorContainerProps> = ({ tab, updateTab }) => {
+const RequestEditorContainer: React.FC<RequestEditorContainerProps> = ({ tab, updateTab, onSend }) => {
   const { themeClass } = useThemeClass();
   const { current: accentColor } = useAccentColor();
 
@@ -69,11 +70,16 @@ const RequestEditorContainer: React.FC<RequestEditorContainerProps> = ({ tab, up
   const { saveRequest, refreshHistory } = useRequestHistory();
 
   const handleSend = async (requestData: { method: string; url: string }) => {
-    console.log('=== handleSend called with:', requestData);
+    if (onSend) {
+      await onSend(requestData);
+    }
+
+    // Original send logic
     if (!tab) {
       console.error('No active tab');
       return;
     }
+    
     try {
       const method = requestData.method || 'GET';
       const url = (requestData.url || '').trim();
@@ -81,13 +87,14 @@ const RequestEditorContainer: React.FC<RequestEditorContainerProps> = ({ tab, up
         console.error('URL is required');
         return;
       }
-      console.log('Updating tab with method:', method, 'and URL:', url);
+      
       updateTab(tab.id, {
         method,
         url,
         isDirty: false,
         updatedAt: new Date().toISOString(),
       });
+      
       // Save to history and refresh
       const now = new Date();
       const historyData = {
@@ -99,12 +106,12 @@ const RequestEditorContainer: React.FC<RequestEditorContainerProps> = ({ tab, up
         time: now.toTimeString().slice(0, 8),
         is_favorite: false,
       };
+      
       await saveRequest(historyData);
       await refreshHistory();
     } catch (error) {
       console.error('Error in handleSend:', error);
       updateTab(tab.id, { isDirty: false });
-      // Optionally show error to user here
     }
   };
 

@@ -4,7 +4,8 @@
 // Imported by: App.tsx (via route)
 // Role: Main entry point for the REST feature, renders the REST request/UI.
 // Located at: src/pages/Rest/RestPage.tsx
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
+import { useRequestHistory } from '../../features/useRequestHistory';
 import { useRestTabs } from '../../hooks/useRestTabs';
 import RestTabsHeader from './components/RestTabsHeader';
 import HTTP_METHOD_COLORS from '../../constants/httpMethodColors';
@@ -35,6 +36,41 @@ const arrayMove = <T,>(array: T[], from: number, to: number): T[] => {
 function HoppscotchClone() {
   // Theme and UI state
   const { themeClass } = useThemeClass();
+  
+  // Request stats state
+  const [requestStats, setRequestStats] = useState<{
+    time: number | null;
+    size: string | null;
+    statusCode: number | null;
+    statusText: string | null;
+  }>({
+    time: null,
+    size: null,
+    statusCode: null,
+    statusText: null,
+  });
+  
+  const { saveRequest, refreshHistory } = useRequestHistory();
+  
+  // Generate random request stats
+  const generateRequestStats = useCallback(() => {
+    // Generate random time between 100ms and 2000ms
+    const time = Math.floor(Math.random() * 1900) + 100;
+    
+    // Generate random size between 0.5KB and 10KB
+    const sizeInKB = (Math.random() * 9.5 + 0.5).toFixed(2);
+    
+    // Always return status 200 OK
+    const statusCode = 200;
+    const statusText = 'OK';
+    
+    return {
+      time,
+      size: `${sizeInKB} KB`,
+      statusCode,
+      statusText,
+    };
+  }, []);
 
   const { 
     tabs, 
@@ -201,6 +237,61 @@ function HoppscotchClone() {
     });
   }, [setTabs, setActiveTabId]);
 
+  const handleSend = async (requestData: { method: string; url: string }) => {
+    // Generate new request stats
+    const newStats = generateRequestStats();
+    setRequestStats(newStats);
+
+    if (!activeTabObj) {
+      console.error('No active tab');
+      return;
+    }
+    
+    try {
+      const method = requestData.method || 'GET';
+      const url = (requestData.url || '').trim();
+      if (!url) {
+        console.error('URL is required');
+        return;
+      }
+      
+      // Update tab with new request data
+      setTabs(tabs => tabs.map(tab => 
+        tab.id === activeTabObj.id 
+          ? { 
+              ...tab, 
+              method,
+              url,
+              isDirty: false,
+              updatedAt: new Date().toISOString()
+            } 
+          : tab
+      ));
+      
+      // Save to history and refresh
+      const now = new Date();
+      const historyData = {
+        method,
+        url,
+        month: String(now.getMonth() + 1).padStart(2, '0'),
+        day: String(now.getDate()).padStart(2, '0'),
+        year: String(now.getFullYear()),
+        time: now.toTimeString().slice(0, 8),
+        is_favorite: false,
+      };
+      
+      await saveRequest(historyData);
+      await refreshHistory();
+    } catch (error) {
+      console.error('Error in handleSend:', error);
+      setTabs(tabs => tabs.map(tab => 
+        tab.id === activeTabObj.id 
+          ? { ...tab, isDirty: false } 
+          : tab
+      ));
+    }
+  };
+
   return (
     <HistoryToTabsContext.Provider value={openTabFromHistory}>
       <div className={`flex flex-col h-full w-full ${themeClass} bg-bg text-text`}>
@@ -234,9 +325,10 @@ function HoppscotchClone() {
             />
             <div className="h-16">
               <RequestEditorContainer
-  tab={activeTabObj}
-  updateTab={(id, changes) => setTabs(tabs => tabs.map(tab => tab.id === id ? { ...tab, ...changes } : tab))}
-/>
+                tab={activeTabObj}
+                updateTab={(id, changes) => setTabs(tabs => tabs.map(tab => tab.id === id ? { ...tab, ...changes } : tab))}
+                onSend={handleSend}
+              />
             </div>
             {/* Tabs - Fixed header */}
             <div className="sticky top-0 z-10 bg-bg border-b border-neutral-800 w-full">
@@ -318,7 +410,14 @@ function HoppscotchClone() {
                     />
                   </div>
                 }
-                bottom={<BottomPanel />}
+                bottom={
+                  <BottomPanel 
+                    requestTime={requestStats.time}
+                    responseSize={requestStats.size}
+                    statusCode={requestStats.statusCode}
+                    statusText={requestStats.statusText}
+                  />
+                }
                 defaultBottomSize={30}
                 minBottomSize={10}
                 maxBottomSize={50}
