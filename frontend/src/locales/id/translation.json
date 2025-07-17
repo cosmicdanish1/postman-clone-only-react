@@ -34,5 +34,23 @@
   "add": "Tambah",
   "key": "Kunci",
   "value": "Nilai",
-  "description": "Deskripsi"
+  "description": "Deskripsi",
+  
+  "response": {
+    "body": "Isi Respons",
+    "headers": "Header",
+    "no_headers": "Tidak ada header yang tersedia",
+    "copy": "Salin",
+    "download": "Unduh",
+    "filter": "Filter",
+    "save": "Simpan",
+    "copy_key": "Salin kunci",
+    "copy_value": "Salin nilai",
+    "copy_all_headers": "Salin semua header"
+  },
+  
+  "common": {
+    "loading": "Memuat...",
+    "error_occurred": "Terjadi kesalahan"
+  }
 }

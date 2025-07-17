@@ -1,4 +1,6 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
+import useThemeClass from '../../../../hooks/useThemeClass';
 
 interface HeaderItem {
   key: string;
@@ -14,6 +16,9 @@ const HeadersViewer: React.FC<HeadersViewerProps> = ({
   headers = [],
   className = '' 
 }) => {
+  const { t } = useTranslation();
+  const { themeClass, borderClass, textClass, textLightClass } = useThemeClass();
+  
   const headerEntries = React.useMemo<HeaderItem[]>(() => {
     // Default headers
     return [
@@ -41,7 +46,7 @@ const HeadersViewer: React.FC<HeadersViewerProps> = ({
   if (headerEntries.length === 0) {
     return (
       <div className={`p-4 text-gray-500 dark:text-gray-400 ${className}`}>
-        No headers available
+        {t('response.no_headers')}
       </div>
     );
   }
@@ -57,14 +62,14 @@ const HeadersViewer: React.FC<HeadersViewerProps> = ({
   const displayHeaders = [...headerEntries]; // Empty array - no default headers
 
   return (
-    <div className={`flex flex-col h-full ${className}`}>
+    <div className={`flex flex-col h-full ${className} ${themeClass}`}>
       {/* Top bar */}
-      <div className="flex items-center justify-between px-4 py-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
-        <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">Headers</h3>
+      <div className={`flex items-center justify-between px-4 py-2 ${borderClass} bg-opacity-50`}>
+        <h3 className={`text-sm font-medium ${textClass}`}>{t('response.headers')}</h3>
         <button
           onClick={copyAllHeaders}
-          className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-          title="Copy all headers"
+          className={`${textLightClass} hover:${textClass} p-1 rounded hover:bg-opacity-10 hover:bg-white transition-colors`}
+          title={t('response.copy_all_headers')}
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -84,15 +89,15 @@ const HeadersViewer: React.FC<HeadersViewerProps> = ({
             {displayHeaders.map(({ key, value }) => (
               <tr 
                 key={key}
-                className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors group"
+                className={`${borderClass} hover:bg-opacity-10 hover:bg-white transition-colors group`}
               >
-                <td className="py-2 px-4 font-mono text-xs text-gray-800 dark:text-gray-200 break-words">
+                <td className={`py-2 px-4 font-mono text-xs ${textClass} break-words`}>
                   <div className="flex items-start">
                     <span className="font-medium">{key}</span>
                     <button
                       onClick={() => handleCopy(key)}
-                      className="ml-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 opacity-0 group-hover:opacity-100 transition-opacity"
-                      title="Copy key"
+                      className={`ml-2 ${textLightClass} hover:${textClass} opacity-0 group-hover:opacity-100 transition-opacity`}
+                      title={t('response.copy_key')}
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -101,13 +106,13 @@ const HeadersViewer: React.FC<HeadersViewerProps> = ({
                     </button>
                   </div>
                 </td>
-                <td className="py-2 px-4 font-mono text-xs text-gray-800 dark:text-gray-200 break-words">
+                <td className={`py-2 px-4 font-mono text-xs ${textLightClass} break-words`}>
                   <div className="flex items-start">
                     <span>{value}</span>
                     <button
                       onClick={() => handleCopy(value)}
                       className="ml-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
-                      title="Copy value"
+                      title={t('response.copy_value')}
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -122,7 +127,7 @@ const HeadersViewer: React.FC<HeadersViewerProps> = ({
             {displayHeaders.length === 0 && (
               <tr>
                 <td colSpan={2} className="py-8 text-center text-sm text-gray-500 dark:text-gray-400">
-                  No headers to display
+                  {t('response.no_headers_to_display')}
                 </td>
               </tr>
             )}

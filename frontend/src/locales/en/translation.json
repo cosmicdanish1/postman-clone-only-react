@@ -33,5 +33,31 @@
   "add": "Add",
   "key": "Key",
   "value": "Value",
-  "description": "Description"
+  "description": "Description",
+  
+  "response": {
+    "body": "Response Body",
+    "headers": "Headers",
+    "no_headers": "No headers available",
+    "no_headers_to_display": "No headers to display",
+    "copy": "Copy",
+    "download": "Download",
+    "filter": "Filter",
+    "save": "Save",
+    "copy_key": "Copy key",
+    "copy_value": "Copy value",
+    "copy_all_headers": "Copy all headers",
+    "loading": "Loading...",
+    "loading_json": "Loading JSON data...",
+    "error": "Error: {{error}}",
+    "error_loading_json": "Error loading JSON: {{error}}",
+    "response_body": "Response Body",
+    "invalid_json": "Invalid JSON data",
+    "copy_to_clipboard": "Copy to clipboard"
+  },
+  
+  "common": {
+    "loading": "Loading...",
+    "error_occurred": "An error occurred"
+  }
 }

@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { FiFilter, FiDownload, FiSave, FiCopy } from 'react-icons/fi';
 import Editor from '@monaco-editor/react';
+import useThemeClass from '../../../../hooks/useThemeClass';
 
 interface JsonViewerProps {
   data?: any;
@@ -13,7 +14,9 @@ const JsonViewer: React.FC<JsonViewerProps> = ({
   loading = false,
   error = null
 }) => {
-  const isDark = document.documentElement.classList.contains('dark');
+  const { themeClass, borderClass, theme: currentTheme, textClass } = useThemeClass();
+  const isDark = currentTheme === 'dark' || currentTheme === 'black';
+  const editorTheme = isDark ? 'vs-dark' : 'light';
 
   if (loading) {
     return (
@@ -75,10 +78,10 @@ const JsonViewer: React.FC<JsonViewerProps> = ({
 
 
   return (
-    <div className="h-full flex flex-col bg-white dark:bg-gray-800">
+    <div className={`h-full flex flex-col ${themeClass}`}>
       {/* Top bar with title and action buttons */}
-      <div className="flex-shrink-0 flex items-center justify-between border-b border-gray-200 dark:border-gray-700 px-4 py-2 bg-gray-50 dark:bg-gray-800">
-        <span className="text-sm font-medium text-gray-900 dark:text-gray-100">Response Body</span>
+      <div className={`flex-shrink-0 flex items-center justify-between px-4 py-2 ${borderClass} ${themeClass} bg-opacity-50`}>
+        <span className={`text-sm font-medium ${textClass}`}>Response Body</span>
         <div className="flex items-center space-x-3">
           <button className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300">
             <FiFilter className="w-4 h-4" />
@@ -101,12 +104,12 @@ const JsonViewer: React.FC<JsonViewerProps> = ({
       </div>
       
       {/* Monaco Editor for JSON */}
-      <div className="flex-1" style={{ height: '400px' }}>
+      <div className={`flex-1 ${themeClass}`} style={{ height: '400px' }}>
         <Editor
           height="100%"
           defaultLanguage="json"
           value={jsonString}
-          theme={isDark ? 'vs-dark' : 'light'}
+          theme={editorTheme}
           options={{
             readOnly: true,
             automaticLayout: true,
