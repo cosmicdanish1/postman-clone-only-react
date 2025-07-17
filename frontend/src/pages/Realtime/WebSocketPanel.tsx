@@ -5,6 +5,7 @@
 // Role: Renders the UI for interacting with WebSocket protocol in the Realtime feature.
 // Located at: src/pages/Realtime/WebSocketPanel.tsx
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { DndContext, closestCenter } from '@dnd-kit/core';
 import { SortableContext, useSortable, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -17,6 +18,7 @@ const initialProtocols = [
 ];
 
 function SortableProtocolRow({ protocol, onNameChange, onDelete }: any) {
+  const { t } = useTranslation();
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: protocol.id });
 
   return (
@@ -37,7 +39,7 @@ function SortableProtocolRow({ protocol, onNameChange, onDelete }: any) {
         className="flex items-center justify-center cursor-grab focus:outline-none h-full mr-2"
         style={{ background: 'none', border: 'none', padding: 0 }}
         tabIndex={-1}
-        title="Drag to reorder"
+        title={t('realtime.actions.drag_to_reorder')}
       >
         <span className="inline-block opacity-70">
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -54,11 +56,17 @@ function SortableProtocolRow({ protocol, onNameChange, onDelete }: any) {
         className="bg-transparent text-text flex-1 outline-none border-none px-0 py-0"
         value={protocol.name}
         onChange={e => onNameChange(protocol.id, e.target.value)}
-        placeholder="Protocol name"
+        placeholder={t('realtime.protocols.name_placeholder')}
       />
       <div className="flex items-center gap-4 ml-2">
-        <span className="material-icons text-green-400 cursor-pointer" title="Active">check_circle</span>
-        <button className="text-red-400 hover:text-red-600" title="Delete" onClick={() => onDelete(protocol.id)}>
+        <span className="material-icons text-green-400 cursor-pointer" title={t('common.active')}>
+          check_circle
+        </span>
+        <button 
+          className="text-red-400 hover:text-red-600" 
+          title={t('common.delete')} 
+          onClick={() => onDelete(protocol.id)}
+        >
           <span className="material-icons">delete</span>
         </button>
       </div>
@@ -73,6 +81,7 @@ const WebSocketPanel: React.FC = () => {
 }`);
   const [protocols, setProtocols] = useState(initialProtocols);
   const [nextId, setNextId] = useState(3);
+  const { t } = useTranslation();
   // Use theme class hook for consistent theming
   const { themeClass, accentColor, accentColorClass } = useThemeClass();
 
@@ -102,8 +111,7 @@ const WebSocketPanel: React.FC = () => {
     setProtocols([]);
   };
 
-
-   const buttonBgClass = 'bg-bg-secondary';
+  const buttonBgClass = 'bg-bg-secondary';
 
   return (
     <div className={`flex flex-col flex-1 bg-bg rounded p-4 mt-2 text-text ${themeClass}`}>
@@ -111,14 +119,14 @@ const WebSocketPanel: React.FC = () => {
       <div className="flex items-center gap-4 mb-4">
         <input
           className={`flex-1 bg-bg  border-border ${buttonBgClass} rounded px-4 py-2 text-text focus:outline-none`}
-          placeholder="wss://echo-websocket.hoppscotch.io"
-          defaultValue="wss://echo-websocket.hoppscotch.io"
+          placeholder={t('realtime.websocket.default_endpoint')}
+          defaultValue={t('realtime.websocket.default_endpoint')}
           style={{ minWidth: 0 }}
         />
         <button 
           className={`px-8 py-2 rounded font-semibold text-white ${accentColorClass.bg} ${accentColorClass.hover} transition-colors`}
         >
-          Connect
+          {t('realtime.actions.connect')}
         </button>
       </div>
       {/* Tabs */}
@@ -132,7 +140,7 @@ const WebSocketPanel: React.FC = () => {
           onClick={() => setActiveTab('communication')}
           style={activeTab === 'communication' ? { borderColor: accentColor } : {}}
         >
-          Communication
+          {t('realtime.tabs.communication')}
         </button>
         <button
           className={`px-2 py-1 border-b-2 font-semibold transition-colors ${
@@ -143,7 +151,7 @@ const WebSocketPanel: React.FC = () => {
           onClick={() => setActiveTab('protocols')}
           style={activeTab === 'protocols' ? { borderColor: accentColor } : {}}
         >
-          Protocols
+          {t('realtime.tabs.protocols')}
         </button>
       </div>
       {/* Tab Content */}
@@ -153,12 +161,20 @@ const WebSocketPanel: React.FC = () => {
         <div className="flex flex-col flex-1 min-h-0">
           {/* Protocols Bar */}
           <div className="flex items-center justify-between border-b border-border px-2 py-1 mb-2">
-            <span className="text-gray-400 font-medium">Protocols</span>
+            <span className="text-gray-400 font-medium">{t('realtime.protocols.title')}</span>
             <div className="flex items-center gap-4">
-              <button className="text-gray-400 hover:text-white" title="Delete All" onClick={handleDeleteAll}>
+              <button 
+                className="text-gray-400 hover:text-white" 
+                title={t('realtime.actions.delete_all')} 
+                onClick={handleDeleteAll}
+              >
                 <span className="material-icons">delete</span>
               </button>
-              <button className="text-gray-400 hover:text-white" title="Add" onClick={handleAdd}>
+              <button 
+                className="text-gray-400 hover:text-white" 
+                title={t('common.add')} 
+                onClick={handleAdd}
+              >
                 <span className="material-icons">add</span>
               </button>
             </div>

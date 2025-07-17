@@ -5,11 +5,12 @@
 // Role: Renders the UI for interacting with Socket.IO protocol in the Realtime feature.
 // Located at: src/pages/Realtime/SocketIOPanel.tsx
 import React, { useState } from 'react';
-import CommunicationTab from './CommunicationTab';
+import type { AuthType } from '../../types';
 import { FiRss } from 'react-icons/fi';
-import AuthorizationTabContent from '../Rest/TabContentArea/AuthorizationTabContent';
-import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
+import CommunicationTab from './CommunicationTab';
+import AuthorizationTabContent from '../Rest/TabContentArea/AuthorizationTabContent';
+import useThemeClass from '../../hooks/useThemeClass';
 
 const SocketIOPanel: React.FC = () => {
   const [clientVersion, setClientVersion] = useState('v2');
@@ -18,13 +19,10 @@ const SocketIOPanel: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'communication' | 'authorization'>('communication');
   const [message, setMessage] = useState('');
   const [eventName, setEventName] = useState('');
+  const [authType, setAuthType] = useState<AuthType>('none');
 
-  const theme = useSelector((state: any) => state.theme.theme);
   const { t } = useTranslation();
-  let themeClass = '';
-  if (theme === 'dark') themeClass = 'theme-dark';
-  else if (theme === 'black') themeClass = 'theme-black';
-  // No class for light (default)
+  const { themeClass, accentColor, accentColorClass } = useThemeClass();
 
   return (
     <div className={`flex flex-col flex-1 bg-bg rounded p-4 mt-2 text-text ${themeClass}`}>
@@ -35,38 +33,52 @@ const SocketIOPanel: React.FC = () => {
           value={clientVersion}
           onChange={e => setClientVersion(e.target.value)}
         >
-          <option value="v2">{t('client_v2')}</option>
-          <option value="v3">{t('client_v3')}</option>
-          <option value="v4">{t('client_v4')}</option>
+          <option value="v2">{t('realtime.socketio.client_versions.v2')}</option>
+          <option value="v3">{t('realtime.socketio.client_versions.v3')}</option>
+          <option value="v4">{t('realtime.socketio.client_versions.v4')}</option>
         </select>
         <input
           className="flex-1 bg-bg border border-border rounded px-4 py-2 text-text focus:outline-none"
-          placeholder={t('socketio_url_placeholder')}
+          placeholder={t('realtime.socketio.url_placeholder')}
           value={url}
           onChange={e => setUrl(e.target.value)}
           style={{ minWidth: 0 }}
         />
         <input
           className="w-40 bg-bg border border-border rounded px-4 py-2 text-text focus:outline-none"
-          placeholder={t('namespace_placeholder')}
+          placeholder={t('realtime.socketio.namespace_placeholder')}
           value={namespace}
           onChange={e => setNamespace(e.target.value)}
         />
-        <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-2 rounded font-semibold ml-4">{t('connect')}</button>
+        <button 
+          className={`px-8 py-2 rounded font-semibold text-white ${accentColorClass.bg} ${accentColorClass.hover} transition-colors ml-4`}
+        >
+          {t('realtime.actions.connect')}
+        </button>
       </div>
       {/* Tabs */}
       <div className="flex gap-6 border-b border-border mb-2">
         <button
-          className={`px-2 py-1 border-b-2 font-semibold transition-colors ${activeTab === 'communication' ? 'border-blue-500 text-text' : 'border-transparent text-gray-400 hover:text-text'}`}
+          className={`px-2 py-1 border-b-2 font-semibold transition-colors ${
+            activeTab === 'communication'
+              ? 'text-text'
+              : 'border-transparent text-gray-400 hover:text-text'
+          }`}
+          style={activeTab === 'communication' ? { borderColor: accentColor } : {}}
           onClick={() => setActiveTab('communication')}
         >
-          {t('communication')}
+          {t('realtime.tabs.communication')}
         </button>
         <button
-          className={`px-2 py-1 border-b-2 font-semibold transition-colors ${activeTab === 'authorization' ? 'border-blue-500 text-text' : 'border-transparent text-gray-400 hover:text-text'}`}
+          className={`px-2 py-1 border-b-2 font-semibold transition-colors ${
+            activeTab === 'authorization'
+              ? 'text-text'
+              : 'border-transparent text-gray-400 hover:text-text'
+          }`}
+          style={activeTab === 'authorization' ? { borderColor: accentColor } : {}}
           onClick={() => setActiveTab('authorization')}
         >
-          {t('authorization')}
+          {t('common.authorization')}
         </button>
       </div>
       {/* Tab Content */}
@@ -76,7 +88,7 @@ const SocketIOPanel: React.FC = () => {
             <FiRss className="text-blue-400 text-xl ml-1" />
             <input
               className="flex-1 bg-bg border border-border rounded px-4 py-2 text-gray-400 focus:outline-none"
-              placeholder={t('event_topic_name')}
+              placeholder={t('realtime.socketio.event_topic_name')}
               value={eventName}
               onChange={e => setEventName(e.target.value)}
             />
@@ -84,7 +96,10 @@ const SocketIOPanel: React.FC = () => {
           <CommunicationTab message={message} setMessage={setMessage} />
         </>
       ) : (
-        <AuthorizationTabContent />
+        <AuthorizationTabContent 
+          authType={authType}
+          setAuthType={setAuthType}
+        />
       )}
     </div>
   );

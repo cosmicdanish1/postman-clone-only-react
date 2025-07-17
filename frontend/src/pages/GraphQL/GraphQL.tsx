@@ -11,32 +11,26 @@ import GraphQLTabContentArea from './GraphQLTabContentArea';
 import GraphQLSecondaryTabBar from './GraphQLSecondaryTabBar';
 // import GraphQLHelpPanel from './GraphQLHelpPanel';
 import GraphQLRightPanel from './GraphQLRightPanel';
-import { useGraphQLHistory } from '../../features/useGraphQLHistory';
-
 import useThemeClass from '../../hooks/useThemeClass';
 
 const MIN_RIGHT_WIDTH = 260;
 const MAX_RIGHT_WIDTH = 440;
 const DEFAULT_RIGHT_WIDTH = 340;
 
-const DEFAULT_GRAPHQL_QUERY = `query Request {\n  method\n  url\n  headers {\n    key\n    value\n  }\n}`;
-
-const createNewTab = (url: string = 'https://echo.hoppscotch.io/graphql') => ({
+const createNewTab = () => ({
   id: Math.random().toString(36).substr(2, 9),
   tabName: 'Untitled',
   showModal: false,
   modalValue: 'Untitled',
   activeTab: 'query',
-  query: DEFAULT_GRAPHQL_QUERY,
+  query: '',
   headers: [],
   variables: [],
-  url,
 });
 
 const GraphQL: React.FC = () => {
   const [tabs, setTabs] = useState([createNewTab()]);
   const [activeTabId, setActiveTabId] = useState(tabs[0].id);
-  const [endpoint, setEndpoint] = useState(tabs[0].url || 'https://echo.hoppscotch.io/graphql');
   const [rightWidth, setRightWidth] = useState(DEFAULT_RIGHT_WIDTH);
   const [dragging, setDragging] = useState(false);
   const dragStartX = useRef(0);
@@ -45,55 +39,7 @@ const GraphQL: React.FC = () => {
   // Use theme class hook for consistent theming
   const { themeClass } = useThemeClass();
 
-  // GraphQL history saving
-  const { saveHistory } = useGraphQLHistory();
-
-  // Keep endpoint in sync with active tab
-  React.useEffect(() => {
-    const tab = tabs.find(t => t.id === activeTabId);
-    if (tab && tab.url !== endpoint) {
-      setEndpoint(tab.url || 'https://echo.hoppscotch.io/graphql');
-    }
-    // eslint-disable-next-line
-  }, [activeTabId]);
-
-  // When endpoint changes, update active tab's url
-  const handleSetEndpoint = (val: string) => {
-    setEndpoint(val);
-    setTabs(tabs => tabs.map(tab => tab.id === activeTabId ? { ...tab, url: val } : tab));
-  };
-
-  // Send GraphQL request and save history
-  const sendRequest = async (_url: string) => {
-    const url = endpoint || 'https://echo.hoppscotch.io/graphql';
-    try {
-      // Log the URL for debugging
-      console.log('Sending GraphQL request to URL:', url);
-      // Always send a harmless default query to satisfy GraphQL server
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify({ query: '{ __typename }' })
-      });
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
-      }
-      // Save only URL to history
-      await saveHistory(url);
-    } catch (err: any) {
-      alert('Error sending GraphQL request: ' + (err?.message || err));
-    }
-  };
-
-  const switchTab = (id: string) => {
-    setActiveTabId(id);
-    const tab = tabs.find(t => t.id === id);
-    setEndpoint(tab?.url || 'https://echo.hoppscotch.io/graphql');
-  };
+  const switchTab = (id: string) => setActiveTabId(id);
   const addTab = () => {
     const newTab = createNewTab();
     setTabs([...tabs, newTab]);
@@ -153,37 +99,12 @@ const GraphQL: React.FC = () => {
     };
   }, [dragging]);
 
-  // Add a function to open a new tab from history (url + query)
-  const openTabFromHistory = ({ url, query }: { url: string; query: string }) => {
-    const newTab = {
-      ...createNewTab(),
-      url,
-      query,
-      tabName: url,
-    };
-    setTabs(prev => [...prev, newTab]);
-    setActiveTabId(newTab.id);
-  };
-
-  // Listen for custom event from right panel to open tab from history
-  React.useEffect(() => {
-    const handler = (e: Event) => {
-      const detail = (e as CustomEvent).detail;
-      if (detail && detail.url && detail.query) {
-        openTabFromHistory(detail);
-      }
-    };
-    window.addEventListener('open-graphql-history-tab', handler);
-    return () => window.removeEventListener('open-graphql-history-tab', handler);
-  }, [tabs]);
-
   return (
-    <div className={`flex flex-row h-full w-full bg-bg text-text ${themeClass}`}>
-
-      {/* Main content: center, vertical stack */}
+   <div className={`flex flex-col sm:flex-row h-full w-full bg-bg text-text ${themeClass}`}>
+      {/* Main content: left side, vertical stack */}
       <div className="flex flex-col flex-1 h-full min-w-0">
         {/* Top bar */}
-        <GraphQLTopBar endpoint={endpoint} setEndpoint={handleSetEndpoint} />
+        <GraphQLTopBar />
         {/* Tab bar (make scrollable on mobile) */}
         <div className="overflow-x-auto whitespace-nowrap">
           <GraphQLTabBar
@@ -211,7 +132,6 @@ const GraphQL: React.FC = () => {
             activeTabObj={activeTabObj}
             activeTabId={activeTabId}
             updateTab={updateTab}
-            sendRequest={sendRequest}
           />
           {/* Only show bottom panel on sm+ */}
           {/* <div className="hidden sm:block w-full h-full">

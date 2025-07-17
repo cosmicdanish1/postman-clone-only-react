@@ -5,34 +5,32 @@
 // Role: Renders the endpoint input and connect button for the GraphQL page.
 // Located at: src/pages/GraphQL/GraphQLTopBar.tsx
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import useThemeClass from '../../hooks/useThemeClass';
 import useAccentColor from '../../hooks/useAccentColor';
 
-interface GraphQLTopBarProps {
-  endpoint: string;
-  setEndpoint: (val: string) => void;
-}
-
-const GraphQLTopBar: React.FC<GraphQLTopBarProps> = ({ endpoint, setEndpoint }) => {
+const GraphQLTopBar: React.FC = () => {
+  const { t } = useTranslation();
+  const [endpoint, setEndpoint] = useState('https://echo.hoppscotch.io/graphql');
   const { themeClass } = useThemeClass();
   const { current: accentColor } = useAccentColor();
 
   return (
-    <div className={`flex items-center gap-4 p-4 border-b border-border bg-bg text-text ${themeClass}`}>
+    <div className={`flex items-center gap-4 p-4 bg-bg text-text ${themeClass}`}>
       <input
-        className="flex-1 bg-bg border border-border rounded px-4 py-2 text-text focus:outline-none"
-        placeholder="https://echo.hoppscotch.io/graphql"
+        className="flex-1 bg-bg rounded px-4 py-2 text-text focus:outline-none"
+        placeholder={t('graphql.endpoint_placeholder')}
         value={endpoint}
         onChange={e => setEndpoint(e.target.value)}
       />
-      <button
+      <button 
         className="px-8 py-2 rounded font-semibold text-white transition-opacity"
-        style={{ backgroundColor: accentColor, boxShadow: `0 2px 8px 0 ${accentColor}33` }}
+        style={{ backgroundColor: accentColor }}
       >
-        Connect
+        {t('graphql.connect')}
       </button>
     </div>
   );
 };
 
-export default GraphQLTopBar;
+export default GraphQLTopBar; 

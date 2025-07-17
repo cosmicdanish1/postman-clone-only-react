@@ -48,7 +48,7 @@ if (theme === 'black') {
   // Tabs with i18n
   const tabs = [
     {
-      label: t('rest'),
+      label: t('sidebar.rest'),
       to: '/',
       icon: (
         <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-link2-icon lucide-link-2">
@@ -59,7 +59,7 @@ if (theme === 'black') {
       ),
     },
     {
-      label: t('graphql'),
+      label: t('sidebar.graphql'),
       to: '/graphql',
       icon: (
         <svg width="1em" height="1em" aria-hidden="true" viewBox="0 0 24 24" fill="currentColor">
@@ -70,7 +70,7 @@ if (theme === 'black') {
       ),
     },
     {
-      label: t('realtime'),
+      label: t('sidebar.realtime'),
       to: '/realtime',
       icon: (
         <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-globe-icon lucide-globe">
@@ -81,7 +81,7 @@ if (theme === 'black') {
       ),
     },
     {
-      label: t('settings'),
+      label: t('sidebar.settings'),
       to: '/settings',
       icon: (
         <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-settings-icon lucide-settings">

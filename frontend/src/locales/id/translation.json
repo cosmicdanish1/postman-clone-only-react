@@ -40,13 +40,27 @@
     "body": "Isi Respons",
     "headers": "Header",
     "no_headers": "Tidak ada header yang tersedia",
+    "no_headers_to_display": "Tidak ada header untuk ditampilkan",
     "copy": "Salin",
     "download": "Unduh",
     "filter": "Filter",
     "save": "Simpan",
     "copy_key": "Salin kunci",
     "copy_value": "Salin nilai",
-    "copy_all_headers": "Salin semua header"
+    "copy_all_headers": "Salin semua header",
+    "loading": "Memuat...",
+    "loading_json": "Memuat data JSON...",
+    "error": "Error: {{error}}",
+    "error_loading_json": "Gagal memuat JSON: {{error}}",
+    "response_body": "Isi Respons",
+    "actions": {
+      "filter": "Filter JSON",
+      "download": "Unduh JSON",
+      "save": "Simpan JSON",
+      "copy": "Salin ke papan klip"
+    },
+    "invalid_json": "Data JSON tidak valid",
+    "copy_to_clipboard": "Salin ke papan klip"
   },
   
   "common": {

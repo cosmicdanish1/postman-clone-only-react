@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FiFilter, FiDownload, FiSave, FiCopy } from 'react-icons/fi';
 import Editor from '@monaco-editor/react';
 import useThemeClass from '../../../../hooks/useThemeClass';
@@ -14,6 +15,7 @@ const JsonViewer: React.FC<JsonViewerProps> = ({
   loading = false,
   error = null
 }) => {
+  const { t } = useTranslation();
   const { themeClass, borderClass, theme: currentTheme, textClass } = useThemeClass();
   const isDark = currentTheme === 'dark' || currentTheme === 'black';
   const editorTheme = isDark ? 'vs-dark' : 'light';
@@ -21,7 +23,7 @@ const JsonViewer: React.FC<JsonViewerProps> = ({
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full text-gray-500">
-        Loading JSON data...
+        {t('response.loading_json')}
       </div>
     );
   }
@@ -29,7 +31,7 @@ const JsonViewer: React.FC<JsonViewerProps> = ({
   if (error) {
     return (
       <div className="text-red-400 p-4">
-        Error loading JSON: {error}
+        {t('response.error_loading_json', { error })}
       </div>
     );
   }
@@ -71,9 +73,9 @@ const JsonViewer: React.FC<JsonViewerProps> = ({
     try {
       return JSON.stringify(displayData, null, 2);
     } catch (e) {
-      return 'Invalid JSON data';
+      return t('response.invalid_json');
     }
-  }, [displayData]);
+  }, [displayData, t]);
 
 
 
@@ -81,15 +83,27 @@ const JsonViewer: React.FC<JsonViewerProps> = ({
     <div className={`h-full flex flex-col ${themeClass}`}>
       {/* Top bar with title and action buttons */}
       <div className={`flex-shrink-0 flex items-center justify-between px-4 py-2 ${borderClass} ${themeClass} bg-opacity-50`}>
-        <span className={`text-sm font-medium ${textClass}`}>Response Body</span>
+        <span className={`text-sm font-medium ${textClass}`}>{t('response.response_body')}</span>
         <div className="flex items-center space-x-3">
-          <button className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300">
+          <button 
+            className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300"
+            title={t('response.actions.filter')}
+            aria-label={t('response.actions.filter')}
+          >
             <FiFilter className="w-4 h-4" />
           </button>
-          <button className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300">
+          <button 
+            className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300"
+            title={t('response.actions.download')}
+            aria-label={t('response.actions.download')}
+          >
             <FiDownload className="w-4 h-4" />
           </button>
-          <button className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300">
+          <button 
+            className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300"
+            title={t('response.actions.save')}
+            aria-label={t('response.actions.save')}
+          >
             <FiSave className="w-4 h-4" />
           </button>
           <button 
@@ -97,6 +111,8 @@ const JsonViewer: React.FC<JsonViewerProps> = ({
             onClick={() => {
               navigator.clipboard.writeText(jsonString);
             }}
+            title={t('response.actions.copy')}
+            aria-label={t('response.actions.copy')}
           >
             <FiCopy className="w-4 h-4" />
           </button>

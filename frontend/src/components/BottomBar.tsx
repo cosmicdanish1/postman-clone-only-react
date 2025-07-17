@@ -74,8 +74,9 @@ const BottomBar: React.FC = () => {
       <div className="flex items-center space-x-4 text-gray-400 relative">
         <button 
           className="hover:text-gray-100" 
-          title={expandNav ? t('collapse_sidebar') : t('expand_sidebar')}
+          title={expandNav ? t('sidebar.collapse') : t('sidebar.expand')}
           onClick={() => dispatch(toggleExpandNav())}
+          aria-label={expandNav ? t('sidebar.collapse') : t('sidebar.expand')}
         >
           {/* simple vertical bar icon with rotation */}
           <svg 
@@ -96,8 +97,11 @@ const BottomBar: React.FC = () => {
         <button
           ref={iconRef}
           className="hover:text-gray-100 relative"
-          title={t('status_ok')}
+          title={t('status.ok')}
+          aria-label={t('status.ok')}
           onClick={() => setShowInterceptor((v) => !v)}
+          aria-expanded={showInterceptor}
+          aria-controls="interceptor-popup"
         >
           {/* shield check icon */}
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-shield-check-icon lucide-shield-check">
@@ -108,14 +112,19 @@ const BottomBar: React.FC = () => {
           <AnimatePresence>
             {showInterceptor && (
               <motion.div
+                id="interceptor-popup"
                 ref={popupRef}
-                className="absolute bottom-10 left-0 z-50 mb-2"
+                className="absolute bottom-10 left-0 z-50 mb-2 bg-bg border border-border rounded shadow-lg p-4 w-64"
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 16 }}
                 transition={{ duration: 0.18 }}
+                role="tooltip"
               >
-                {/* InterceptorCard content */}
+                <div className="text-sm text-gray-300">
+                  <p className="font-medium">{t('status.ok')}</p>
+                  <p className="text-xs mt-1">All systems operational</p>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>
@@ -145,6 +154,7 @@ const BottomBar: React.FC = () => {
         </div>
         <button
           title={t('shortcuts')}
+          aria-label={t('shortcuts')}
           className="hover:text-yellow-400 transition-colors"
           onClick={() => {
             setShortcutsRotating(true);
@@ -167,7 +177,10 @@ const BottomBar: React.FC = () => {
             <path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/>
           </svg>
         </button>
-        <button title={t('share')} className="hover:text-blue-400 transition-colors"
+        <button 
+          title={t('share')} 
+          aria-label={t('share')}
+          className="hover:text-blue-400 transition-colors"
           onClick={() => {
             const shareData = {
               title: document.title,
@@ -189,7 +202,10 @@ const BottomBar: React.FC = () => {
             <line x1="15.41" x2="8.59" y1="6.51" y2="10.49" />
           </svg>
         </button>
-        <button title={t('vertical_layout')} className="hover:text-green-400 transition-colors"
+        <button 
+          title={t('vertical_layout')} 
+          aria-label={t('vertical_layout')}
+          className="hover:text-green-400 transition-colors"
           onClick={() => {
             setVerticalRotating(true);
             // You can add your layout toggle logic here if needed

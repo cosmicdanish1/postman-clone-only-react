@@ -1,54 +1,498 @@
 {
-  "settings": "الإعدادات",
-  "general": "عام",
-  "theme": "السمة",
-  "interceptor": "المعترض",
+  "settings": {
+    "page_title": "الإعدادات",
+    "sections": {
+      "general": {
+        "title": "عام",
+        "description": "الإعدادات العامة المستخدمة في التطبيق"
+      },
+      "theme": {
+        "title": "الثيم",
+        "description": "إعدادات الثيم للتطبيق"
+      },
+      "interceptor": {
+        "title": "المعترض",
+        "description": "تكوين إعدادات اعتراض HTTP/HTTPS"
+      }
+    }
+  },
   "language": "اللغة",
   "query_parameters_encoding": "ترميز معلمات الاستعلام",
   "query_parameters_encoding_desc": "تكوين الترميز لمعلمات الاستعلام في الطلبات",
-  "experiments": "تجارب",
-  "experiments_desc": "هذه مجموعة من التجارب التي نعمل عليها والتي قد تكون مفيدة أو ممتعة أو كلاهما أو لا شيء منهما. ليست نهائية وقد لا تكون مستقرة، لذلك إذا حدث شيء غريب جدًا، لا تقلق. فقط قم بإيقاف تشغيلها. على الهامش، تواصل معنا.",
-  "telemetry": "القياس عن بعد",
+  "experiments": "التجارب",
+  "experiments_desc": "هذه مجموعة من التجارب التي نعمل عليها والتي قد تكون مفيدة، ممتعة، أو كليهما، أو لا شيء منهما. إنها ليست نهائية وقد لا تكون مستقرة، لذا إذا حدث شيء غريب للغاية، لا داعي للذعر. فقط أوقف الشيء. على سبيل المزاح، تواصلوا معنا.",
+  "telemetry": "القياس عن بُعد",
   "confirm": "تأكيد",
-  "telemetry_optout_desc": "هل أنت متأكد أنك تريد إلغاء الاشتراك في القياس عن بعد؟ القياس عن بعد يساعدنا في تخصيص عملياتنا وتقديم أفضل تجربة لك.",
+  "telemetry_optout_desc": "هل أنت متأكد أنك تريد إلغاء الاشتراك في القياس عن بُعد؟ يساعدنا القياس عن بُعد في تخصيص عملياتنا وتوفير أفضل تجربة لك.",
   "yes": "نعم",
   "no": "لا",
   "no_results": "لا توجد نتائج",
   "save": "حفظ",
   "cancel": "إلغاء",
   "app_name": "بوستمان",
-  "search_and_commands": "بحث وأوامر...",
-
+  "search_and_commands": "البحث والأوامر...",
   "save_workspace": "حفظ مساحة العمل الخاصة بي",
   "login": "تسجيل الدخول",
-  "rest": "ريست",
-  "graphql": "جراف كيو إل",
-  "realtime": "الوقت الحقيقي",
-  "global": "عام",
-  "environment": "البيئة",
-  "close_tab": "إغلاق التبويب",
+  "rest": "REST",
+  "graphql_feature": "GraphQL",
+  "realtime_feature": "الوقت الحقيقي",
   "query_parameters": "معلمات الاستعلام",
   "help": "مساعدة",
   "delete": "حذف",
   "edit": "تعديل",
   "add": "إضافة",
-  "key": "مفتاح",
-  "value": "قيمة",
-  "description": "الوصف",
-  "content_type": "Content Type",
-  "none": "None",
-  "override": "Override",
-  "raw_request_body": "Raw request body",
-  "format": "Format",
-  "request_headers": "Request Headers",
-  "auth_inherit": "Inherit",
-  "auth_none": "None",
-  "auth_basic": "Basic Auth",
-  "auth_digest": "Digest Auth",
-  "auth_bearer": "Bearer Token",
-  "auth_oauth2": "OAuth 2.0",
-  "auth_apikey": "API Key",
-  "auth_aws": "AWS Signature",
-  "auth_hawk": "Hawk",
-  "auth_jwt": "JWT"
+  "edit_environment": "تعديل البيئة",
+  "label": "تسمية",
+  "secrets": "الأسرار",
+  "environments_empty": "لا توجد متغيرات بيئية بعد",
+  "add_new": "إضافة جديد",
+  "generate_code": "إنشاء رمز",
+  "choose_language": "اختر اللغة",
+  "generated_code": "الرمز المنشأ",
+  "shell_curl": "Shell (cURL)",
+  "node_fetch": "Node.js (fetch)",
+  "python_requests": "Python (requests)",
+  "go_http": "Go (net/http)",
+  "js_xhr": "JavaScript (XHR)",
+  "copy": "نسخ",
+  "dismiss": "رفض",
+  "copy_toast": "تم نسخ الرمز إلى الحافظة!",
+  "copy_failed": "فشل في نسخ الرمز",
+  "import_curl": "استيراد cURL",
+  "curl": "cURL",
+  "enter_curl_command": "الصق أمر cURL هنا...",
+  "import": "استيراد",
+  "paste": "لصق",
+  "curl_import_success": "تم استيراد cURL بنجاح!",
+  "curl_import_failed": "فشل استيراد cURL. يرجى التحقق من الصيغة.",
+  "clear": "مسح",
+  "copy_curl": "نسخ cURL",
+  "close": "إغلاق",
+  "pasted_from_clipboard": "تم اللصق من الحافظة!",
+  "clipboard_access_denied": "تعذر الوصول إلى الحافظة. يرجى اللصق يدويًا.",
+  "empty_curl_error": "يرجى إدخال أمر cURL للاستيراد.",
+  "paste_curl_hint": "الصق أمر cURL أعلاه أو اكتبه يدويًا.",
+  "save_as": "حفظ باسم",
+  "request_name": "اسم الطلب",
+  "select_location": "اختر الموقع",
+  "personal_workspace_collections": "مساحة العمل الشخصية / المجموعات",
+  "import_or_create_collection": "استيراد أو إنشاء مجموعة للبدء",
+  "no_collections_found": "لم يتم العثور على مجموعات",
+  "search_collections": "البحث في المجموعات",
+  "create_new_collection": "إنشاء مجموعة جديدة",
+  "request_name_required": "يرجى إدخال اسم الطلب",
+  
+  "search": {
+    "all": "الكل",
+    "requests": "الطلبات",
+    "collections": "المجموعات",
+    "environments": "البيئات",
+    "documentation": "الوثائق",
+    "categories": "فئات البحث",
+    "results": "نتائج البحث",
+    "placeholder": "البحث في الطلبات، المجموعات، وأكثر...",
+    "no_results": "لم يتم العثور على نتائج",
+    "no_recent_searches": "لا توجد عمليات بحث حديثة",
+    "recent_searches": "عمليات البحث الحديثة",
+    "tip": "اضغط على Esc للإغلاق",
+    "to_toggle": "لتبديل البحث",
+    "common": {
+      "close": "إغلاق البحث"
+    }
+  },
+  "download": {
+    "title": "تنزيل التطبيق",
+    "platforms": {
+      "macos": "macOS",
+      "windows": "ويندوز",
+      "linux": "لينكس",
+      "cli": "واجهة الأوامر"
+    },
+    "aria_labels": {
+      "windows": "تنزيل لنظام ويندوز",
+      "macos": "تنزيل لنظام macOS",
+      "linux": "تنزيل لنظام لينكس",
+      "cli": "عرض وثائق واجهة الأوامر"
+    }
+  },
+  "response": {
+    "body": "جسم الاستجابة",
+    "headers": "الرؤوس",
+    "no_headers": "لا توجد رؤوس متاحة",
+    "no_headers_to_display": "لا توجد رؤوس للعرض",
+    "copy": "نسخ",
+    "download": "تنزيل",
+    "filter": "تصفية",
+    "save": "حفظ",
+    "copy_key": "نسخ المفتاح",
+    "copy_value": "نسخ القيمة",
+    "copy_all_headers": "نسخ جميع الرؤوس",
+    "loading": "جارٍ التحميل...",
+    "loading_json": "جارٍ تحميل بيانات JSON...",
+    "error": "خطأ: {{error}}",
+    "error_loading_json": "خطأ في تحميل JSON: {{error}}",
+    "response_body": "جسم الاستجابة",
+    "actions": {
+      "filter": "تصفية JSON",
+      "download": "تنزيل JSON",
+      "save": "حفظ JSON",
+      "copy": "نسخ إلى الحافظة"
+    },
+    "invalid_json": "بيانات JSON غير صالحة",
+    "copy_to_clipboard": "نسخ إلى الحافظة"
+  },
+  
+  "common": {
+    "loading": "جارٍ التحميل...",
+    "error_occurred": "حدث خطأ"
+  },
+  
+  "sidebar": {
+    "collapse": "طي الشريط الجانبي",
+    "expand": "توسيع الشريط الجانبي",
+    "rest": "REST",
+    "graphql": "GraphQL",
+    "realtime": "الوقت الحقيقي",
+    "settings": "الإعدادات"
+  },
+  
+  "realtime": {
+    "message": "رسالة",
+    "format_options": {
+      "json": "JSON",
+      "raw": "خام"
+    },
+    "actions": {
+      "send": "إرسال",
+      "clear_input": "مسح الإدخال",
+      "connect": "الاتصال",
+      "drag_to_reorder": "اسحب لإعادة الترتيب",
+      "delete_all": "حذف الكل"
+    },
+    "tabs": {
+      "communication": "الاتصال",
+      "protocols": "البروتوكولات"
+    },
+    "protocols": {
+      "title": "البروتوكولات",
+      "name_placeholder": "اسم البروتوكول",
+      "websocket": "WebSocket",
+      "sse": "SSE",
+      "socketio": "Socket.IO",
+      "mqtt": "MQTT"
+    },
+    "websocket": {
+      "default_endpoint": "wss://echo-websocket.hoppscotch.io"
+    },
+    "mqtt": {
+      "url_placeholder": "mqtt://broker.hivemq.com:8000",
+      "client_id": "معرف العميل",
+      "client_id_placeholder": "أدخل معرف العميل",
+      "connection_config": "تكوين الاتصال",
+      "clean_session": "جلسة نظيفة",
+      "username": "اسم المستخدم",
+      "password": "كلمة المرور",
+      "last_will_topic": "موضوع الوصية الأخيرة",
+      "last_will_message": "رسالة الوصية الأخيرة",
+      "keep_alive": "البقاء على قيد الحياة (ثوانٍ)",
+      "last_will_qos": "جودة الخدمة للوصية الأخيرة",
+      "last_will_retain": "الاحتفاظ بالوصية الأخيرة"
+    },
+    "socketio": {
+      "url_placeholder": "wss://echo-socketio.hoppscotch.io",
+      "namespace_placeholder": "النطاق",
+      "event_topic_name": "اسم موضوع الحدث",
+      "client_versions": {
+        "v2": "v2.x",
+        "v3": "v3.x",
+        "v4": "v4.x"
+      }
+    },
+    "sse": {
+      "url_placeholder": "https://express-eventsource.herokuapp.com/events",
+      "event_type": "نوع الحدث",
+      "default_event_type": "البيانات"
+    },
+    "help": {
+      "send_request": "إرسال الطلب",
+      "keyboard_shortcuts": "تبديل اختصارات لوحة المفاتيح",
+      "search_command_menu": "قائمة أوامر البحث",
+      "help_menu": "تبديل قائمة المساعدة",
+      "documentation": "الوثائق"
+    }
+  },
+  
+  "graphql": {
+    "endpoint_placeholder": "https://example.com/graphql",
+    "connect": "الاتصال",
+    "edit_request": "تعديل الطلب",
+    "label": "تسمية",
+    "untitled": "بدون عنوان",
+    "error_sending_request": "خطأ في إرسال طلب GraphQL",
+    "default_endpoint": "https://echo.hoppscotch.io/graphql",
+    "tabs": {
+      "query": "الاستعلام",
+      "variables": "المتغيرات",
+      "headers": "الرؤوس",
+      "authorization": "التفويض"
+    }
+  },
+  "headers": {
+    "drag_to_reorder": "اسحب لإعادة الترتيب",
+    "key": "المفتاح",
+    "value": "القيمة",
+    "description": "الوصف",
+    "save": "حفظ",
+    "delete": "حذف"
+  },
+  
+  "params": {
+    "drag_to_reorder": "اسحب لإعادة الترتيب",
+    "key": "المفتاح",
+    "value": "القيمة",
+    "description": "الوصف"
+  },
+  
+  "variables": {
+    "drag_to_reorder": "اسحب لإعادة الترتيب",
+    "variable": "المتغير",
+    "value": "القيمة"
+  },
+  
+  "tabs": {
+    "close_tab": "إغلاق علامة التبويب",
+    "global": "عالمي",
+    "environment": "البيئة",
+    "no_environment": "لا توجد بيئة"
+  },
+  
+  "status": {
+    "ok": "الحالة: جيد"
+  },
+  
+  "help_feedback": "المساعدة والتعليقات",
+  "share": "مشاركة",
+  "link_copied": "تم نسخ الرابط إلى الحافظة!",
+  "vertical_layout": "تبديل التخطيط العمودي",
+  
+  "shortcuts": "اختصارات لوحة المفاتيح",
+  "close_shortcuts_panel": "إغلاق لوحة اختصارات لوحة المفاتيح",
+  "close_shortcuts_panel_overlay": "إغلاق اختصارات لوحة المفاتيح",
+  "no_shortcuts_found": "لم يتم العثور على اختصارات",
+  "search_shortcuts_placeholder": "البحث في الاختصارات...",
+  
+  "shortcut_sections": {
+    "general": "عام",
+    "request": "الطلب",
+    "response": "الاستجابة",
+    "navigation": "التنقل",
+    "miscellaneous": "متنوع"
+  },
+  
+  "shortcut_labels": {
+    "help_menu": "تبديل قائمة المساعدة",
+    "search_command_menu": "فتح لوحة الأوامر",
+    "keyboard_shortcuts": "إظهار اختصارات لوحة المفاتيح",
+    "close_current_menu": "إغلاق القائمة الحالية",
+    "send_request": "إرسال الطلب",
+    "save_to_collections": "حفظ في المجموعات",
+    "share_request": "مشاركة الطلب",
+    "reset_request": "إعادة تعيين الطلب",
+    "select_next_method": "اختيار الطريقة التالية لـ HTTP",
+    "select_prev_method": "اختيار الطريقة السابقة لـ HTTP",
+    "select_get_method": "اختيار طريقة GET",
+    "select_head_method": "اختيار طريقة HEAD",
+    "select_post_method": "اختيار طريقة POST",
+    "select_put_method": "اختيار طريقة PUT",
+    "select_delete_method": "اختيار طريقة DELETE",
+    "download_response": "تنزيل الاستجابة",
+    "copy_response": "نسخ الاستجابة",
+    "go_back": "الرجوع",
+    "go_forward": "التقدم",
+    "go_rest": "الذهاب إلى عميل REST",
+    "go_graphql": "الذهاب إلى GraphQL",
+    "go_realtime": "الذهاب إلى WebSockets",
+    "go_settings": "الذهاب إلى الإعدادات",
+    "go_profile": "الذهاب إلى الملف الشخصي",
+    "invite_people": "دعوة أعضاء الفريق"
+  },
+  
+  "navbar": {
+    "search_placeholder": "البحث والأوامر...",
+    "download": "تنزيل",
+    "support": "الدعم",
+    "save_workspace": "حفظ مساحة العمل",
+    "login": "تسجيل الدخول"
+  },
+  
+  "app_theme": {
+    "labels": {
+      "background": "الخلفية",
+      "accent_color": "لون التمييز"
+    },
+    "backgrounds": {
+      "system": "النظام (داكن)",
+      "light": "فاتح",
+      "dark": "داكن",
+      "black": "أسود"
+    },
+    "colors": {
+      "blue": "أزرق",
+      "green": "أخضر",
+      "purple": "بنفسجي",
+      "pink": "وردي",
+      "red": "أحمر",
+      "orange": "برتقالي",
+      "yellow": "أصفر",
+      "teal": "أزرق مخضر",
+      "cyan": "سماوي"
+    }
+  },
+  "interceptor": {
+    "interceptor": "المعترض",
+    "title": "المعترض",
+    "description": "الوسيط بين التطبيق وواجهات برمجة التطبيقات.",
+    "browser_extension": "إضافة المتصفح",
+    "extension_version": "إصدار الإضافة: {{version}}",
+    "not_reported": "غير مذكور",
+    "chrome": "كروم",
+    "firefox": "فايرفوكس",
+    "options": {
+      "browser": "المتصفح",
+      "proxy": "الوكيل",
+      "agent": "الوكيل",
+      "browser_extension": "إضافة المتصفح"
+    },
+    "proxy_settings": {
+      "title": "إعدادات الوكيل",
+      "url_placeholder": "http://proxy.example.com:8080",
+      "username": "اسم المستخدم",
+      "password": "كلمة المرور",
+      "test_connection": "اختبار الاتصال"
+    },
+    "agent_settings": {
+      "title": "إعدادات الوكيل",
+      "description": "يدعم وكيل Hoppscotch وتطبيق سطح المكتب وكلاء HTTP/HTTPS/SOCKS مع دعم NTLM والمصادقة الأساسية.",
+      "verify_host": "التحقق من المضيف",
+      "verify_peer": "التحقق من النظير",
+      "ca_certificates": "شهادات CA",
+      "client_certificates": "شهادات العميل",
+      "register_agent": "تسجيل الوكيل",
+      "manage_domains": "إدارة النطاقات"
+    },
+    "domain_overrides": {
+      "title": "تجاوزات النطاق",
+      "add_domain": "إضافة نطاق",
+      "global_defaults": "الإعدادات الافتراضية العالمية"
+    },
+    "url_credentials_note": "يجب أن يتضمن عنوان URL بيانات الاعتماد إذا لزم الأمر",
+    "proxy_url": "عنوان URL للوكيل",
+    "enter_proxy_url": "أدخل عنوان URL للوكيل (مثل، http://proxy.example.com:8080)",
+    "agent_not_detected": "لم يتم اكتشاف وكيل Hoppscotch.",
+    "check_agent_running": "يرجى التحقق مما إذا كان الوكيل يعمل",
+    "certificate": {
+      "pem": "PEM",
+      "pfx": "PFX",
+      "cert_file": "ملف الشهادة",
+      "key_file": "ملف المفتاح",
+      "pfx_file": "ملف PFX",
+      "password": "كلمة المرور",
+      "browse": "تصفح",
+      "no_file_selected": "لم يتم تحديد ملف",
+      "remove": "إزالة"
+    },
+    "notifications": {
+      "agent_registered": "تم تسجيل الوكيل بنجاح!",
+      "connection_success": "اختبار الاتصال ناجح!",
+      "connection_failed": "فشل اختبار الاتصال",
+      "domain_added": "تم إضافة النطاق بنجاح"
+    }
+  },
+  "help_menu": {
+    "documentation": "الوثائق",
+    "keyboard_shortcuts": "اختصارات لوحة المفاتيح",
+    "chat_with_us": "الدردشة معنا",
+    "whats_new": "ما الجديد",
+    "status": "الحالة",
+    "github": "GitHub",
+    "twitter": "تويتر",
+    "invite": "دعوة أعضاء الفريق",
+    "terms_privacy": "الشروط والخصوصية"
+  },
+  
+  "request_editor": {
+    "url_placeholder": "أدخل عنوان URL",
+    "url_validation_error": "يرجى إدخال عنوان URL صالح (يجب أن يبدأ بـ http:// أو https://)",
+    "buttons": {
+      "send": "إرسال",
+      "send_options": "خيارات الإرسال",
+      "save": "حفظ",
+      "cancel": "إلغاء"
+    },
+    "menu_items": {
+      "import_curl": "استيراد cURL",
+      "show_code": "إظهار الرمز",
+      "clear_all": "مسح الكل"
+    },
+    "save_modal": {
+      "title": "حفظ الطلب",
+      "name_placeholder": "اسم الطلب"
+    }
+  },
+  "certificate_settings": {
+    "url_credentials_note": "يمكنك أيضًا تضمين اسم المستخدم وكلمة المرور في عنوان URL.",
+    "username": "اسم المستخدم",
+    "password": "كلمة المرور",
+    "add_certificate_file": "إضافة ملف شهادة",
+    "supported_certificate_formats": "يدعم Hoppscotch ملفات .crt أو .cer أو .pem التي تحتوي على شهادة واحدة أو أكثر.",
+    "done": "تم",
+    "pem": "PEM",
+    "pfx": "PFX",
+    "certificate": "الشهادة",
+    "select_file": "تحديد ملف",
+    "private_key": "المفتاح الخاص",
+    "pfx_file": "ملف PFX",
+    "enter_password_if_any": "أدخل كلمة المرور (إن وجدت)",
+    "manage_domains_overrides": "إدارة تجاوزات النطاقات",
+    "example_domain": "example.com",
+    "global_defaults": "الإعدادات الافتراضية العالمية"
+  },
+  "history": {
+    "breadcrumb": {
+      "workspace": "مساحة العمل الشخصية",
+      "title": "السجل"
+    },
+    "search": {
+      "placeholder": "البحث في السجل...",
+      "no_results": "لم يتم العثور على نتائج",
+      "try_again": "جرب مصطلح بحث مختلف"
+    },
+    "filter": {
+      "title": "تصفية",
+      "all_items": "جميع العناصر",
+      "starred_only": "المميزة فقط"
+    },
+    "actions": {
+      "help": "مساعدة",
+      "clear_all": "مسح كل السجل",
+      "confirm_clear_all": "هل أنت متأكد أنك تريد حذف كل السجل؟",
+      "confirm_delete": "هل أنت متأكد أنك تريد حذف هذا الطلب؟",
+      "add_star": "إضافة نجمة",
+      "remove_star": "إزالة النجمة",
+      "remove": "إزالة"
+    },
+    "empty_state": {
+      "title": "لا يوجد سجل بعد",
+      "description": "سجل طلباتك سيظهر هنا"
+    },
+    "loading": "جارٍ تحميل السجل...",
+    "items_count": "{{count}} عناصر",
+    "no_url": "لا يوجد عنوان URL",
+    "debug": {
+      "items": "العناصر:",
+      "status": "الحالة:",
+      "ready": "جاهز",
+      "error": "خطأ"
+    }
+  }
 }

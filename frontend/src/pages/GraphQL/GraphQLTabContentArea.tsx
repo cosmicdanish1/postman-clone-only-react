@@ -18,7 +18,7 @@ interface GraphQLTabContentAreaProps {
   updateTab: (id: string, field: string, value: any) => void;
 }
 
-const GraphQLTabContentArea: React.FC<GraphQLTabContentAreaProps & { sendRequest?: (url: string, query: string) => void }> = ({ activeTabObj, activeTabId, updateTab, sendRequest }) => {
+const GraphQLTabContentArea: React.FC<GraphQLTabContentAreaProps> = ({ activeTabObj, activeTabId, updateTab }) => {
   const [editHeadersActive, setEditHeadersActive] = React.useState(false);
   // Use theme class hook for consistent theming
   const { themeClass } = useThemeClass();
@@ -35,22 +35,12 @@ const GraphQLTabContentArea: React.FC<GraphQLTabContentAreaProps & { sendRequest
           SortableHeaderRow={SortableHeaderRow}
         />
       )}
-      {activeTabObj.activeTab === 'query' && (() => {
-        const isQueryValid = activeTabObj.query && activeTabObj.query.trim() !== '';
-        return (
-          <GraphQLQueryEditor
-            query={activeTabObj.query !== undefined && activeTabObj.query !== '' ? activeTabObj.query : `query Request {\n  method\n  url\n  headers {\n    key\n    value\n  }\n}`}
-            onChange={val => updateTab(activeTabId, 'query', val)}
-            onSendRequest={sendRequest && isQueryValid ? () => {
-              const url = activeTabObj.url || 'https://echo.hoppscotch.io/graphql';
-              const query = activeTabObj.query || '';
-              sendRequest(url, query);
-            } : undefined}
-            isQueryValid={isQueryValid}
-          />
-        );
-      })()}
-
+      {activeTabObj.activeTab === 'query' && (
+        <GraphQLQueryEditor
+          query={activeTabObj.query || `query Request {\n  method\n  url\n  headers {\n    key\n    value\n  }\n}`}
+          onChange={val => updateTab(activeTabId, 'query', val)}
+        />
+      )}
       {/* Placeholders for Variables, Authorization, etc. */}
       {activeTabObj.activeTab === 'variables' && (
         <GraphQLVariablesEditor
@@ -58,9 +48,9 @@ const GraphQLTabContentArea: React.FC<GraphQLTabContentAreaProps & { sendRequest
           onChange={val => updateTab(activeTabId, 'variables', val)}
         />
       )}
-      {/* {activeTabObj.activeTab === 'authorization' && (
-        <AuthorizationTabContent />
-      )} */} // TODO: Pass required props or implement as needed.
+      {activeTabObj.activeTab === 'authorization' && (
+        <AuthorizationTabContent authType={activeTabObj.authType} setAuthType={val => updateTab(activeTabId, 'authType', val)} />
+      )}
     </div>
   );
 };

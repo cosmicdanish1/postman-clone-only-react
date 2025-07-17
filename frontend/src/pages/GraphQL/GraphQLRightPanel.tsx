@@ -1,6 +1,5 @@
 import React, { useState, useRef } from 'react';
 import useThemeClass from '../../hooks/useThemeClass';
-import { GraphQLHistoryPanel } from './GraphQLHistoryPanel';
 
 const icons = [
   // Book (active)
@@ -33,6 +32,13 @@ const icons = [
   ),
 ];
 
+const panelContents = [
+  <div className="text-gray-400 text-center mt-8">GraphQL Schema Panel</div>,
+  <div className="text-gray-400 text-center mt-8">GraphQL Explorer Panel</div>,
+  <div className="text-gray-400 text-center mt-8">GraphQL Collections Panel</div>,
+  <div className="text-gray-400 text-center mt-8">GraphQL History Panel</div>,
+];
+
 const MIN_WIDTH = 260;
 const DEFAULT_WIDTH = 340;
 const MAX_WIDTH = 500; // Limited maximum width
@@ -46,7 +52,7 @@ const GraphQLRightPanel: React.FC = () => {
   const startWidth = useRef(width);
 
   // Use theme class hook for consistent theming
-  const { themeClass, borderClass, accentColor } = useThemeClass();
+  const { themeClass, accentColor, borderClass } = useThemeClass();
   
   // Use the accent color directly from the theme
 
@@ -77,15 +83,9 @@ const GraphQLRightPanel: React.FC = () => {
     document.removeEventListener('mouseup', onMouseUp);
   };
 
-  // Open a new tab from history (emit a custom event)
-  const handleHistorySelect = (item: { url: string; query: string }) => {
-    const event = new CustomEvent('open-graphql-history-tab', { detail: item });
-    window.dispatchEvent(event);
-  };
-
   return (
     <div
-      className={`flex flex-row h-full w-full bg-bg text-text ${themeClass} ${borderClass}`}
+      className={`flex flex-row h-full w-full bg-bg text-text ${themeClass}`}
       style={{ 
         width: width, 
         minWidth: MIN_WIDTH, 
@@ -127,7 +127,7 @@ const GraphQLRightPanel: React.FC = () => {
       </div>
 
       {/* Sub sidebar */}
-      <div className={`flex flex-col items-center py-4 px-0 gap-6 bg-bg-secondary border-r ${borderClass} h-full w-14`}>
+      <div className="flex flex-col items-center py-4 px-0 gap-6 bg-bg-secondary h-full w-14">
         {icons.map((icon, idx) => (
           <button
             key={idx}
@@ -145,11 +145,8 @@ const GraphQLRightPanel: React.FC = () => {
         ))}
       </div>
       {/* Main right panel content area, changes with activeIdx */}
-      <div className="flex-1 p-4 overflow-y-auto bg-bg">
-        {activeIdx === 0 && <div className="text-gray-400 text-center mt-8">GraphQL Schema Panel</div>}
-        {activeIdx === 1 && <div className="text-gray-400 text-center mt-8">GraphQL Explorer Panel</div>}
-        {activeIdx === 2 && <div className="text-gray-400 text-center mt-8">GraphQL Collections Panel</div>}
-        {activeIdx === 3 && <GraphQLHistoryPanel onSelect={handleHistorySelect} />}
+      <div className={`flex-1 p-4 overflow-y-auto bg-bg ${borderClass}`}>
+        {panelContents[activeIdx]}
       </div>
     </div>
   );

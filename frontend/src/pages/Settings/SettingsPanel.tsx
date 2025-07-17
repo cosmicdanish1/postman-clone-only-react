@@ -5,6 +5,7 @@
 // Role: Renders the main settings panel and tabs for the Settings feature.
 // Located at: src/pages/Settings/SettingsPanel.tsx
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import GeneralSettings from './GeneralSettings';
 import ThemeSettings from './ThemeSettings';
 import InterceptorSettings from './InterceptorSettings';
@@ -17,29 +18,31 @@ import useThemeClass from '../../hooks/useThemeClass';
 // - InterceptorSettings (Interceptor card)
 // Each card is displayed with a title, description, and its respective component.
 
-const sections = [
-  {
-    key: 'general',
-    title: 'General',
-    description: 'General settings used in the application',
-    content: <GeneralSettings />,
-  },
-  {
-    key: 'theme',
-    title: 'Theme',
-    description: 'Theme settings for the application',
-    content: <ThemeSettings />,
-  },
-  {
-    key: 'interceptor',
-    title: 'Interceptor',
-    description: 'Interceptor settings for the application',
-    content: <InterceptorSettings />,
-  },
-];
-
 const SettingsPanel: React.FC = () => {
+  const { t } = useTranslation();
   const { themeClass } = useThemeClass();
+  
+  const sections = [
+    {
+      key: 'general',
+      title: t('settings.sections.general.title'),
+      description: t('settings.sections.general.description'),
+      content: <GeneralSettings />,
+    },
+    {
+      key: 'theme',
+      title: t('settings.sections.theme.title'),
+      description: t('settings.sections.theme.description'),
+      content: <ThemeSettings />,
+    },
+    {
+      key: 'interceptor',
+      title: t('settings.sections.interceptor.title'),
+      description: t('settings.sections.interceptor.description'),
+      content: <InterceptorSettings />,
+    },
+  ];
+
   return (
     <div className={`flex-1 overflow-y-auto p-1 pr-2 sm:pr-8 bg-bg text-text scrollbar-hide ${themeClass}`}>
       {/* General Card */} 

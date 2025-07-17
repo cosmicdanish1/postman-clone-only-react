@@ -11,8 +11,6 @@ import useThemeClass from '../../hooks/useThemeClass';
 interface GraphQLQueryEditorProps {
   query: string;
   onChange: (val: string) => void;
-  onSendRequest?: () => void;
-  isQueryValid?: boolean;
 }
 
 const getMonacoTheme = (theme: string) => {
@@ -22,7 +20,7 @@ const getMonacoTheme = (theme: string) => {
   return 'vs-dark';
 };
 
-const GraphQLQueryEditor: React.FC<GraphQLQueryEditorProps> = ({ query, onChange, onSendRequest, isQueryValid }) => {
+const GraphQLQueryEditor: React.FC<GraphQLQueryEditorProps> = ({ query, onChange }) => {
   // Use theme class hook for consistent theming
   const { themeClass } = useThemeClass();
   const theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
@@ -32,12 +30,7 @@ const GraphQLQueryEditor: React.FC<GraphQLQueryEditorProps> = ({ query, onChange
       <div className="flex items-center justify-between px-4 pt-4 pb-2">
         <span className="text-gray-400 font-medium">Query</span>
         <div className="flex items-center gap-4">
-          <button
-            className={`flex items-center gap-1 font-medium ${isQueryValid === false ? 'opacity-60 cursor-not-allowed' : 'text-blue-500 hover:text-blue-400'}`}
-            title={isQueryValid === false ? 'Enter a valid (non-empty) GraphQL query to enable' : 'Send Request (Ctrl+Enter)'}
-            onClick={isQueryValid === false ? undefined : onSendRequest}
-            disabled={isQueryValid === false}
-          >
+          <button className="flex items-center gap-1 text-blue-500 hover:text-blue-400 font-medium" title="Send Request (Ctrl+Enter)">
             <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3" /></svg>
             <span>Request</span>
           </button>

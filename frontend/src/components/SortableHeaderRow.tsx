@@ -72,7 +72,7 @@ const SortableHeaderRow: React.FC<SortableHeaderRowProps> = React.memo(function 
         className="flex items-center justify-center cursor-grab focus:outline-none h-full"
         style={{ background: 'none', border: 'none', padding: 0 }}
         tabIndex={-1}
-        title={t('drag_to_reorder')}
+        title={t('headers.drag_to_reorder')}
       >
         <span className="inline-block opacity-0 group-hover:opacity-70 transition-opacity duration-150">
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -90,7 +90,7 @@ const SortableHeaderRow: React.FC<SortableHeaderRowProps> = React.memo(function 
           <input
             className={`bg-transparent text-text px-3 py-1.5 outline-none w-full h-full focus:ring-2 focus:ring-accent/50 rounded-sm ${header.locked ? 'opacity-70' : ''}`}
             value={header.key}
-            placeholder={t('key')}
+            placeholder={t('headers.key')}
             onChange={e => {
               handleHeaderChange(header.id, 'key', e.target.value);
               setFilter(e.target.value);
@@ -119,21 +119,21 @@ const SortableHeaderRow: React.FC<SortableHeaderRowProps> = React.memo(function 
       <input
         className={`bg-transparent text-text px-3 py-1.5 outline-none w-full h-full focus:ring-2 focus:ring-accent/50 rounded-sm ${header.locked ? 'opacity-70' : ''}`}
         value={header.value}
-        placeholder={t('value')}
+        placeholder={t('headers.value')}
         onChange={e => handleHeaderChange(header.id, 'value', e.target.value)}
         disabled={header.locked}
       />
       <input
         className={`bg-transparent text-text px-3 py-1.5 outline-none w-full h-full focus:ring-2 focus:ring-accent/50 rounded-sm ${header.locked ? 'opacity-70' : ''}`}
         value={header.description}
-        placeholder={t('description')}
+        placeholder={t('headers.description')}
         onChange={e => handleHeaderChange(header.id, 'description', e.target.value)}
         disabled={header.locked}
       />
       <div className="flex items-center gap-2 justify-end px-2">
         <button 
           className="text-green-500 hover:text-green-400 p-1 rounded-full hover:bg-green-500/10 transition-colors" 
-          title={t('save')}
+          title={t('headers.save')}
           tabIndex={-1}
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -146,7 +146,7 @@ const SortableHeaderRow: React.FC<SortableHeaderRowProps> = React.memo(function 
             e.preventDefault();
             handleDeleteHeader(header.id);
           }} 
-          title={t('delete')}
+          title={t('headers.delete')}
           tabIndex={-1}
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

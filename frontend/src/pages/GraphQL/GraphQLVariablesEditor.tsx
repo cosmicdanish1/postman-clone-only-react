@@ -39,7 +39,7 @@ const GraphQLVariablesEditor: React.FC<GraphQLVariablesEditorProps> = ({ variabl
   return (
     <div className={`flex flex-col flex-1 bg-bg min-h-0 text-text ${themeClass}`}>
       {/* Variables Bar */}
-      <div className="flex items-center justify-between px-4 h-10 bg-bg w-full border-b border-border">
+      <div className="flex items-center justify-between px-4 h-10 bg-bg w-full">
         <span className="text-gray-400 text-base">Variables</span>
         <div className="flex items-center gap-3">
           {/* Help icon */}

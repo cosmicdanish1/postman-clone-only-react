@@ -117,7 +117,7 @@ const ShortcutsPanel = ({ open, onClose }: { open: boolean; onClose: () => void 
         <div className="px-6 py-4 border-b border-zinc-800">
           <input
             type="text"
-            placeholder={t('search')}
+            placeholder={t('search_shortcuts_placeholder')}
             value={search}
             onChange={e => setSearch(e.target.value)}
             className="w-full px-3 py-2 rounded bg-neutral-800 text-zinc-200 text-sm focus:outline-none border border-zinc-700"
@@ -129,11 +129,11 @@ const ShortcutsPanel = ({ open, onClose }: { open: boolean; onClose: () => void 
           ) : (
             filteredShortcuts.map(section => (
               <div key={section.section}>
-                <div className="text-zinc-400 text-xs font-semibold uppercase mb-2 tracking-wide">{t(section.section)}</div>
+                <div className="text-zinc-400 text-xs font-semibold uppercase mb-2 tracking-wide">{t(`shortcut_sections.${section.section}`)}</div>
                 <div className="space-y-2">
                   {section.items.map(item => (
                     <div key={item.label} className="flex items-center justify-between text-zinc-200 text-sm">
-                      <span>{t(item.label)}</span>
+                      <span>{t(`shortcut_labels.${item.label}`)}</span>
                       <span className="flex gap-1">
                         {item.keys.map((key, i) => (
                           <kbd key={i} className="px-2 py-1 rounded bg-zinc-800 border border-zinc-700 text-xs font-mono text-zinc-300">

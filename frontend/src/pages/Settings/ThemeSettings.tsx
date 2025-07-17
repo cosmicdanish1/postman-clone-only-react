@@ -5,6 +5,7 @@
 // Role: Renders the theme customization options in the Settings feature.
 // Located at: src/pages/Settings/ThemeSettings.tsx
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { setTheme, setAccentColor } from '../../features/themeSlice';
 import { FaDesktop, FaSun, FaCloud, FaMoon } from 'react-icons/fa';
@@ -17,20 +18,19 @@ type ThemeBackground = {
   icon: React.ReactNode;
 };
 
-const backgrounds: ThemeBackground[] = [
-  { key: 'system', label: 'System (Dark)', icon: <FaDesktop /> },
-  { key: 'light', label: 'Light', icon: <FaSun /> },
-  { key: 'dark', label: 'Dark', icon: <FaCloud /> },
-  { key: 'black', label: 'Black', icon: <FaMoon /> },
-];
-
 const ThemeSettings: React.FC = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const { theme, themeClass } = useThemeClass();
   const { current: accentColor, currentKey: accentKey, colors: accentColors } = useAccentColor();
   const [hoveredColor, setHoveredColor] = useState<AccentKey | null>(null);
-  
 
+  const backgrounds: ThemeBackground[] = [
+    { key: 'system', label: t('app_theme.backgrounds.system'), icon: <FaDesktop /> },
+    { key: 'light', label: t('app_theme.backgrounds.light'), icon: <FaSun /> },
+    { key: 'dark', label: t('app_theme.backgrounds.dark'), icon: <FaCloud /> },
+    { key: 'black', label: t('app_theme.backgrounds.black'), icon: <FaMoon /> },
+  ];
 
   const handleAccentColorClick = (colorKey: AccentKey) => {
     dispatch(setAccentColor(colorKey));
@@ -49,7 +49,9 @@ const ThemeSettings: React.FC = () => {
       <div className="flex-1 space-y-8">
         {/* Background */}
         <div>
-          <div className="font-semibold text-text mb-1">Background</div>
+          <div className="font-semibold text-text mb-1">
+            {t('app_theme.labels.background')}
+          </div>
           <div className="text-text-secondary text-sm mb-6">
             {backgrounds.find(bg => bg.key === theme)?.label}
           </div>
@@ -72,7 +74,9 @@ const ThemeSettings: React.FC = () => {
         </div>
         {/* Accent color */}
         <div>
-          <div className="font-semibold mb-1 text-text">Accent color</div>
+          <div className="font-semibold mb-1 text-text">
+            {t('app_theme.labels.accent_color')}
+          </div>
           <div className="text-text-secondary text-sm mb-6">
             {accentKey.charAt(0).toUpperCase() + accentKey.slice(1)}
           </div>
@@ -91,7 +95,7 @@ const ThemeSettings: React.FC = () => {
                   onClick={() => handleAccentColorClick(key)}
                   onMouseEnter={() => handleMouseEnter(key)}
                   onMouseLeave={handleMouseLeave}
-                  aria-label={key.charAt(0).toUpperCase() + key.slice(1)}
+                  aria-label={t(`app_theme.colors.${key}`) || (key.charAt(0).toUpperCase() + key.slice(1))}
                 >
                   {accentKey === key && (
                     <span className="w-1.5 h-1.5 rounded-full block" style={{ backgroundColor: 'white' }} />

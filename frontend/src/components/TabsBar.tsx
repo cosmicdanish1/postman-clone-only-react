@@ -146,7 +146,7 @@ const TabsBar: React.FC<TabsBarProps> = ({
       <EditEnvironmentModal
         open={editModal !== null}
         onClose={() => setEditModal(null)}
-        modalValue={editModal === 'global' ? t('global') : t('environment')}
+        modalValue={editModal === 'global' ? t('tabs.global') : t('tabs.environment')}
         setModalValue={() => {}}
         onSave={() => setEditModal(null)}
       />
@@ -187,7 +187,7 @@ const TabsBar: React.FC<TabsBarProps> = ({
                       style={{ pointerEvents: 'auto' }}
                       onClick={e => { e.stopPropagation(); onCloseTab(tab.id); }}
                       tabIndex={-1}
-                      title={t('close_tab')}
+                      title={t('tabs.close_tab')}
                     >
                       <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M2 2l6 6m0-6l-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>

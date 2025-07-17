@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useRequestHistory } from '../../../features/useRequestHistory';
 import { formatDate, formatTime, groupHistoryByTime } from '../../../utils/timeUtils';
 import { getFavorites, toggleFavorite as toggleFavoriteInStorage } from '../../../utils/favorites';
@@ -56,6 +57,7 @@ const getMethodColor = (method: string): string => {
 type FilterType = 'all' | 'starred';
 
 const History: React.FC = () => {
+  const { t } = useTranslation();
   const { themeClass, borderClass } = useThemeClass();
   const { 
     history, 
@@ -133,7 +135,7 @@ const History: React.FC = () => {
   }, [refreshHistory]);
 
   const handleDeleteAll = useCallback(async () => {
-    if (window.confirm('Are you sure you want to delete all history?')) {
+    if (window.confirm(t('history.actions.confirm_clear_all'))) {
       try {
         await clearHistory();
         // No need to manually refresh as the history state will update automatically
@@ -144,7 +146,7 @@ const History: React.FC = () => {
   }, [clearHistory]);
 
   const handleDeleteItem = useCallback(async (itemId: number) => {
-    if (window.confirm('Are you sure you want to delete this request?')) {
+    if (window.confirm(t('history.actions.confirm_delete'))) {
       try {
         await deleteHistory(itemId);
         // No need to manually refresh as the history state will update automatically
@@ -207,11 +209,11 @@ const History: React.FC = () => {
       <div className={`flex items-center justify-between px-6 py-3 border-b ${borderClass}`}>
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-sm font-medium">
-          <span>Personal Workspace</span>
+          <span>{t('history.breadcrumb.workspace')}</span>
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 -2 27 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-right-icon lucide-chevron-right">
             <path d="m9 18 6-6-6-6"/>
           </svg>
-          <span>History</span>
+          <span>{t('history.breadcrumb.title')}</span>
         </div>
       </div>
       
@@ -236,7 +238,7 @@ const History: React.FC = () => {
           {/* Search input */}
           <input
             type="text"
-            placeholder="Search history..."
+            placeholder={t('history.search.placeholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="flex-1 pl-8 pr-24 py-2 text-sm bg-transparent focus:outline-none"
@@ -245,7 +247,7 @@ const History: React.FC = () => {
           {/* Icons container */}
           <div className="absolute right-0 flex items-center h-full px-2 space-x-2">
             <div className="relative">
-              <Tippy content="Filter">
+              <Tippy content={t('history.filter.title')}>
                 <button 
                   className={`p-1 transition-colors ${
                     activeFilter === 'starred' 
@@ -279,7 +281,7 @@ const History: React.FC = () => {
                         <svg className="w-4 h-4 mr-2 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
                         </svg>
-                        <span className="text-sm text-gray-700 dark:text-gray-300">All Items</span>
+                        <span className="text-sm text-gray-700 dark:text-gray-300">{t('history.filter.all_items')}</span>
                       </div>
                     </label>
                     
@@ -297,7 +299,7 @@ const History: React.FC = () => {
                         <svg className="w-4 h-4 mr-2 text-yellow-500" fill={activeFilter === 'starred' ? 'currentColor' : 'none'} viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
                         </svg>
-                        <span className="text-sm text-gray-700 dark:text-gray-300">Starred Only</span>
+                        <span className="text-sm text-gray-700 dark:text-gray-300">{t('history.filter.starred_only')}</span>
                       </div>
                     </label>
                   </div>
@@ -305,7 +307,7 @@ const History: React.FC = () => {
               )}
             </div>
             
-            <Tippy content="Help">
+            <Tippy content={t('history.actions.help')}>
               <button 
                 className="p-1 text-gray-500 hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400 transition-colors"
                 onClick={() => {/* Add help functionality */}}
@@ -314,7 +316,7 @@ const History: React.FC = () => {
               </button>
             </Tippy>
             
-            <Tippy content="Clear all history">
+            <Tippy content={t('history.actions.clear_all')}>
               <button 
                 className="p-1 text-gray-500 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-500 transition-colors"
                 onClick={handleDeleteAll}
@@ -332,7 +334,7 @@ const History: React.FC = () => {
         {loading && !history.length ? (
           <div className="flex flex-col items-center justify-center h-full p-4">
             <div className="animate-spin rounded-full h-8 w-8   mb-2"></div>
-            <p className="text-sm text-gray-500">Loading history...</p>
+            <p className="text-sm text-gray-500">{t('history.loading')}</p>
           </div>
         ) : error ? (
           <div className="p-4 text-center">
@@ -345,16 +347,16 @@ const History: React.FC = () => {
                 <svg className="w-12 h-12 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <p className="text-gray-500">No history yet</p>
-                <p className="text-sm text-gray-400 mt-1">Your request history will appear here</p>
+                <p className="text-gray-500">{t('history.empty_state.title')}</p>
+                <p className="text-sm text-gray-400 mt-1">{t('history.empty_state.description')}</p>
               </div>
             ) : filteredHistory(history).length === 0 ? (
               <div className="flex flex-col items-center justify-center p-4 text-center">
                 <svg className="w-12 h-12 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <p className="text-gray-500">No results found</p>
-                <p className="text-sm text-gray-400 mt-1">Try a different search term</p>
+                <p className="text-gray-500">{t('history.search.no_results')}</p>
+                <p className="text-sm text-gray-400 mt-1">{t('history.search.try_again')}</p>
               </div>
             ) : (
               <div>
@@ -385,7 +387,7 @@ const History: React.FC = () => {
                         </svg>
                         <h3 className="text-sm font-medium ml-2">{timeGroup}</h3>
                       </div>
-                      <span className="text-xs text-gray-500 dark:text-gray-400">{items.length} items</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400">{t('history.items_count', { count: items.length })}</span>
                     </button>
                     {expandedGroups.has(timeGroup) && (
                       <div className="space-y-1">
@@ -411,13 +413,13 @@ const History: React.FC = () => {
                                   offset={[0, 10]}
                                 >
                                   <p className="text-sm font-medium truncate ${textClass}">
-                                    {item.url || 'No URL'}
+                                    {item.url || t('history.no_url')}
                                   </p>
                                 </Tippy>
                               </div>
                               <div className="flex items-center gap-2 ml-2 absolute right-3 top-1/2 -translate-y-1/2 group-hover:opacity-100 opacity-0 transition-opacity duration-200">
                                 <Tippy
-                                  content={item.is_favorite ? 'Remove star' : 'Add star'}
+                                  content={t(item.is_favorite ? 'history.actions.remove_star' : 'history.actions.add_star')}
                                   placement="top"
                                   arrow={true}
                                   theme="light"
@@ -446,7 +448,7 @@ const History: React.FC = () => {
                                   </button>
                                 </Tippy>
                                 <Tippy
-                                  content="Remove"
+                                  content={t('history.actions.remove')}
                                   placement="top"
                                   arrow={true}
                                   theme="light"
@@ -483,8 +485,8 @@ const History: React.FC = () => {
       {/* Debug info - visible only in development */}
       {process.env.NODE_ENV === 'development' && (
         <div className="p-2 text-xs text-gray-500">
-          <div>Items: {history?.length || 0}</div>
-          <div>Status: {loading ? 'Loading...' : error ? 'Error' : 'Ready'}</div>
+          <div>{t('history.debug.items')} {history?.length || 0}</div>
+          <div>{t('history.debug.status')} {loading ? t('common.loading') : error ? t('history.debug.error') : t('history.debug.ready')}</div>
         </div>
       )}
     </div>

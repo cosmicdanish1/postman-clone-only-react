@@ -5,45 +5,45 @@
 // Role: Renders the settings panel for HTTP interceptors in the Settings feature.
 // Located at: src/pages/Settings/InterceptorSettings.tsx
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FaSync, FaLock, FaIdBadge, FaEye, FaEyeSlash, FaChrome, FaFirefox, FaCog, FaPlus } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ToastContainer, toast, Slide } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import useThemeClass from '../../hooks/useThemeClass';
 
-const interceptorOptions = [
-  'Browser',
-  'Proxy',
-  'Agent',
-  'Browser extension',
-];
+interface BrowserExtensionSectionProps {
+  className?: string;
+}
 
-
-type BrowserExtensionSectionProps = { className?: string };
-const BrowserExtensionSection: React.FC<BrowserExtensionSectionProps> = ({ className }) => (
-  <div className={className}>
-    <div className="font-semibold text-text mb-1">Browser extension</div>
-    <div className="text-text-secondary text-sm mb-4">Extension Version: Not Reported</div>
-    <div className="flex gap-3">
-      <button
-        type="button"
-        className="flex items-center gap-2 px-4 py-2 rounded  text-text border-border bg-bg hover:border-accent hover:text-text-primary transition font-semibold"
-        onClick={() => window.open('https://chromewebstore.google.com/detail/hoppscotch-browser-extens/amknoiejhlmhancpahfcfcfhllgkpbld', '_blank')}
-      >
-        <FaChrome className="w-5 h-5 text-[#4285F4]" />
-        Chrome
-      </button>
-      <button
-        type="button"
-        className="flex items-center gap-2 px-4 py-2 rounded  text-text border-border bg-bg hover:border-accent hover:text-text-primary transition font-semibold"
-        onClick={() => window.open('https://addons.mozilla.org/en-US/firefox/addon/hoppscotch/', '_blank')}
-      >
-        <FaFirefox className="w-5 h-5 text-[#FF7139]" />
-        Firefox
-      </button>
+const BrowserExtensionSection: React.FC<BrowserExtensionSectionProps> = ({ className }) => {
+  const { t } = useTranslation();
+  
+  return (
+    <div className={className}>
+      <div className="font-semibold text-text mb-1">{t('interceptor.browser_extension')}</div>
+      <div className="text-text-secondary text-sm mb-4">{t('interceptor.extension_version')}: {t('interceptor.not_reported')}</div>
+      <div className="flex gap-3">
+        <button
+          type="button"
+          className="flex items-center gap-2 px-4 py-2 rounded text-text border border-border bg-bg hover:border-accent hover:text-text-primary transition font-semibold"
+          onClick={() => window.open('https://chromewebstore.google.com/detail/hoppscotch-browser-extens/amknoiejhlmhancpahfcfcfhllgkpbld', '_blank')}
+        >
+          <FaChrome className="w-5 h-5 text-[#4285F4]" />
+          {t('interceptor.chrome')}
+        </button>
+        <button
+          type="button"
+          className="flex items-center gap-2 px-4 py-2 rounded text-text border border-border bg-bg hover:border-accent hover:text-text-primary transition font-semibold"
+          onClick={() => window.open('https://addons.mozilla.org/en-US/firefox/addon/hoppscotch/', '_blank')}
+        >
+          <FaFirefox className="w-5 h-5 text-[#FF7139]" />
+          {t('interceptor.firefox')}
+        </button>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 // InterceptorSettings is responsible for the Interceptor card in the settings page.
 // It manages all settings related to network interception, proxy, agent, and browser extension.
@@ -58,8 +58,16 @@ const BrowserExtensionSection: React.FC<BrowserExtensionSectionProps> = ({ class
 // - Toast notifications for agent registration
 // All modals and toasts are managed with local state and framer-motion for animation.
 const InterceptorSettings: React.FC = () => {
+  const { t } = useTranslation();
   const themeClass = useThemeClass();
-  const [selected, setSelected] = useState('Browser');
+  const [selected, setSelected] = useState('browser');
+  
+  const options = [
+    { key: 'browser', label: t('interceptor.options.browser') },
+    { key: 'proxy', label: t('interceptor.options.proxy') },
+    { key: 'agent', label: t('interceptor.options.agent') },
+    { key: 'browser_extension', label: t('interceptor.options.browser_extension') }
+  ];
   const [verifyHost, setVerifyHost] = useState(false);
   const [verifyPeer, setVerifyPeer] = useState(false);
   const [proxyToggle, setProxyToggle] = useState(false);
@@ -83,26 +91,23 @@ const InterceptorSettings: React.FC = () => {
     <div className={`space-y-8 ${themeClass} bg-bg text-text border-border`}>
     {/* Interceptor */}
     <div>
-      <label className="block text-sm font-semibold text-text mb-2">Interceptor</label>
+      <label className="block text-sm font-semibold text-text mb-2">{t('interceptor.title')}</label>
         <div className="flex flex-col gap-4 mb-2 pt-2">
-          {interceptorOptions.map(option => (
-            <React.Fragment key={option}>
+          {options.map(option => (
+            <React.Fragment key={option.key}>
               <label className="flex items-center gap-3 text-text text-sm cursor-pointer">
                 <button
                   type="button"
-                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition focus:outline-none group ${
-                    selected === option ? 'border-blue-500' : 'border-border'
-                  }`}
-                  onClick={() => setSelected(option)}
-                  aria-pressed={selected === option}
+                  className={`relative w-4 h-4 rounded-full border ${selected === option.key ? 'border-blue-500' : 'border-border'} flex items-center justify-center`}
+                  onClick={() => setSelected(option.key)}
                 >
-                  {selected === option && (
+                  {selected === option.key && (
                     <span className="w-1.5 h-1.5 rounded-full block" style={{ background: '#3b82f6' }} />
                   )}
                 </button>
-                <span>{option}</span>
-        </label>
-              {option === 'Agent' && selected === 'Agent' && (
+                <span>{option.label}</span>
+              </label>
+              {option.key === 'agent' && selected === 'agent' && (
                 <AnimatePresence>
                   <motion.button
                     key="register-agent"
@@ -115,7 +120,7 @@ const InterceptorSettings: React.FC = () => {
                     onClick={() => {
                       toast(
                         <span className="font-semibold text-red-600">
-                          Hoppscotch Agent not detected. <span className="font-normal">Please check if the Agent is running</span>
+                          {t('agent_not_detected')} <span className="font-normal">{t('check_agent_running')}</span>
                         </span>,
                         {
                           position: 'bottom-center',
@@ -137,11 +142,11 @@ const InterceptorSettings: React.FC = () => {
                     }}
                   >
                     <FaPlus className="w-3 h-3" />
-                    Register Agent
+                    {t('register_agent')}
                   </motion.button>
                 </AnimatePresence>
               )}
-              {option === 'Browser extension' && selected === 'Browser extension' && (
+              {option.key === 'browser_extension' && selected === 'browser_extension' && (
                 <BrowserExtensionSection className="mt-2 mb-2" />
               )}
             </React.Fragment>
@@ -149,11 +154,11 @@ const InterceptorSettings: React.FC = () => {
       </div>
       {/* Proxy input */}
       <div className="mt-2">
-          <label className="block text-sm font-semibold text-text mb-1">Proxy</label>
+          <label className="block text-sm font-semibold text-text mb-1">{t('proxy')}</label>
           <div className="my-1 text-text-secondary opacity-55 font-semibold text-sm">
-            Official Proxy is hosted by Hoppscotch. Read the 
+            {t('proxy_description')} 
             <a aria-label="Link" href="https://docs.hoppscotch.io/support/privacy" role="link" target="_blank" rel="noopener" className="inline-flex items-center justify-center text-blue-800 ml-1 focus:outline-none hover:text-secondaryDark focus-visible: link">
-             Proxy privacy policy</a>. </div>
+             {t('proxy_privacy_policy')}</a>. </div>
           <div className="relative w-[840px]">
         <input
           type="text"
@@ -164,7 +169,7 @@ const InterceptorSettings: React.FC = () => {
             <button
               type="button"
               className="absolute right-2 top-1/2 -translate-y-1/2 p-0 m-0 text-text-secondary hover:text-blue-500 focus:outline-none"
-              aria-label="Reload Proxy"
+              aria-label={t('reload_proxy')}
               onClick={() => { /* reload logic here */ }}
               style={{ background: 'none', boxShadow: 'none' }}
             >
@@ -176,7 +181,7 @@ const InterceptorSettings: React.FC = () => {
     {/* Agent */}
     <div>
         <div className="relative flex items-center mb-2 w-full">
-          <span className="block text-sm font-semibold text-text">Agent</span>
+          <span className="block text-sm font-semibold text-text">{t('agent')}</span>
           <button type="button" className="absolute right-0 top-1/2 -translate-y-1/2 p-1 text-text-secondary hover:text-blue-500 focus:outline-none" onClick={() => setShowDomainModal(true)}>
             <FaCog className="w-5 h-5" />
           </button>
@@ -249,7 +254,7 @@ const InterceptorSettings: React.FC = () => {
               onClick={() => setShowCAModal(true)}
             >
               <FaLock className="w-4 h-4" />
-              CA Certificates
+              {t('ca_certificates')}
             </button>
             <button
               type="button"
@@ -257,7 +262,7 @@ const InterceptorSettings: React.FC = () => {
               onClick={() => setShowClientModal(true)}
             >
               <FaIdBadge className="w-4 h-4" />
-              Client Certificates
+              {t('client_certificates')}
             </button>
           </div>
           <label className="flex items-center justify-start gap-5 mt-4 text-sm text-neutral-500 font-semibold hover:text-text">
@@ -291,7 +296,7 @@ const InterceptorSettings: React.FC = () => {
             Proxy
         </label>
       </div>
-        <div className="text-xs font-semibold text-text-secondary mt-2">Hoppscotch Agent and Desktop App supports HTTP/HTTPS/SOCKS proxies with NTLM and Basic Auth support.</div>
+        <div className="text-xs font-semibold text-text-secondary mt-2">{t('agent_support_description')}</div>
       </div>
       {proxyToggle && (
         <div className="mt-6">
@@ -306,7 +311,7 @@ const InterceptorSettings: React.FC = () => {
                 className="font-semibold text-text mb-1 cursor-pointer select-none"
                 onClick={() => setShowProxyUrlInput(true)}
               >
-                Proxy URL
+                {t('proxy')} URL
               </motion.div>
             )}
             {(showProxyUrlInput || proxyUrl) && (
@@ -314,7 +319,7 @@ const InterceptorSettings: React.FC = () => {
                 key="input"
                 type="text"
                 className="bg-bg text-text w-full px-3 py-2 text-sm focus:outline-none border border-border rounded-sm mb-4"
-                placeholder="Enter proxy URL"
+                placeholder={t('enter_proxy_url')}
                 value={proxyUrl}
                 autoFocus
                 initial={{ opacity: 0, y: 8 }}
@@ -328,10 +333,10 @@ const InterceptorSettings: React.FC = () => {
               />
             )}
           </AnimatePresence>
-          <div className="text-text-secondary text-sm mb-6">You can also include username and password in the URL.</div>
+          <div className="text-text-secondary text-sm mb-6">{t('url_credentials_note')}</div>
           <div className="flex gap-8 items-end">
             <div className="flex-1">
-              <label className="block text-sm text-text-secondary mb-1 ">Username</label>
+              <label className="block text-sm text-text-secondary mb-1">{t('username')}</label>
               <input
                 type="text"
                 className="bg-bg text-text w-full px-3 py-2 text-sm  focus:outline-none border border-border rounded-sm"
@@ -340,7 +345,7 @@ const InterceptorSettings: React.FC = () => {
               />
             </div>
             <div className="flex-1 relative">
-              <label className="block text-sm text-text-secondary mb-1">Password</label>
+              <label className="block text-sm text-text-secondary mb-1">{t('password')}</label>
               <input
                 type={showPassword ? 'text' : 'password'}
                 className="bg-bg text-text w-full px-3 py-2 text-sm focus:outline-none border border-border rounded-sm pr-8"
@@ -396,7 +401,7 @@ const InterceptorSettings: React.FC = () => {
               >
                 ×
               </button>
-              <div className="text-2xl font-bold text-center text-text mb-6">CA Certificates</div>
+              <div className="text-2xl font-bold text-center text-text mb-6">{t('ca_certificates')}</div>
               <hr className="border-border mb-6" />
               <input
                 ref={fileInputRef}
@@ -408,9 +413,9 @@ const InterceptorSettings: React.FC = () => {
                 className="w-full flex items-center justify-center gap-2 py-3 rounded  border-border bg-bg-secondary text-text hover:border-blue-500 hover:text-blue-400 transition font-semibold text-base mb-4"
                 onClick={() => fileInputRef.current?.click()}
               >
-                <span className="text-xl">+</span> Add Certificate File
+                <span className="text-xl">+</span> {t('add_certificate_file')}
               </button>
-              <div className="text-text-secondary text-sm text-center mb-8">Hoppscotch supports .crt, .cer or .pem files containing one or more certificates.</div>
+              <div className="text-text-secondary text-sm text-center mb-8">{t('supported_certificate_formats')}</div>
               <div className="flex justify-start">
                 <button
                   className="bg-accent hover:bg-accent-dark text-text px-6 py-2 rounded font-semibold text-base shadow"
@@ -441,25 +446,25 @@ const InterceptorSettings: React.FC = () => {
               >
                 ×
               </button>
-              <div className="text-2xl font-bold text-center text-text mb-6">Client Certificates</div>
+              <div className="text-2xl font-bold text-center text-text mb-6">{t('client_certificates')}</div>
               <div className="flex gap-8 border-b border-border mb-6">
                 <button
                   className={`pb-2 px-2 text-base font-semibold focus:outline-none transition border-b-2 ${clientTab === 'PEM' ? 'border-blue-500 text-text' : 'border-transparent text-text-secondary hover:text-text'}`}
                   onClick={() => setClientTab('PEM')}
                 >
-                  PEM
+                  {t('pem')}
                 </button>
                 <button
                   className={`pb-2 px-2 text-base font-semibold focus:outline-none transition border-b-2 ${clientTab === 'PFX' ? 'border-blue-500 text-text' : 'border-transparent text-text-secondary hover:text-text'}`}
                   onClick={() => setClientTab('PFX')}
                 >
-                  PFX
+                  {t('pfx')}
                 </button>
               </div>
               {clientTab === 'PEM' && (
                 <>
                   <div className="mb-4">
-                    <div className="text-text-secondary font-semibold mb-2">Certificate</div>
+                    <div className="text-text-secondary font-semibold mb-2">{t('certificate')}</div>
                     <input
                       ref={pemCertInputRef}
                       type="file"
@@ -470,11 +475,11 @@ const InterceptorSettings: React.FC = () => {
                       className="w-full flex items-center justify-center gap-2 py-3 rounded border border-border bg-bg-secondary text-text hover:border-blue-500 hover:text-blue-400 transition font-semibold text-base"
                       onClick={() => pemCertInputRef.current?.click()}
                     >
-                      <span className="text-xl">+</span> Select File
+                      <span className="text-xl">+</span> {t('select_file')}
                     </button>
                   </div>
                   <div className="mb-8">
-                    <div className="text-text-secondary font-semibold mb-2">Private Key</div>
+                    <div className="text-text-secondary font-semibold mb-2">{t('private_key')}</div>
                     <input
                       ref={pemKeyInputRef}
                       type="file"
@@ -485,14 +490,14 @@ const InterceptorSettings: React.FC = () => {
                       className="w-full flex items-center justify-center gap-2 py-3 rounded border border-border bg-bg-secondary text-text hover:border-blue-500 hover:text-blue-400 transition font-semibold text-base"
                       onClick={() => pemKeyInputRef.current?.click()}
                     >
-                      <span className="text-xl">+</span> Select File
+                      <span className="text-xl">+</span> {t('select_file')}
                     </button>
                   </div>
                 </>
               )}
               {clientTab === 'PFX' && (
                 <div className="mb-8">
-                  <div className="text-text-secondary font-semibold mb-2">PFX File</div>
+                  <div className="text-text-secondary font-semibold mb-2">{t('pfx_file')}</div>
                   <input
                     ref={pfxInputRef}
                     type="file"
@@ -511,7 +516,7 @@ const InterceptorSettings: React.FC = () => {
                     value={pfxPassword}
                     onChange={e => setPfxPassword(e.target.value)}
                     className="w-full px-3 py-2 rounded border border-border bg-bg-secondary text-text focus:outline-none focus:border-blue-500 text-base"
-                    placeholder="Enter password (if any)"
+                    placeholder={t('enter_password_if_any')}
                   />
                 </div>
               )}
@@ -528,7 +533,7 @@ const InterceptorSettings: React.FC = () => {
                     // Clear logic can be added here
                   }}
                 >
-                  Clear
+                  {t('clear')}
                 </button>
               </div>
             </motion.div>
@@ -553,13 +558,13 @@ const InterceptorSettings: React.FC = () => {
               >
                 ×
               </button>
-              <div className="text-2xl font-bold text-center text-text mb-6">Manage Domains Overrides</div>
+              <div className="text-2xl font-bold text-center text-text mb-6">{t('manage_domains_overrides')}</div>
               <div className="flex items-center gap-2 mb-6">
                 <input
                   type="text"
                   value={domainInput}
                   onChange={e => setDomainInput(e.target.value)}
-                  placeholder="example.com"
+                  placeholder={t('example_domain')}
                   className={`p-4 sm:p-6 rounded-lg shadow-sm border border-border bg-bg text-text ${themeClass}`}
                 />
                 <button
@@ -569,7 +574,7 @@ const InterceptorSettings: React.FC = () => {
                   +
                 </button>
               </div>
-              <div className="bg-border rounded p-4 text-text-secondary text-base opacity-60 select-none cursor-not-allowed">Global Defaults</div>
+              <div className="bg-border rounded p-4 text-text-secondary text-base opacity-60 select-none cursor-not-allowed">{t('global_defaults')}</div>
             </motion.div>
     </div>
         </AnimatePresence>

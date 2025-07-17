@@ -5,8 +5,10 @@
 // Role: Renders and manages the tab bar for GraphQL requests, including tab switching, renaming, and closing.
 // Located at: src/pages/GraphQL/GraphQLTabBar.tsx
 import React, { useRef, useLayoutEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FiPlus } from 'react-icons/fi';
 import useThemeClass from '../../hooks/useThemeClass';
+import useAccentColor from '../../hooks/useAccentColor';
 
 interface Tab {
   id: string;
@@ -43,9 +45,11 @@ const GraphQLTabBar: React.FC<GraphQLTabBarProps> = ({
   const [barStyle, setBarStyle] = useState({ left: 0, width: 0 });
   const [hoveredTabId, setHoveredTabId] = useState<string | null>(null);
   const [hoveredCloseId, setHoveredCloseId] = useState<string | null>(null);
+  const { t } = useTranslation();
 
   // Use theme class hook for consistent theming
-  const { themeClass } = useThemeClass();
+  const { themeClass, borderClass } = useThemeClass();
+  const { current: accentColor } = useAccentColor();
 
   useLayoutEffect(() => {
     const el = tabRefs.current[activeTabId];
@@ -57,7 +61,7 @@ const GraphQLTabBar: React.FC<GraphQLTabBarProps> = ({
   }, [activeTabId, tabs.length]);
 
   return (
-    <div className={`w-full bg-bg border-b h-10 border-border relative flex items-center overflow-x-auto ${themeClass}`}>
+    <div className={`w-full bg-bg h-10 relative flex items-center overflow-x-auto ${themeClass} ${borderClass}`}>
       <div className="flex items-center flex-1 min-w-0 relative" style={{ position: 'relative' }}>
         {/* Animated blue bar on top */}
         <div
@@ -81,8 +85,14 @@ const GraphQLTabBar: React.FC<GraphQLTabBarProps> = ({
             <div
               key={tab.id}
               ref={el => { tabRefs.current[tab.id] = el; }}
-              className={`flex items-center h-10 cursor-pointer select-none border-b-2 transition relative group ${isActive ? 'bg-bg text-text font-bold border-blue-500' : 'border-transparent text-gray-400 hover:text-text'}`}
-              style={{ minWidth: 160, maxWidth: 240, width: 200, paddingLeft: 24, paddingRight: 24 }}
+              className={`flex items-center h-12 px-4 bg-bg ${themeClass} ${borderClass} select-none transition relative group ${isActive ? 'bg-bg font-bold' : 'text-gray-400 hover:text-text'}`}
+              style={{
+                ...(isActive ? { color: accentColor } : {}),
+                minWidth: 160,
+                maxWidth: 240,
+                width: 200,
+                paddingRight: 24
+              }}
               onClick={() => onSwitchTab(tab.id)}
               onDoubleClick={() => onOpenModal(tab.id)}
               onMouseEnter={() => setHoveredTabId(tab.id)}
@@ -109,18 +119,18 @@ const GraphQLTabBar: React.FC<GraphQLTabBarProps> = ({
               {/* Rename modal */}
               {tab.showModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-                  <div className={`bg-bg rounded-2xl shadow-2xl border border-border w-[400px] max-w-full p-0 relative ${themeClass}`}>
+                  <div className={`bg-bg rounded-2xl shadow-2xl w-[400px] max-w-full p-0 relative ${themeClass}`}>
                     {/* Title and close */}
                     <div className="flex items-center justify-center pt-6 pb-2 px-6 relative">
-                      <div className="text-xl font-bold text-center flex-1">Edit Request</div>
+                      <div className="text-xl font-bold text-center flex-1">{t('graphql.edit_request')}</div>
                       <button className="absolute right-6 top-6 text-gray-400 hover:text-white text-2xl" onClick={() => onCloseModal(tab.id)}>&times;</button>
                     </div>
                     {/* Label and input */}
                     <div className="px-6 pb-2 pt-2">
-                      <label className="block text-xs text-gray-400 mb-1">Label</label>
+                      <label className="block text-xs text-gray-400 mb-1">{t('graphql.label')}</label>
                       <div className="relative">
                         <input
-                          className="w-full bg-bg border border-border rounded px-3 py-3 text-text text-base pr-10 focus:outline-none"
+                          className="w-full bg-bg rounded px-3 py-3 text-text text-base pr-10 focus:outline-none"
                           value={tab.modalValue}
                           onChange={e => onSetModalValue(tab.id, e.target.value)}
                           autoFocus
@@ -133,8 +143,12 @@ const GraphQLTabBar: React.FC<GraphQLTabBarProps> = ({
                     </div>
                     {/* Buttons */}
                     <div className="flex gap-3 justify-start px-6 pb-6 pt-4">
-                      <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded font-semibold text-base" onClick={() => onSaveModal(tab.id)}>Save</button>
-                      <button className="bg-bg hover:bg-bg/80 text-text px-6 py-2 rounded font-semibold text-base border border-border" onClick={() => onCloseModal(tab.id)}>Cancel</button>
+                      <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded font-semibold text-base" onClick={() => onSaveModal(tab.id)}>
+                        {t('common.save')}
+                      </button>
+                      <button className="bg-bg hover:bg-bg/80 text-text px-6 py-2 rounded font-semibold text-base" onClick={() => onCloseModal(tab.id)}>
+                        {t('common.cancel')}
+                      </button>
                     </div>
                   </div>
                 </div>

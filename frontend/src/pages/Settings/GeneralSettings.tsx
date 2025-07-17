@@ -7,6 +7,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import useThemeClass from '../../hooks/useThemeClass';
 import type { RootState } from '../../store';
 import {
@@ -15,7 +16,6 @@ import {
   toggleSidebarLeft,
   toggleAllExperiments,
 } from '../../features/settingsSlice';
-import { useTranslation } from 'react-i18next';
 
 const languages = [
   "English", "Afrikaans", "العربية (Arabic)", "Català (Catalan)", "简体中文 (Simplified Chinese)",
@@ -84,7 +84,7 @@ const GeneralSettings: React.FC = () => {
   const { t, i18n } = useTranslation();
   const [selected, setSelected] = useState(languages[0]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
   const dispatch = useDispatch();
   const telemetry = useSelector((state: RootState) => state.settings.telemetry);
@@ -97,7 +97,7 @@ const GeneralSettings: React.FC = () => {
   const namingDropdownRef = useRef<HTMLDivElement>(null);
   const [experimentalSandbox, setExperimentalSandbox] = useState(false);
   const [encoding, setEncoding] = useState('Enable');
-  const themeClass = useThemeClass();
+  const { themeClass, accentColor } = useThemeClass();
 
   const handleLanguageChange = (lang: string) => {
     const langKey = languageMap[lang] || 'en';
@@ -138,7 +138,7 @@ const GeneralSettings: React.FC = () => {
     <div className={`space-y-8 ${themeClass} bg-bg text-text`}>
     {/* Language */}
     <div>
-        <label className="block text-sm font-semibold text-text-secondary mb-5">{t('language')}</label>
+        <label className="block text-sm font-semibold text-text-secondary mb-2">{t('language')}</label>
         <div className="relative w-48" ref={dropdownRef}>
           <button
             type="button"
@@ -207,7 +207,7 @@ const GeneralSettings: React.FC = () => {
         <label className="block text-sm font-semibold text-text-secondary mb-1">
           {t('query_parameters_encoding')}
         </label>
-        <span className="text-sm text-text-secondary">{t('query_parameters_encoding_desc')}</span>
+        <p className="text-sm text-text-secondary mb-3">{t('query_parameters_encoding_desc')}</p>
 
         {/* Stack vertically and black background for radio */}
         <div className="flex flex-col gap-4 pt-5">
@@ -215,14 +215,18 @@ const GeneralSettings: React.FC = () => {
             <label key={option} className="flex items-center gap-3 text-text-secondary text-sm cursor-pointer">
               <button
                 type="button"
-                className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition focus:outline-none group ${
-                  encoding === option ? 'border-accent' : 'border-border'
-                }`}
+                className="w-5 h-5 rounded-full border-2 flex items-center justify-center transition focus:outline-none group"
+                style={{
+                  borderColor: encoding === option ? accentColor : 'var(--border)'
+                }}
                 onClick={() => setEncoding(option)}
                 aria-pressed={encoding === option}
               >
                 {encoding === option && (
-                  <span className="w-1.5 h-1.5 rounded-full block" style={{ background: '#3b82f6' }} />
+                  <span 
+                    className="w-1.5 h-1.5 rounded-full block" 
+                    style={{ backgroundColor: accentColor }} 
+                  />
                 )}
               </button>
               <span>{option}</span>
@@ -234,7 +238,7 @@ const GeneralSettings: React.FC = () => {
     {/* Experiments */}
     <div>
       <label className="block text-sm font-semibold text-text-secondary mb-2">{t('experiments')}</label>
-        <div className="my-1 text-text-secondary text-sm">{t('experiments_desc')}</div>
+      <p className="text-sm text-text-secondary mb-4">{t('experiments_desc')}</p>
          <div className="space-y-4 mt-6">
 
   {/* Telemetry */}
@@ -251,15 +255,19 @@ const GeneralSettings: React.FC = () => {
       }}
       aria-pressed={telemetry}
     >
-      <span
-        className={`absolute inset-0 rounded-full border transition-colors duration-200 border-border group-hover:border-accent z-0 ${
-          telemetry ? '' : 'bg-bg'
-        }`}
+      <div 
+        className="absolute inset-0 rounded-full border transition-colors duration-200 z-0"
+        style={{
+          borderColor: telemetry ? accentColor : 'var(--border)',
+          backgroundColor: telemetry ? 'transparent' : 'var(--bg)'
+        }}
       />
       <span
-        className={`absolute left-1 top-1 w-2 h-2 rounded-full transition-all duration-200 ${
-          telemetry ? "translate-x-4 bg-accent shadow-lg" : "bg-gray-500"
-        }`}
+        className="absolute left-1 top-1 w-2 h-2 rounded-full transition-all duration-200 shadow-lg"
+        style={{
+          transform: telemetry ? 'translateX(1rem)' : 'translateX(0)',
+          backgroundColor: telemetry ? accentColor : 'var(--text-secondary)'
+        }}
       />
       <input
         type="checkbox"
@@ -337,15 +345,19 @@ const GeneralSettings: React.FC = () => {
       onClick={() => dispatch(toggleExpandNav())}
       aria-pressed={expandNav}
     >
-      <span
-        className={`absolute inset-0 rounded-full border transition-colors duration-200 border-border group-hover:border-accent z-0 ${
-          expandNav ? '' : 'bg-bg'
-        }`}
+      <div 
+        className="absolute inset-0 rounded-full border transition-colors duration-200 z-0"
+        style={{
+          borderColor: expandNav ? accentColor : 'var(--border)',
+          backgroundColor: expandNav ? 'transparent' : 'var(--bg)'
+        }}
       />
       <span
-        className={`absolute left-1 top-1 w-2 h-2 rounded-full transition-all duration-200 ${
-          expandNav ? "translate-x-4 bg-accent shadow-lg" : "bg-gray-500"
-        }`}
+        className="absolute left-1 top-1 w-2 h-2 rounded-full transition-all duration-200 shadow-lg"
+        style={{
+          transform: expandNav ? 'translateX(1rem)' : 'translateX(0)',
+          backgroundColor: expandNav ? accentColor : 'var(--text-secondary)'
+        }}
       />
       <input
         type="checkbox"
@@ -367,15 +379,19 @@ const GeneralSettings: React.FC = () => {
       onClick={() => dispatch(toggleSidebarLeft())}
       aria-pressed={sidebarLeft}
     >
-      <span
-        className={`absolute inset-0 rounded-full border transition-colors duration-200 border-border group-hover:border-accent z-0 ${
-          sidebarLeft ? '' : 'bg-bg'
-        }`}
+      <div 
+        className="absolute inset-0 rounded-full border transition-colors duration-200 z-0"
+        style={{
+          borderColor: sidebarLeft ? accentColor : 'var(--border)',
+          backgroundColor: sidebarLeft ? 'transparent' : 'var(--bg)'
+        }}
       />
       <span
-        className={`absolute left-1 top-1 w-2 h-2 rounded-full transition-all duration-200 ${
-          sidebarLeft ? "translate-x-4 bg-accent shadow-lg" : "bg-gray-500"
-        }`}
+        className="absolute left-1 top-1 w-2 h-2 rounded-full transition-all duration-200 shadow-lg"
+        style={{
+          transform: sidebarLeft ? 'translateX(1rem)' : 'translateX(0)',
+          backgroundColor: sidebarLeft ? accentColor : 'var(--text-secondary)'
+        }}
       />
       <input
         type="checkbox"
@@ -397,15 +413,19 @@ const GeneralSettings: React.FC = () => {
       onClick={() => dispatch(toggleAllExperiments())}
       aria-pressed={allExperiments}
     >
-      <span
-        className={`absolute inset-0 rounded-full border transition-colors duration-200 border-border group-hover:border-accent z-0 ${
-          allExperiments ? '' : 'bg-bg'
-        }`}
+      <div 
+        className="absolute inset-0 rounded-full border transition-colors duration-200 z-0"
+        style={{
+          borderColor: allExperiments ? accentColor : 'var(--border)',
+          backgroundColor: allExperiments ? 'transparent' : 'var(--bg)'
+        }}
       />
       <span
-        className={`absolute left-1 top-1 w-2 h-2 rounded-full transition-all duration-200 ${
-          allExperiments ? "translate-x-4 bg-accent shadow-lg" : "bg-gray-500"
-        }`}
+        className="absolute left-1 top-1 w-2 h-2 rounded-full transition-all duration-200 shadow-lg"
+        style={{
+          transform: allExperiments ? 'translateX(1rem)' : 'translateX(0)',
+          backgroundColor: allExperiments ? accentColor : 'var(--text-secondary)'
+        }}
       />
       <input
         type="checkbox"
@@ -477,15 +497,19 @@ const GeneralSettings: React.FC = () => {
       onClick={() => setExperimentalSandbox((v) => !v)}
       aria-pressed={experimentalSandbox}
     >
-      <span
-        className={`absolute inset-0 rounded-full border transition-colors duration-200 border-border group-hover:border-accent z-0 ${
-          experimentalSandbox ? '' : 'bg-bg'
-        }`}
+      <div 
+        className="absolute inset-0 rounded-full border transition-colors duration-200 z-0"
+        style={{
+          borderColor: experimentalSandbox ? accentColor : 'var(--border)',
+          backgroundColor: experimentalSandbox ? 'transparent' : 'var(--bg)'
+        }}
       />
       <span
-        className={`absolute left-1 top-1 w-2 h-2 rounded-full transition-all duration-200 ${
-          experimentalSandbox ? "translate-x-4 bg-accent shadow-lg" : "bg-gray-500"
-        }`}
+        className="absolute left-1 top-1 w-2 h-2 rounded-full transition-all duration-200 shadow-lg"
+        style={{
+          transform: experimentalSandbox ? 'translateX(1rem)' : 'translateX(0)',
+          backgroundColor: experimentalSandbox ? accentColor : 'var(--text-secondary)'
+        }}
       />
       <input
         type="checkbox"

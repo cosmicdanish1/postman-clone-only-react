@@ -5,6 +5,7 @@
 // Role: Renders the main request editor UI for the REST feature.
 
 import React, { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import useThemeClass from '../../hooks/useThemeClass';
 import { isValidUrl } from '../../utils/timeUtils';
 
@@ -105,6 +106,7 @@ const RequestEditor: React.FC<RequestEditorProps> = ({
   };
 
   const [localUrl, setLocalUrl] = React.useState(url || DEFAULT_URL);
+  const { t } = useTranslation();
   const [sendError, setSendError] = useState<string>('');
   
   // Handle send button click
@@ -113,7 +115,7 @@ const RequestEditor: React.FC<RequestEditorProps> = ({
     
     // Validate URL before sending
     if (!trimmedUrl || !isValidUrl(trimmedUrl)) {
-      setSendError('Please enter a valid URL (must start with http:// or https://)');
+      setSendError(t('request_editor.url_validation_error'));
       // Show error popup
       setTimeout(() => {
         setSendError('');
@@ -272,7 +274,7 @@ const RequestEditor: React.FC<RequestEditorProps> = ({
             value={localUrl}
             onChange={handleUrlChange}
             onKeyDown={handleKeyDown}
-            placeholder="Enter URL"
+            placeholder={t('request_editor.url_placeholder')}
             className={`w-full px-3 py-2 text-sm ${textClass} transition-colors ${cardBgClass}`}
             aria-label="Request URL"
           />
@@ -295,10 +297,10 @@ const RequestEditor: React.FC<RequestEditorProps> = ({
             }}
             onClick={handleSendButtonClick}
           >
-            Send
+            {t('request_editor.buttons.send')}
           </button>
           <button
-            disabled={false}
+            type="button"
             className={`px-2 py-2 rounded-r-md font-semibold transition-colors duration-200 ${buttonBgClass} ${sendMenuOpen ? 'bg-opacity-90' : ''}`}
             style={{
               backgroundColor: accentColor,
@@ -311,7 +313,7 @@ const RequestEditor: React.FC<RequestEditorProps> = ({
               e.currentTarget.style.backgroundColor = accentColor;
             }}
             onClick={onSendMenuOpen}
-            aria-label="Send options"
+            aria-label={t('request_editor.buttons.send_options')}
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
           </button>
@@ -368,7 +370,7 @@ const RequestEditor: React.FC<RequestEditorProps> = ({
             className={`px-4 py-2 text-sm font-medium ${textClass} ${buttonBgClass} rounded-md hover:bg-opacity-90 transition-colors duration-200`}
             onClick={onShowSaveDropdown}
           >
-            Save
+            {t('request_editor.buttons.save')}
           </button>
           {showSaveDropdown && (
             <div className={`absolute right-0 z-10 w-64 mt-1 ${cardBgClass} rounded-md shadow-lg border ${borderClass}`}>
@@ -376,7 +378,7 @@ const RequestEditor: React.FC<RequestEditorProps> = ({
                 <input
                   type="text"
                   className={`w-full px-3 py-2 text-sm ${textClass} ${cardBgClass} border ${borderClass} rounded focus:outline-none focus:ring-2 focus:ring-${accentColor}`}
-                  placeholder="Request Name"
+                  placeholder={t('request_editor.save_modal.name_placeholder')}
                   value={saveRequestName}
                   onChange={(e) => onSaveRequestNameChange(e.target.value)}
                 />
@@ -386,14 +388,14 @@ const RequestEditor: React.FC<RequestEditorProps> = ({
                     className="px-3 py-1 text-sm font-medium text-gray-700 hover:text-gray-900"
                     onClick={() => onShowSaveDropdown()}
                   >
-                    Cancel
+                    {t('request_editor.buttons.cancel')}
                   </button>
                   <button
                     type="button"
                     className="px-3 py-1 ml-2 text-sm font-medium text-white bg-blue-600 rounded hover:bg-blue-700"
                     onClick={onSave}
                   >
-                    Save
+                    {t('request_editor.buttons.save')}
                   </button>
                 </div>
               </div>

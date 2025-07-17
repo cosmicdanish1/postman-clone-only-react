@@ -1,37 +1,499 @@
 {
-  "settings": "सेटिंग्स",
-  "general": "सामान्य",
-  "theme": "थीम",
-  "interceptor": "इंटरसेप्टर",
+  "settings": {
+    "page_title": "सेटिंग्स",
+    "sections": {
+      "general": {
+        "title": "सामान्य",
+        "description": "एप्लिकेशन में उपयोग की जाने वाली सामान्य सेटिंग्स"
+      },
+      "theme": {
+        "title": "थीम",
+        "description": "एप्लिकेशन के लिए थीम सेटिंग्स"
+      },
+      "interceptor": {
+        "title": "इंटरसेप्टर",
+        "description": "HTTP/HTTPS इंटरसेप्शन सेटिंग्स कॉन्फ़िगर करें"
+      }
+    }
+  },
   "language": "भाषा",
-  "query_parameters_encoding": "क्वेरी पैरामीटर एनकोडिंग",
-  "query_parameters_encoding_desc": "अनुरोधों में क्वेरी पैरामीटर के लिए एनकोडिंग कॉन्फ़िगर करें",
+  "query_parameters_encoding": "क्वेरी पैरामीटर एन्कोडिंग",
+  "query_parameters_encoding_desc": "अनुरोधों में क्वेरी पैरामीटर के लिए एन्कोडिंग कॉन्फ़िगर करें",
   "experiments": "प्रयोग",
-  "experiments_desc": "यह प्रयोगों का एक संग्रह है जिस पर हम काम कर रहे हैं, जो उपयोगी, मजेदार, दोनों या कोई भी नहीं हो सकते हैं। ये अंतिम नहीं हैं और स्थिर भी नहीं हो सकते हैं, इसलिए यदि कुछ अजीब होता है, तो घबराएं नहीं। बस इसे बंद कर दें। मजाक अलग, हमसे संपर्क करें।",
+  "experiments_desc": "यह उन प्रयोगों का संग्रह है जिन पर हम काम कर रहे हैं जो उपयोगी, मजेदार, दोनों या कोई भी नहीं हो सकते हैं। ये अंतिम नहीं हैं और स्थिर नहीं हो सकते हैं, इसलिए यदि कुछ अत्यधिक अजीब होता है, तो घबराएं नहीं। बस इसे बंद कर दें। मजाक एक तरफ, हमसे संपर्क करें।",
   "telemetry": "टेलीमेट्री",
   "confirm": "पुष्टि करें",
-  "telemetry_optout_desc": "क्या आप वाकई टेलीमेट्री से बाहर निकलना चाहते हैं? टेलीमेट्री हमें आपके अनुभव को बेहतर बनाने में मदद करती है।",
+  "telemetry_optout_desc": "क्या आप वाकई टेलीमेट्री से बाहर निकलना चाहते हैं? टेलीमेट्री हमारे संचालन को व्यक्तिगत बनाने और आपको सबसे अच्छा अनुभव प्रदान करने में मदद करती है।",
   "yes": "हाँ",
   "no": "नहीं",
   "no_results": "कोई परिणाम नहीं",
-  "save": "सहेजें",
+  "save": "सेव करें",
   "cancel": "रद्द करें",
   "app_name": "पोस्टमैन",
-  "search_and_commands": "खोजें और कमांड...",
-  "save_workspace": "मेरा कार्यक्षेत्र सहेजें",
-  "login": "लॉग इन करें",
+  "search_and_commands": "खोज और कमांड...",
+  "save_workspace": "मेरा वर्कस्पेस सेव करें",
+  "login": "लॉग इन",
   "rest": "रेस्ट",
-  "graphql": "ग्राफक्यूएल",
-  "realtime": "रीयलटाइम",
-  "global": "वैश्विक",
-  "environment": "पर्यावरण",
-  "close_tab": "टैब बंद करें",
+  "graphql_feature": "ग्राफक्यूएल",
+  "realtime_feature": "रियलटाइम",
   "query_parameters": "क्वेरी पैरामीटर",
   "help": "सहायता",
   "delete": "हटाएं",
   "edit": "संपादित करें",
   "add": "जोड़ें",
-  "key": "कुंजी",
-  "value": "मान",
-  "description": "विवरण"
+  "edit_environment": "एनवायरनमेंट संपादित करें",
+  "label": "लेबल",
+  "secrets": "सीक्रेट्स",
+  "environments_empty": "अभी तक कोई एनवायरनमेंट वेरिएबल नहीं",
+  "add_new": "नया जोड़ें",
+  "generate_code": "कोड जेनरेट करें",
+  "choose_language": "भाषा चुनें",
+  "generated_code": "जेनरेट किया गया कोड",
+  "shell_curl": "शेल (cURL)",
+  "node_fetch": "Node.js (fetch)",
+  "python_requests": "Python (requests)",
+  "go_http": "Go (net/http)",
+  "js_xhr": "JavaScript (XHR)",
+  "copy": "कॉपी करें",
+  "dismiss": "खारिज करें",
+  "copy_toast": "कोड क्लिपबोर्ड में कॉपी किया गया!",
+  "copy_failed": "कोड कॉपी करने में विफल",
+  "import_curl": "cURL इंपोर्ट करें",
+  "curl": "cURL",
+  "enter_curl_command": "अपना cURL कमांड यहाँ पेस्ट करें...",
+  "import": "इंपोर्ट करें",
+  "paste": "पेस्ट करें",
+  "curl_import_success": "cURL सफलतापूर्वक इंपोर्ट किया गया!",
+  "curl_import_failed": "cURL इंपोर्ट करने में विफल। कृपया फॉर्मेट जांचें।",
+  "clear": "साफ़ करें",
+  "copy_curl": "cURL कॉपी करें",
+  "close": "बंद करें",
+  "pasted_from_clipboard": "क्लिपबोर्ड से पेस्ट किया गया!",
+  "clipboard_access_denied": "क्लिपबोर्ड एक्सेस नहीं कर सका। कृपया मैन्युअल रूप से पेस्ट करें।",
+  "empty_curl_error": "कृपया इंपोर्ट करने के लिए cURL कमांड दर्ज करें।",
+  "paste_curl_hint": "अपना cURL कमांड ऊपर पेस्ट करें या इसे मैन्युअल रूप से टाइप करें।",
+  "save_as": "इस रूप में सेव करें",
+  "request_name": "अनुरोध का नाम",
+  "select_location": "स्थान चुनें",
+  "personal_workspace_collections": "व्यक्तिगत वर्कस्पेस / संग्रह",
+  "import_or_create_collection": "शुरू करने के लिए संग्रह इंपोर्ट करें या बनाएं",
+  "no_collections_found": "कोई संग्रह नहीं मिला",
+  "search_collections": "संग्रह खोजें",
+  "create_new_collection": "नया संग्रह बनाएं",
+  "request_name_required": "कृपया अनुरोध का नाम दर्ज करें",
+  
+  "search": {
+    "all": "सभी",
+    "requests": "अनुरोध",
+    "collections": "संग्रह",
+    "environments": "एनवायरनमेंट",
+    "documentation": "डॉक्यूमेंटेशन",
+    "categories": "खोज श्रेणियां",
+    "results": "खोज परिणाम",
+    "placeholder": "अनुरोध, संग्रह, और अधिक खोजें...",
+    "no_results": "कोई परिणाम नहीं मिला",
+    "no_recent_searches": "कोई हाल की खोज नहीं",
+    "recent_searches": "हाल की खोजें",
+    "tip": "बंद करने के लिए Esc दबाएं",
+    "to_toggle": "खोज टॉगल करने के लिए",
+    "common": {
+      "close": "खोज बंद करें"
+    }
+  },
+  "download": {
+    "title": "ऐप डाउनलोड करें",
+    "platforms": {
+      "macos": "macOS",
+      "windows": "विंडोज",
+      "linux": "लिनक्स",
+      "cli": "CLI"
+    },
+    "aria_labels": {
+      "windows": "विंडोज के लिए डाउनलोड करें",
+      "macos": "macOS के लिए डाउनलोड करें",
+      "linux": "लिनक्स के लिए डाउनलोड करें",
+      "cli": "CLI डॉक्यूमेंटेशन देखें"
+    }
+  },
+  "response": {
+    "body": "रिस्पॉन्स बॉडी",
+    "headers": "हेडर्स",
+    "no_headers": "कोई हेडर उपलब्ध नहीं",
+    "no_headers_to_display": "प्रदर्शित करने के लिए कोई हेडर नहीं",
+    "copy": "कॉपी करें",
+    "download": "डाउनलोड करें",
+    "filter": "फिल्टर करें",
+    "save": "सेव करें",
+    "copy_key": "की कॉपी करें",
+    "copy_value": "वैल्यू कॉपी करें",
+    "copy_all_headers": "सभी हेडर कॉपी करें",
+    "loading": "लोड हो रहा है...",
+    "loading_json": "JSON डेटा लोड हो रहा है...",
+    "error": "त्रुटि: {{error}}",
+    "error_loading_json": "JSON लोड करने में त्रुटि: {{error}}",
+    "response_body": "रिस्पॉन्स बॉडी",
+    "actions": {
+      "filter": "JSON फिल्टर करें",
+      "download": "JSON डाउनलोड करें",
+      "save": "JSON सेव करें",
+      "copy": "क्लिपबोर्ड में कॉपी करें"
+    },
+    "invalid_json": "अमान्य JSON डेटा",
+    "copy_to_clipboard": "क्लिपबोर्ड में कॉपी करें"
+  },
+  
+  "common": {
+    "loading": "लोड हो रहा है...",
+    "error_occurred": "एक त्रुटि हुई"
+  },
+  
+  "sidebar": {
+    "collapse": "साइडबार छोटा करें",
+    "expand": "साइडबार बड़ा करें",
+    "rest": "रेस्ट",
+    "graphql": "ग्राफक्यूएल",
+    "realtime": "रियलटाइम",
+    "settings": "सेटिंग्स"
+  },
+  
+  "realtime": {
+    "message": "संदेश",
+    "format_options": {
+      "json": "JSON",
+      "raw": "रॉ"
+    },
+    "actions": {
+      "send": "भेजें",
+      "clear_input": "इनपुट साफ़ करें",
+      "connect": "कनेक्ट करें",
+      "drag_to_reorder": "पुनर्व्यवस्थित करने के लिए ड्रैग करें",
+      "delete_all": "सभी हटाएं"
+    },
+    "tabs": {
+      "communication": "संचार",
+      "protocols": "प्रोटोकॉल"
+    },
+    "protocols": {
+      "title": "प्रोटोकॉल",
+      "name_placeholder": "प्रोटोकॉल नाम",
+      "websocket": "वेबसॉकेट",
+      "sse": "SSE",
+      "socketio": "Socket.IO",
+      "mqtt": "MQTT"
+    },
+    "websocket": {
+      "default_endpoint": "wss://echo-websocket.hoppscotch.io"
+    },
+    "mqtt": {
+      "url_placeholder": "mqtt://broker.hivemq.com:8000",
+      "client_id": "क्लाइंट आईडी",
+      "client_id_placeholder": "क्लाइंट आईडी दर्ज करें",
+      "connection_config": "कनेक्शन कॉन्फ़िगरेशन",
+      "clean_session": "क्लीन सेशन",
+      "username": "उपयोगकर्ता नाम",
+      "password": "पासवर्ड",
+      "last_will_topic": "अंतिम इच्छा विषय",
+      "last_will_message": "अंतिम इच्छा संदेश",
+      "keep_alive": "जीवित रखें (सेकंड)",
+      "last_will_qos": "अंतिम इच्छा QoS",
+      "last_will_retain": "अंतिम इच्छा को बनाए रखें"
+    },
+    "socketio": {
+      "url_placeholder": "wss://echo-socketio.hoppscotch.io",
+      "namespace_placeholder": "नेमस्पेस",
+      "event_topic_name": "इवेंट विषय नाम",
+      "client_versions": {
+        "v2": "v2.x",
+        "v3": "v3.x",
+        "v4": "v4.x"
+      }
+    },
+    "sse": {
+      "url_placeholder": "https://express-eventsource.herokuapp.com/events",
+      "event_type": "इवेंट प्रकार",
+      "default_event_type": "डेटा"
+    },
+    "help": {
+      "send_request": "अनुरोध भेजें",
+      "keyboard_shortcuts": "कीबोर्ड शॉर्टकट टॉगल करें",
+      "search_command_menu": "खोज कमांड मेनू",
+      "help_menu": "सहायता मेनू टॉगल करें",
+      "documentation": "डॉक्यूमेंटेशन"
+    }
+  },
+  
+  "graphql": {
+    "endpoint_placeholder": "https://example.com/graphql",
+    "connect": "कनेक्ट करें",
+    "edit_request": "अनुरोध संपादित करें",
+    "label": "लेबल",
+    "untitled": "बिना शीर्षक",
+    "error_sending_request": "GraphQL अनुरोध भेजने में त्रुटि",
+    "default_endpoint": "https://echo.hoppscotch.io/graphql",
+    "tabs": {
+      "query": "क्वेरी",
+      "variables": "वेरिएबल्स",
+      "headers": "हेडर्स",
+      "authorization": "प्राधिकरण"
+    }
+  },
+  "headers": {
+    "drag_to_reorder": "पुनर्व्यवस्थित करने के लिए ड्रैग करें",
+    "key": "की",
+    "value": "वैल्यू",
+    "description": "विवरण",
+    "save": "सेव करें",
+    "delete": "हटाएं"
+  },
+  
+  "params": {
+    "drag_to_reorder": "पुनर्व्यवस्थित करने के लिए ड्रैग करें",
+    "key": "की",
+    "value": "वैल्यू",
+    "description": "विवरण"
+  },
+  
+  "variables": {
+    "drag_to_reorder": "पुनर्व्यवस्थित करने के लिए ड्रैग करें",
+    "variable": "वेरिएबल",
+    "value": "वैल्यू"
+  },
+  
+  "tabs": {
+    "close_tab": "टैब बंद करें",
+    "global": "ग्लोबल",
+    "environment": "एनवायरनमेंट",
+    "no_environment": "कोई एनवायरनमेंट नहीं"
+  },
+  
+  
+  "status": {
+    "ok": "स्थिति: ठीक है"
+  },
+  
+  "help_feedback": "सहायता और फीडबैक",
+  "share": "साझा करें",
+  "link_copied": "लिंक क्लिपबोर्ड में कॉपी किया गया!",
+  "vertical_layout": "वर्टिकल लेआउट टॉगल करें",
+  
+  "shortcuts": "कीबोर्ड शॉर्टकट",
+  "close_shortcuts_panel": "कीबोर्ड शॉर्टकट पैनल बंद करें",
+  "close_shortcuts_panel_overlay": "कीबोर्ड शॉर्टकट बंद करें",
+  "no_shortcuts_found": "कोई शॉर्टकट नहीं मिला",
+  "search_shortcuts_placeholder": "शॉर्टकट खोजें...",
+  
+  "shortcut_sections": {
+    "general": "सामान्य",
+    "request": "अनुरोध",
+    "response": "रिस्पॉन्स",
+    "navigation": "नेवीगेशन",
+    "miscellaneous": "विविध"
+  },
+  
+  "shortcut_labels": {
+    "help_menu": "सहायता मेनू टॉगल करें",
+    "search_command_menu": "कमांड पैलेट खोलें",
+    "keyboard_shortcuts": "कीबोर्ड शॉर्टकट दिखाएं",
+    "close_current_menu": "वर्तमान मेनू बंद करें",
+    "send_request": "अनुरोध भेजें",
+    "save_to_collections": "संग्रह में सेव करें",
+    "share_request": "अनुरोध साझा करें",
+    "reset_request": "अनुरोध रीसेट करें",
+    "select_next_method": "अगला HTTP मेथड चुनें",
+    "select_prev_method": "पिछला HTTP मेथड चुनें",
+    "select_get_method": "GET मेथड चुनें",
+    "select_head_method": "HEAD मेथड चुनें",
+    "select_post_method": "POST मेथड चुनें",
+    "select_put_method": "PUT मेथड चुनें",
+    "select_delete_method": "DELETE मेथड चुनें",
+    "download_response": "रिस्पॉन्स डाउनलोड करें",
+    "copy_response": "रिस्पॉन्स कॉपी करें",
+    "go_back": "वापस जाएं",
+    "go_forward": "आगे जाएं",
+    "go_rest": "REST क्लाइंट पर जाएं",
+    "go_graphql": "GraphQL पर जाएं",
+    "go_realtime": "WebSockets पर जाएं",
+    "go_settings": "सेटिंग्स पर जाएं",
+    "go_profile": "प्रोफ़ाइल पर जाएं",
+    "invite_people": "टीम सदस्यों को आमंत्रित करें"
+  },
+  
+  "navbar": {
+    "search_placeholder": "खोज और कमांड...",
+    "download": "डाउनलोड करें",
+    "support": "सपोर्ट",
+    "save_workspace": "वर्कस्पेस सेव करें",
+    "login": "लॉग इन करें"
+  },
+  
+  "app_theme": {
+    "labels": {
+      "background": "बैकग्राउंड",
+      "accent_color": "एक्सेंट कलर"
+    },
+    "backgrounds": {
+      "system": "सिस्टम (डार्क)",
+      "light": "लाइट",
+      "dark": "डार्क",
+      "black": "ब्लैक"
+    },
+    "colors": {
+      "blue": "नीला",
+      "green": "हरा",
+      "purple": "बैंगनी",
+      "pink": "गुलाबी",
+      "red": "लाल",
+      "orange": "नारंगी",
+      "yellow": "पीला",
+      "teal": "टील",
+      "cyan": "सियान"
+    }
+  },
+  "interceptor": {
+    "interceptor": "इंटरसेप्टर",
+    "title": "इंटरसेप्टर",
+    "description": "एप्लिकेशन और APIs के बीच मिडलवेयर।",
+    "browser_extension": "ब्राउज़र एक्सटेंशन",
+    "extension_version": "एक्सटेंशन वर्जन: {{version}}",
+    "not_reported": "रिपोर्ट नहीं किया गया",
+    "chrome": "क्रोम",
+    "firefox": "फायरफॉक्स",
+    "options": {
+      "browser": "ब्राउज़र",
+      "proxy": "प्रॉक्सी",
+      "agent": "एजेंट",
+      "browser_extension": "ब्राउज़र एक्सटेंशन"
+    },
+    "proxy_settings": {
+      "title": "प्रॉक्सी सेटिंग्स",
+      "url_placeholder": "http://proxy.example.com:8080",
+      "username": "उपयोगकर्ता नाम",
+      "password": "पासवर्ड",
+      "test_connection": "कनेक्शन टेस्ट करें"
+    },
+    "agent_settings": {
+      "title": "एजेंट सेटिंग्स",
+      "description": "Hoppscotch एजेंट और डेस्कटॉप ऐप NTLM और बेसिक ऑथ सपोर्ट के साथ HTTP/HTTPS/SOCKS प्रॉक्सी को सपोर्ट करता है।",
+      "verify_host": "होस्ट वेरिफाई करें",
+      "verify_peer": "पीयर वेरिफाई करें",
+      "ca_certificates": "CA सर्टिफिकेट्स",
+      "client_certificates": "क्लाइंट सर्टिफिकेट्स",
+      "register_agent": "एजेंट रजिस्टर करें",
+      "manage_domains": "डोमेन प्रबंधित करें"
+    },
+    "domain_overrides": {
+      "title": "डोमेन ओवरराइड",
+      "add_domain": "डोमेन जोड़ें",
+      "global_defaults": "ग्लोबल डिफ़ॉल्ट"
+    },
+    "url_credentials_note": "आवश्यक होने पर URL में क्रेडेंशियल्स शामिल करना होगा",
+    "proxy_url": "प्रॉक्सी URL",
+    "enter_proxy_url": "प्रॉक्सी URL दर्ज करें (जैसे, http://proxy.example.com:8080)",
+    "agent_not_detected": "Hoppscotch एजेंट का पता नहीं चला।",
+    "check_agent_running": "कृपया जांचें कि एजेंट चल रहा है या नहीं",
+    "certificate": {
+      "pem": "PEM",
+      "pfx": "PFX",
+      "cert_file": "सर्टिफिकेट फाइल",
+      "key_file": "की फाइल",
+      "pfx_file": "PFX फाइल",
+      "password": "पासवर्ड",
+      "browse": "ब्राउज़ करें",
+      "no_file_selected": "कोई फाइल चुनी नहीं गई",
+      "remove": "हटाएं"
+    },
+    "notifications": {
+      "agent_registered": "एजेंट सफलतापूर्वक रजिस्टर किया गया!",
+      "connection_success": "कनेक्शन टेस्ट सफल!",
+      "connection_failed": "कनेक्शन टेस्ट विफल",
+      "domain_added": "डोमेन सफलतापूर्वक जोड़ा गया"
+    }
+  },
+  "help_menu": {
+    "documentation": "डॉक्यूमेंटेशन",
+    "keyboard_shortcuts": "कीबोर्ड शॉर्टकट",
+    "chat_with_us": "हमारे साथ चैट करें",
+    "whats_new": "क्या नया है",
+    "status": "स्थिति",
+    "github": "GitHub",
+    "twitter": "Twitter",
+    "invite": "टीम सदस्यों को आमंत्रित करें",
+    "terms_privacy": "नियम और गोपनीयता"
+  },
+  
+  "request_editor": {
+    "url_placeholder": "URL दर्ज करें",
+    "url_validation_error": "कृपया एक मान्य URL दर्ज करें (http:// या https:// से शुरू होना चाहिए)",
+    "buttons": {
+      "send": "भेजें",
+      "send_options": "भेजने के विकल्प",
+      "save": "सेव करें",
+      "cancel": "रद्द करें"
+    },
+    "menu_items": {
+      "import_curl": "cURL इंपोर्ट करें",
+      "show_code": "कोड दिखाएं",
+      "clear_all": "सभी साफ़ करें"
+    },
+    "save_modal": {
+      "title": "अनुरोध सेव करें",
+      "name_placeholder": "अनुरोध का नाम"
+    }
+  },
+  "certificate_settings": {
+    "url_credentials_note": "आप URL में उपयोगकर्ता नाम और पासवर्ड भी शामिल कर सकते हैं।",
+    "username": "उपयोगकर्ता नाम",
+    "password": "पासवर्ड",
+    "add_certificate_file": "सर्टिफिकेट फाइल जोड़ें",
+    "supported_certificate_formats": "Hoppscotch एक या अधिक सर्टिफिकेट वाली .crt, .cer या .pem फाइलों को सपोर्ट करता है।",
+    "done": "हो गया",
+    "pem": "PEM",
+    "pfx": "PFX",
+    "certificate": "सर्टिफिकेट",
+    "select_file": "फाइल चुनें",
+    "private_key": "प्राइवेट की",
+    "pfx_file": "PFX फाइल",
+    "enter_password_if_any": "पासवर्ड दर्ज करें (यदि कोई है)",
+    "manage_domains_overrides": "डोमेन ओवरराइड प्रबंधित करें",
+    "example_domain": "example.com",
+    "global_defaults": "ग्लोबल डिफ़ॉल्ट"
+  },
+  "history": {
+    "breadcrumb": {
+      "workspace": "व्यक्तिगत वर्कस्पेस",
+      "title": "इतिहास"
+    },
+    "search": {
+      "placeholder": "इतिहास खोजें...",
+      "no_results": "कोई परिणाम नहीं मिला",
+      "try_again": "एक अलग खोज शब्द का प्रयास करें"
+    },
+    "filter": {
+      "title": "फिल्टर",
+      "all_items": "सभी आइटम",
+      "starred_only": "केवल स्टार किए गए"
+    },
+    "actions": {
+      "help": "सहायता",
+      "clear_all": "सभी इतिहास साफ़ करें",
+      "confirm_clear_all": "क्या आप वाकई सभी इतिहास हटाना चाहते हैं?",
+      "confirm_delete": "क्या आप वाकई इस अनुरोध को हटाना चाहते हैं?",
+      "add_star": "स्टार जोड़ें",
+      "remove_star": "स्टार हटाएं",
+      "remove": "हटाएं"
+    },
+    "empty_state": {
+      "title": "अभी तक कोई इतिहास नहीं",
+      "description": "आपका अनुरोध इतिहास यहाँ दिखाई देगा"
+    },
+    "loading": "इतिहास लोड हो रहा है...",
+    "items_count": "{{count}} आइटम",
+    "no_url": "कोई URL नहीं",
+    "debug": {
+      "items": "आइटम:",
+      "status": "स्थिति:",
+      "ready": "तैयार",
+      "error": "त्रुटि"
+    }
+  }
 }

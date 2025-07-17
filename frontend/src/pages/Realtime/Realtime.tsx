@@ -11,7 +11,7 @@ import SSEPanel from './SSEPanel';
 import SocketIOPanel from './SocketIOPanel';
 import MQTTPanel from './MQTTPanel';
 import RealtimeHelpPanel from './RealtimeHelpPanel';
-import { useSelector } from 'react-redux';
+import useThemeClass from '../../hooks/useThemeClass';
 
 const MIN_LEFT_WIDTH = 300;
 const MAX_LEFT_WIDTH = 900;
@@ -22,11 +22,7 @@ const Realtime: React.FC = () => {
   const [selectedProtocol, setSelectedProtocol] = useState('websocket');
   const dividerRef = useRef<HTMLDivElement>(null);
 
-  const theme = useSelector((state: any) => state.theme.theme);
-  let themeClass = '';
-  if (theme === 'dark') themeClass = 'theme-dark';
-  else if (theme === 'black') themeClass = 'theme-black';
-  // No class for light (default)
+  const { themeClass, accentColor } = useThemeClass();
 
   const handleMouseDown = (_e: React.MouseEvent) => {
     setDragging(true);
@@ -73,7 +69,7 @@ const Realtime: React.FC = () => {
   };
 
   return (
-    <div className={`flex flex-col h-full w-full  bg-bg text-text ${themeClass}`}>
+    <div className={`flex flex-col h-full w-full bg-bg text-text ${themeClass}`}>
       {/* Protocol tab bar at the top (make scrollable on mobile) */}
       <div className="overflow-x-auto whitespace-nowrap">
         <RealtimeProtocolTabBar selectedProtocol={selectedProtocol} onSelectProtocol={setSelectedProtocol} />
@@ -87,9 +83,13 @@ const Realtime: React.FC = () => {
         {/* Vertical divider for resizing (hide on mobile) */}
         <div
           ref={dividerRef}
-          className="w-2 h-full cursor-col-resize bg-border hover:bg-blue-600 transition hidden sm:block"
+          className="w-2 h-full cursor-col-resize bg-border transition hidden sm:block hover:opacity-100"
+          style={{
+            zIndex: 10,
+            backgroundColor: dragging ? accentColor : 'var(--border)',
+            opacity: dragging ? 1 : 0.5
+          }}
           onMouseDown={handleMouseDown}
-          style={{ zIndex: 10 }}
         />
         {/* Right: Help panel (hide on mobile) */}
         <div className="flex-1 h-full bg-bg hidden sm:block">

@@ -1,54 +1,499 @@
 {
-  "settings": "Instellings",
-  "general": "Algemeen",
-  "theme": "Tema",
-  "interceptor": "Interceptor",
+  "settings": {
+    "page_title": "Instellings",
+    "sections": {
+      "general": {
+        "title": "Algemeen",
+        "description": "Algemene instellings wat in die toepassing gebruik word"
+      },
+      "theme": {
+        "title": "Tema",
+        "description": "Tema instellings vir die toepassing"
+      },
+      "interceptor": {
+        "title": "Onderskeppingstelsel",
+        "description": "Konfigureer HTTP/HTTPS onderskeppingsinstellings"
+      }
+    }
+  },
   "language": "Taal",
-  "query_parameters_encoding": "Kodeer navraagparameters",
-  "query_parameters_encoding_desc": "Stel kodering in vir navraagparameters in versoeke",
+  "query_parameters_encoding": "Navraag Parameters Enkodering",
+  "query_parameters_encoding_desc": "Konfigureer enkodering vir navraag parameters in versoeke",
   "experiments": "Eksperimente",
-  "experiments_desc": "Hierdie is 'n versameling eksperimente waaraan ons werk wat dalk nuttig, pret, albei of geen van beide kan wees nie. Hulle is nie finaal nie en dalk nie stabiel nie, so as iets baie vreemd gebeur, moenie paniekerig raak nie. Skakel dit net af. Grappe eenkant, kontak ons.",
+  "experiments_desc": "Dit is 'n versameling eksperimente waaraan ons werk wat nuttig, pret, beide, of geeneen mag wees nie. Hulle is nie finaal nie en mag nie stabiel wees nie, so as iets oormatig vreemd gebeur, moenie paniek nie. Skakel die ding net af. Grappies opsy, kontak ons.",
   "telemetry": "Telemetrie",
   "confirm": "Bevestig",
-  "telemetry_optout_desc": "Is jy seker jy wil van telemetrie onttrek? Telemetrie help ons om ons bedrywighede te personaliseer en jou die beste ervaring te bied.",
+  "telemetry_optout_desc": "Is jy seker jy wil uit telemetrie onttrek? Telemetrie help ons om ons bedrywighede te personaliseer en jou die beste ervaring te bied.",
   "yes": "Ja",
   "no": "Nee",
   "no_results": "Geen resultate",
   "save": "Stoor",
   "cancel": "Kanselleer",
   "app_name": "Postman",
-  "search_and_commands": "Soek en opdragte...",
-
-  "save_workspace": "Stoor my werksruimte",
+  "search_and_commands": "Soek en bevele...",
+  "save_workspace": "Stoor My Werkruimte",
   "login": "Meld aan",
   "rest": "REST",
-  "graphql": "GraphQL",
-  "realtime": "Regstreekse tyd",
-  "global": "Globaal",
-  "environment": "Omgewing",
-  "close_tab": "Maak oortjie toe",
-  "query_parameters": "Navraagparameters",
+  "graphql_feature": "GraphQL",
+  "realtime_feature": "Intydse",
+  "query_parameters": "Navraag Parameters",
   "help": "Hulp",
-  "delete": "Verwyder",
-  "edit": "Wysig",
+  "delete": "Skrap",
+  "edit": "Redigeer",
   "add": "Voeg by",
-  "key": "Sleutel",
-  "value": "Waarde",
-  "description": "Beskrywing",
-  "content_type": "Content Type",
-  "none": "None",
-  "override": "Override",
-  "raw_request_body": "Raw request body",
-  "format": "Format",
-  "request_headers": "Request Headers",
-  "auth_inherit": "Inherit",
-  "auth_none": "None",
-  "auth_basic": "Basic Auth",
-  "auth_digest": "Digest Auth",
-  "auth_bearer": "Bearer Token",
-  "auth_oauth2": "OAuth 2.0",
-  "auth_apikey": "API Key",
-  "auth_aws": "AWS Signature",
-  "auth_hawk": "Hawk",
-  "auth_jwt": "JWT"
+  "edit_environment": "Redigeer Omgewing",
+  "label": "Etiket",
+  "secrets": "Geheime",
+  "environments_empty": "Nog geen omgewingsveranderlikes nie",
+  "add_new": "Voeg nuwe by",
+  "generate_code": "Genereer Kode",
+  "choose_language": "Kies Taal",
+  "generated_code": "Gegenereerde Kode",
+  "shell_curl": "Shell (cURL)",
+  "node_fetch": "Node.js (fetch)",
+  "python_requests": "Python (requests)",
+  "go_http": "Go (net/http)",
+  "js_xhr": "JavaScript (XHR)",
+  "copy": "Kopieer",
+  "dismiss": "Verwerp",
+  "copy_toast": "Kode na klembord gekopieer!",
+  "copy_failed": "Kon nie kode kopieer nie",
+  "import_curl": "Voer cURL in",
+  "curl": "cURL",
+  "enter_curl_command": "Plak jou cURL bevel hier...",
+  "import": "Voer in",
+  "paste": "Plak",
+  "curl_import_success": "cURL suksesvol ingevoer!",
+  "curl_import_failed": "Kon nie cURL invoer nie. Gaan die formaat na.",
+  "clear": "Maak skoon",
+  "copy_curl": "Kopieer cURL",
+  "close": "Sluit",
+  "pasted_from_clipboard": "Geplak vanaf klembord!",
+  "clipboard_access_denied": "Kon nie klembord toegang kry nie. Plak asseblief handmatig.",
+  "empty_curl_error": "Gee asseblief 'n cURL bevel om in te voer.",
+  "paste_curl_hint": "Plak jou cURL bevel hierbo of tik dit handmatig.",
+  "save_as": "Stoor as",
+  "request_name": "Versoek Naam",
+  "select_location": "Kies 'n ligging",
+  "personal_workspace_collections": "Persoonlike Werkruimte / Versamelings",
+  "import_or_create_collection": "Voer in of skep 'n versameling om te begin",
+  "no_collections_found": "Geen versamelings gevind nie",
+  "search_collections": "Soek versamelings",
+  "create_new_collection": "Skep nuwe versameling",
+  "request_name_required": "Gee asseblief 'n versoek naam",
+  
+  "search": {
+    "all": "Alles",
+    "requests": "Versoeke",
+    "collections": "Versamelings",
+    "environments": "Omgewings",
+    "documentation": "Dokumentasie",
+    "categories": "Soek kategorieë",
+    "results": "Soek resultate",
+    "placeholder": "Soek versoeke, versamelings, en meer...",
+    "no_results": "Geen resultate gevind nie",
+    "no_recent_searches": "Geen onlangse soektogte nie",
+    "recent_searches": "Onlangse Soektogte",
+    "tip": "Druk Esc om te sluit",
+    "to_toggle": "om soek te wissel",
+    "common": {
+      "close": "Sluit soek"
+    }
+  },
+  "download": {
+    "title": "Laai App af",
+    "platforms": {
+      "macos": "macOS",
+      "windows": "Windows",
+      "linux": "Linux",
+      "cli": "CLI"
+    },
+    "aria_labels": {
+      "windows": "Laai af vir Windows",
+      "macos": "Laai af vir macOS",
+      "linux": "Laai af vir Linux",
+      "cli": "Bekyk CLI Dokumentasie"
+    }
+  },
+  "response": {
+    "body": "Respons Liggaam",
+    "headers": "Hoofde",
+    "no_headers": "Geen hoofde beskikbaar nie",
+    "no_headers_to_display": "Geen hoofde om te vertoon nie",
+    "copy": "Kopieer",
+    "download": "Laai af",
+    "filter": "Filter",
+    "save": "Stoor",
+    "copy_key": "Kopieer sleutel",
+    "copy_value": "Kopieer waarde",
+    "copy_all_headers": "Kopieer alle hoofde",
+    "loading": "Laai...",
+    "loading_json": "Laai JSON data...",
+    "error": "Fout: {{error}}",
+    "error_loading_json": "Fout met laai van JSON: {{error}}",
+    "response_body": "Respons Liggaam",
+    "actions": {
+      "filter": "Filter JSON",
+      "download": "Laai JSON af",
+      "save": "Stoor JSON",
+      "copy": "Kopieer na klembord"
+    },
+    "invalid_json": "Ongeldige JSON data",
+    "copy_to_clipboard": "Kopieer na klembord"
+  },
+  
+  "common": {
+    "loading": "Laai...",
+    "error_occurred": "'n Fout het voorgekom"
+  },
+  
+  "sidebar": {
+    "collapse": "Vou sybalk toe",
+    "expand": "Vou sybalk uit",
+    "rest": "REST",
+    "graphql": "GraphQL",
+    "realtime": "Intydse",
+    "settings": "Instellings"
+  },
+  
+  "realtime": {
+    "message": "Boodskap",
+    "format_options": {
+      "json": "JSON",
+      "raw": "Rou"
+    },
+    "actions": {
+      "send": "Stuur",
+      "clear_input": "Maak invoer skoon",
+      "connect": "Koppel",
+      "drag_to_reorder": "Sleep om te herrangskik",
+      "delete_all": "Skrap alles"
+    },
+    "tabs": {
+      "communication": "Kommunikasie",
+      "protocols": "Protokolle"
+    },
+    "protocols": {
+      "title": "Protokolle",
+      "name_placeholder": "Protokol naam",
+      "websocket": "WebSocket",
+      "sse": "SSE",
+      "socketio": "Socket.IO",
+      "mqtt": "MQTT"
+    },
+    "websocket": {
+      "default_endpoint": "wss://echo-websocket.hoppscotch.io"
+    },
+    "mqtt": {
+      "url_placeholder": "mqtt://broker.hivemq.com:8000",
+      "client_id": "Kliënt ID",
+      "client_id_placeholder": "Voer kliënt ID in",
+      "connection_config": "Verbinding Konfigurasie",
+      "clean_session": "Skoon Sessie",
+      "username": "Gebruikersnaam",
+      "password": "Wagwoord",
+      "last_will_topic": "Laaste Testament Onderwerp",
+      "last_will_message": "Laaste Testament Boodskap",
+      "keep_alive": "Hou lewend (sek)",
+      "last_will_qos": "Laaste Testament QoS",
+      "last_will_retain": "Behou Laaste Testament"
+    },
+    "socketio": {
+      "url_placeholder": "wss://echo-socketio.hoppscotch.io",
+      "namespace_placeholder": "Naamruimte",
+      "event_topic_name": "Gebeurtenis onderwerp naam",
+      "client_versions": {
+        "v2": "v2.x",
+        "v3": "v3.x",
+        "v4": "v4.x"
+      }
+    },
+    "sse": {
+      "url_placeholder": "https://express-eventsource.herokuapp.com/events",
+      "event_type": "Gebeurtenis tipe",
+      "default_event_type": "data"
+    },
+    "help": {
+      "send_request": "Stuur versoek",
+      "keyboard_shortcuts": "Wissel sleutelbord kortpaaie",
+      "search_command_menu": "Soek bevel kieslys",
+      "help_menu": "Wissel hulp kieslys",
+      "documentation": "Dokumentasie"
+    }
+  },
+  
+  "graphql": {
+    "endpoint_placeholder": "https://example.com/graphql",
+    "connect": "Koppel",
+    "edit_request": "Redigeer Versoek",
+    "label": "Etiket",
+    "untitled": "Sonder titel",
+    "error_sending_request": "Fout met stuur van GraphQL versoek",
+    "default_endpoint": "https://echo.hoppscotch.io/graphql",
+    "tabs": {
+      "query": "Navraag",
+      "variables": "Veranderlikes",
+      "headers": "Hoofde",
+      "authorization": "Magtiging"
+    }
+  },
+  "headers": {
+    "drag_to_reorder": "Sleep om te herrangskik",
+    "key": "Sleutel",
+    "value": "Waarde",
+    "description": "Beskrywing",
+    "save": "Stoor",
+    "delete": "Skrap"
+  },
+  
+  "params": {
+    "drag_to_reorder": "Sleep om te herrangskik",
+    "key": "Sleutel",
+    "value": "Waarde",
+    "description": "Beskrywing"
+  },
+  
+  "variables": {
+    "drag_to_reorder": "Sleep om te herrangskik",
+    "variable": "Veranderlike",
+    "value": "Waarde"
+  },
+  
+  "tabs": {
+    "close_tab": "Sluit oortjie",
+    "global": "Globaal",
+    "environment": "Omgewing",
+    "no_environment": "Geen Omgewing"
+  },
+  
+  
+  "status": {
+    "ok": "Status: Reg"
+  },
+  
+  "help_feedback": "Hulp & Terugvoer",
+  "share": "Deel",
+  "link_copied": "Skakel na klembord gekopieer!",
+  "vertical_layout": "Wissel vertikale uitleg",
+  
+  "shortcuts": "Sleutelbord Kortpaaie",
+  "close_shortcuts_panel": "Sluit sleutelbord kortpaaie paneel",
+  "close_shortcuts_panel_overlay": "Sluit sleutelbord kortpaaie",
+  "no_shortcuts_found": "Geen kortpaaie gevind nie",
+  "search_shortcuts_placeholder": "Soek kortpaaie...",
+  
+  "shortcut_sections": {
+    "general": "Algemeen",
+    "request": "Versoek",
+    "response": "Respons",
+    "navigation": "Navigasie",
+    "miscellaneous": "Verskillende"
+  },
+  
+  "shortcut_labels": {
+    "help_menu": "Wissel hulp kieslys",
+    "search_command_menu": "Maak bevel palet oop",
+    "keyboard_shortcuts": "Wys sleutelbord kortpaaie",
+    "close_current_menu": "Sluit huidige kieslys",
+    "send_request": "Stuur versoek",
+    "save_to_collections": "Stoor na versamelings",
+    "share_request": "Deel versoek",
+    "reset_request": "Herstel versoek",
+    "select_next_method": "Kies volgende HTTP metode",
+    "select_prev_method": "Kies vorige HTTP metode",
+    "select_get_method": "Kies GET metode",
+    "select_head_method": "Kies HEAD metode",
+    "select_post_method": "Kies POST metode",
+    "select_put_method": "Kies PUT metode",
+    "select_delete_method": "Kies DELETE metode",
+    "download_response": "Laai respons af",
+    "copy_response": "Kopieer respons",
+    "go_back": "Gaan terug",
+    "go_forward": "Gaan vorentoe",
+    "go_rest": "Gaan na REST kliënt",
+    "go_graphql": "Gaan na GraphQL",
+    "go_realtime": "Gaan na WebSockets",
+    "go_settings": "Gaan na instellings",
+    "go_profile": "Gaan na profiel",
+    "invite_people": "Nooi span lede"
+  },
+  
+  "navbar": {
+    "search_placeholder": "Soek en bevele...",
+    "download": "Laai af",
+    "support": "Ondersteuning",
+    "save_workspace": "Stoor Werkruimte",
+    "login": "Meld aan"
+  },
+  
+  "app_theme": {
+    "labels": {
+      "background": "Agtergrond",
+      "accent_color": "Aksent Kleur"
+    },
+    "backgrounds": {
+      "system": "Stelsel (Donker)",
+      "light": "Lig",
+      "dark": "Donker",
+      "black": "Swart"
+    },
+    "colors": {
+      "blue": "Blou",
+      "green": "Groen",
+      "purple": "Pers",
+      "pink": "Pienk",
+      "red": "Rooi",
+      "orange": "Oranje",
+      "yellow": "Geel",
+      "teal": "Blougroen",
+      "cyan": "Siaan"
+    }
+  },
+  "interceptor": {
+    "interceptor": "Onderskeppingstelsel",
+    "title": "Onderskeppingstelsel",
+    "description": "Middelware tussen toepassing en API's.",
+    "browser_extension": "Blaaier uitbreiding",
+    "extension_version": "Uitbreiding Weergawe: {{version}}",
+    "not_reported": "Nie Gerapporteer nie",
+    "chrome": "Chrome",
+    "firefox": "Firefox",
+    "options": {
+      "browser": "Blaaier",
+      "proxy": "Proksi",
+      "agent": "Agent",
+      "browser_extension": "Blaaier uitbreiding"
+    },
+    "proxy_settings": {
+      "title": "Proksi Instellings",
+      "url_placeholder": "http://proxy.example.com:8080",
+      "username": "Gebruikersnaam",
+      "password": "Wagwoord",
+      "test_connection": "Toets Verbinding"
+    },
+    "agent_settings": {
+      "title": "Agent Instellings",
+      "description": "Hoppscotch Agent en Desktop App ondersteun HTTP/HTTPS/SOCKS proksies met NTLM en Basiese Mag ondersteuning.",
+      "verify_host": "Verifieer Gasheer",
+      "verify_peer": "Verifieer Eweknie",
+      "ca_certificates": "CA Sertifikate",
+      "client_certificates": "Kliënt Sertifikate",
+      "register_agent": "Registreer Agent",
+      "manage_domains": "Bestuur Domeine"
+    },
+    "domain_overrides": {
+      "title": "Domein Oorheersings",
+      "add_domain": "Voeg Domein by",
+      "global_defaults": "Globale Standaarde"
+    },
+    "url_credentials_note": "URL moet geloofsbriewe insluit indien nodig",
+    "proxy_url": "Proksi URL",
+    "enter_proxy_url": "Voer proksi URL in (bv. http://proxy.example.com:8080)",
+    "agent_not_detected": "Hoppscotch Agent nie opgespoor nie.",
+    "check_agent_running": "Gaan asseblief na of die Agent loop",
+    "certificate": {
+      "pem": "PEM",
+      "pfx": "PFX",
+      "cert_file": "Sertifikaat Lêer",
+      "key_file": "Sleutel Lêer",
+      "pfx_file": "PFX Lêer",
+      "password": "Wagwoord",
+      "browse": "Blaai",
+      "no_file_selected": "Geen lêer gekies nie",
+      "remove": "Verwyder"
+    },
+    "notifications": {
+      "agent_registered": "Agent suksesvol geregistreer!",
+      "connection_success": "Verbinding toets suksesvol!",
+      "connection_failed": "Verbinding toets gefaal",
+      "domain_added": "Domein suksesvol bygevoeg"
+    }
+  },
+  "help_menu": {
+    "documentation": "Dokumentasie",
+    "keyboard_shortcuts": "Sleutelbord Kortpaaie",
+    "chat_with_us": "Gesels met ons",
+    "whats_new": "Wat's nuut",
+    "status": "Status",
+    "github": "GitHub",
+    "twitter": "Twitter",
+    "invite": "Nooi Span Lede",
+    "terms_privacy": "Bepalings & Privaatheid"
+  },
+  
+  "request_editor": {
+    "url_placeholder": "Voer URL in",
+    "url_validation_error": "Gee asseblief 'n geldige URL (moet begin met http:// of https://)",
+    "buttons": {
+      "send": "Stuur",
+      "send_options": "Stuur opsies",
+      "save": "Stoor",
+      "cancel": "Kanselleer"
+    },
+    "menu_items": {
+      "import_curl": "Voer cURL in",
+      "show_code": "Wys kode",
+      "clear_all": "Maak alles skoon"
+    },
+    "save_modal": {
+      "title": "Stoor Versoek",
+      "name_placeholder": "Versoek Naam"
+    }
+  },
+  "certificate_settings": {
+    "url_credentials_note": "Jy kan ook gebruikersnaam en wagwoord in die URL insluit.",
+    "username": "Gebruikersnaam",
+    "password": "Wagwoord",
+    "add_certificate_file": "Voeg Sertifikaat Lêer by",
+    "supported_certificate_formats": "Hoppscotch ondersteun .crt, .cer of .pem lêers wat een of meer sertifikate bevat.",
+    "done": "Klaar",
+    "pem": "PEM",
+    "pfx": "PFX",
+    "certificate": "Sertifikaat",
+    "select_file": "Kies Lêer",
+    "private_key": "Private Sleutel",
+    "pfx_file": "PFX Lêer",
+    "enter_password_if_any": "Voer wagwoord in (indien enige)",
+    "manage_domains_overrides": "Bestuur Domeine Oorheersings",
+    "example_domain": "example.com",
+    "global_defaults": "Globale Standaarde"
+  },
+  "history": {
+    "breadcrumb": {
+      "workspace": "Persoonlike Werkruimte",
+      "title": "Geskiedenis"
+    },
+    "search": {
+      "placeholder": "Soek geskiedenis...",
+      "no_results": "Geen resultate gevind nie",
+      "try_again": "Probeer 'n ander soek term"
+    },
+    "filter": {
+      "title": "Filter",
+      "all_items": "Alle Items",
+      "starred_only": "Slegs Gester"
+    },
+    "actions": {
+      "help": "Hulp",
+      "clear_all": "Maak alle geskiedenis skoon",
+      "confirm_clear_all": "Is jy seker jy wil alle geskiedenis skrap?",
+      "confirm_delete": "Is jy seker jy wil hierdie versoek skrap?",
+      "add_star": "Voeg ster by",
+      "remove_star": "Verwyder ster",
+      "remove": "Verwyder"
+    },
+    "empty_state": {
+      "title": "Nog geen geskiedenis nie",
+      "description": "Jou versoek geskiedenis sal hier verskyn"
+    },
+    "loading": "Laai geskiedenis...",
+    "items_count": "{{count}} items",
+    "no_url": "Geen URL",
+    "debug": {
+      "items": "Items:",
+      "status": "Status:",
+      "ready": "Gereed",
+      "error": "Fout"
+    }
+  }
 }

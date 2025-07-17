@@ -7,7 +7,6 @@
 import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { useSelector } from 'react-redux';
 import type { Parameter } from '../types';
 import { useTranslation } from 'react-i18next';
 import useThemeClass from '../hooks/useThemeClass';
@@ -48,7 +47,7 @@ const SortableParamRow: React.FC<SortableParamRowProps> = ({ param, handleParamC
         className="flex items-center justify-center cursor-grab focus:outline-none h-full"
         style={{ background: 'none', border: 'none', padding: 0 }}
         tabIndex={-1}
-        title={t('drag_to_reorder')}
+        title={t('params.drag_to_reorder')}
       >
         <span className="inline-block opacity-0 group-hover:opacity-70 transition-opacity duration-150">
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -64,20 +63,20 @@ const SortableParamRow: React.FC<SortableParamRowProps> = ({ param, handleParamC
       <input
         className={`bg-transparent ${textClass} px-2 py-1 outline-none w-full border-r `}
         value={param.key}
-        placeholder={t('key')}
+        placeholder={t('params.key')}
         onChange={e => handleParamChange(param.id, 'key', e.target.value)}
         onFocus={() => setFocusedRow(param.id)}
       />
       <input
         className={`bg-transparent ${textClass} px-2 py-1 outline-none w-full border-r `}
         value={param.value}
-        placeholder={t('value')}
+        placeholder={t('params.value')}
         onChange={e => handleParamChange(param.id, 'value', e.target.value)}
       />
       <input
         className={`bg-transparent ${textClass} px-2 py-1 outline-none w-full border-r `}
         value={param.description}
-        placeholder={t('description')}
+        placeholder={t('params.description')}
         onChange={e => handleParamChange(param.id, 'description', e.target.value)}
       />
       <div className="flex items-center gap-2 justify-end px-2">

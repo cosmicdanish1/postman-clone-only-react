@@ -11,7 +11,7 @@ import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
 import useThemeClass from '../hooks/useThemeClass';
 import { useSearch } from '../contexts/SearchContext';
-import SearchModal from './SearchModal/SearchModal';
+
 import DownloadDropdown from './DownloadDropdown/DownloadDropdown';
 
 const NavBar: React.FC = () => {
@@ -69,7 +69,7 @@ const NavBar: React.FC = () => {
       >
         <span className={`flex items-center font-semibold text-[14px] opacity-75 ${searchTextClass}`}>
           <svg viewBox="0 0 24 24" width="20" height="20" className="mr-2"><g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"><circle cx="11" cy="11" r="8" /><path d="m21 21l-4.3-4.3" /></g></svg>
-          {t('Search and commands')}
+          {t('navbar.search_placeholder')}
         </span>
         <span className="flex space-x-1">
           <kbd className={`px-1 rounded text-xs ${kbdClass}`}>
@@ -78,7 +78,7 @@ const NavBar: React.FC = () => {
           <kbd className={`px-1 rounded text-sm ${kbdClass}`}>K</kbd>
         </span>
       </button>
-      <SearchModal />
+    
     </div>
 
 
@@ -90,7 +90,7 @@ const NavBar: React.FC = () => {
 
         <div className="relative">
           <Tippy
-            content="Download"
+            content={t('navbar.download')}
             placement="bottom"
             arrow={true}
             animation="fade"
@@ -126,7 +126,7 @@ const NavBar: React.FC = () => {
           />
         </div>
         <Tippy
-          content="Support"
+          content={t('navbar.support')}
           placement="bottom"
           arrow={true}
           animation="fade"
@@ -143,7 +143,7 @@ const NavBar: React.FC = () => {
       <div className="inline-flex items-center space-x-2 ">
         
         <Tippy
-          content="Save Workspace"
+          content={t('navbar.save_workspace')}
           placement="bottom"
           arrow={true}
           animation="fade"
@@ -152,7 +152,7 @@ const NavBar: React.FC = () => {
         >
           <button className="hidden md:flex items-center px-4 py-2 mb-2 border border-emerald-600/25 bg-emerald-500/10 text-emerald-500 text-sm hover:bg-emerald-600/20 hover:border-emerald-600/20 rounded">
             <svg viewBox="0 0 24 24" width="20" height="20" className="mr-2"><g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"><path d="M12 13v8m-8-6.101A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"></path><path d="m8 17l4-4l4 4"></path></g></svg>
-            {t('save_workspace')}
+            {t('navbar.save_workspace')}
           </button>
         </Tippy>
         
@@ -160,7 +160,7 @@ const NavBar: React.FC = () => {
           className="px-4 py-2 rounded text-sm mb-2 tracking-wide font-bold text-white bg-[var(--accent-color)] hover:bg-[var(--accent-hover)] transition-colors"
           style={accentColorClass.style as React.CSSProperties}
         >
-          {t('login')}
+          {t('navbar.login')}
         </button>
       </div>
     </div>

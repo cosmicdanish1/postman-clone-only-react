@@ -1,8 +1,21 @@
 {
-  "settings": "Settings",
-  "general": "General",
-  "theme": "Theme",
-  "interceptor": "Interceptor",
+  "settings": {
+    "page_title": "Settings",
+    "sections": {
+      "general": {
+        "title": "General",
+        "description": "General settings used in the application"
+      },
+      "theme": {
+        "title": "Theme",
+        "description": "Theme settings for the application"
+      },
+      "interceptor": {
+        "title": "Interceptor",
+        "description": "Configure HTTP/HTTPS interception settings"
+      }
+    }
+  },
   "language": "Language",
   "query_parameters_encoding": "Query Parameters Encoding",
   "query_parameters_encoding_desc": "Configure encoding for query parameters in requests",
@@ -21,20 +34,87 @@
   "save_workspace": "Save My Workspace",
   "login": "Log in",
   "rest": "REST",
-  "graphql": "GraphQL",
-  "realtime": "Realtime",
-  "global": "Global",
-  "environment": "Environment",
-  "close_tab": "Close tab",
+  "graphql_feature": "GraphQL",
+  "realtime_feature": "Realtime",
   "query_parameters": "Query Parameters",
   "help": "Help",
   "delete": "Delete",
   "edit": "Edit",
   "add": "Add",
-  "key": "Key",
-  "value": "Value",
-  "description": "Description",
+  "edit_environment": "Edit Environment",
+  "label": "Label",
+  "secrets": "Secrets",
+  "environments_empty": "No environment variables yet",
+  "add_new": "Add New",
+  "generate_code": "Generate Code",
+  "choose_language": "Choose Language",
+  "generated_code": "Generated Code",
+  "shell_curl": "Shell (cURL)",
+  "node_fetch": "Node.js (fetch)",
+  "python_requests": "Python (requests)",
+  "go_http": "Go (net/http)",
+  "js_xhr": "JavaScript (XHR)",
+  "copy": "Copy",
+  "dismiss": "Dismiss",
+  "copy_toast": "Code copied to clipboard!",
+  "copy_failed": "Failed to copy code",
+  "import_curl": "Import cURL",
+  "curl": "cURL",
+  "enter_curl_command": "Paste your cURL command here...",
+  "import": "Import",
+  "paste": "Paste",
+  "curl_import_success": "cURL imported successfully!",
+  "curl_import_failed": "Failed to import cURL. Please check the format.",
+  "clear": "Clear",
+  "copy_curl": "Copy cURL",
+  "close": "Close",
+  "pasted_from_clipboard": "Pasted from clipboard!",
+  "clipboard_access_denied": "Could not access clipboard. Please paste manually.",
+  "empty_curl_error": "Please enter a cURL command to import.",
+  "paste_curl_hint": "Paste your cURL command above or type it manually.",
+  "save_as": "Save As",
+  "request_name": "Request Name",
+  "select_location": "Select a location",
+  "personal_workspace_collections": "Personal Workspace / Collections",
+  "import_or_create_collection": "Import or create a collection to get started",
+  "no_collections_found": "No collections found",
+  "search_collections": "Search collections",
+  "create_new_collection": "Create new collection",
+  "request_name_required": "Please enter a request name",
   
+  "search": {
+    "all": "All",
+    "requests": "Requests",
+    "collections": "Collections",
+    "environments": "Environments",
+    "documentation": "Documentation",
+    "categories": "Search categories",
+    "results": "Search results",
+    "placeholder": "Search requests, collections, and more...",
+    "no_results": "No results found",
+    "no_recent_searches": "No recent searches",
+    "recent_searches": "Recent Searches",
+    "tip": "Press Esc to close",
+    "to_toggle": "to toggle search",
+    "common": {
+      "close": "Close search"
+    }
+  },
+  "download": {
+    "title": "Download App",
+    "platforms": {
+      "macos": "macOS",
+      "windows": "Windows",
+      "linux": "Linux",
+      "cli": "CLI"
+    },
+    "aria_labels": {
+      "windows": "Download for Windows",
+      "macos": "Download for macOS",
+      "linux": "Download for Linux",
+      "cli": "View CLI Documentation"
+    }
+  },
   "response": {
     "body": "Response Body",
     "headers": "Headers",
@@ -52,6 +132,12 @@
     "error": "Error: {{error}}",
     "error_loading_json": "Error loading JSON: {{error}}",
     "response_body": "Response Body",
+    "actions": {
+      "filter": "Filter JSON",
+      "download": "Download JSON",
+      "save": "Save JSON",
+      "copy": "Copy to clipboard"
+    },
     "invalid_json": "Invalid JSON data",
     "copy_to_clipboard": "Copy to clipboard"
   },
@@ -59,5 +145,355 @@
   "common": {
     "loading": "Loading...",
     "error_occurred": "An error occurred"
+  },
+  
+  "sidebar": {
+    "collapse": "Collapse sidebar",
+    "expand": "Expand sidebar",
+    "rest": "REST",
+    "graphql": "GraphQL",
+    "realtime": "Realtime",
+    "settings": "Settings"
+  },
+  
+  "realtime": {
+    "message": "Message",
+    "format_options": {
+      "json": "JSON",
+      "raw": "Raw"
+    },
+    "actions": {
+      "send": "Send",
+      "clear_input": "Clear input",
+      "connect": "Connect",
+      "drag_to_reorder": "Drag to reorder",
+      "delete_all": "Delete All"
+    },
+    "tabs": {
+      "communication": "Communication",
+      "protocols": "Protocols"
+    },
+    "protocols": {
+      "title": "Protocols",
+      "name_placeholder": "Protocol name",
+      "websocket": "WebSocket",
+      "sse": "SSE",
+      "socketio": "Socket.IO",
+      "mqtt": "MQTT"
+    },
+    "websocket": {
+      "default_endpoint": "wss://echo-websocket.hoppscotch.io"
+    },
+    "mqtt": {
+      "url_placeholder": "mqtt://broker.hivemq.com:8000",
+      "client_id": "Client ID",
+      "client_id_placeholder": "Enter client ID",
+      "connection_config": "Connection Configuration",
+      "clean_session": "Clean Session",
+      "username": "Username",
+      "password": "Password",
+      "last_will_topic": "Last Will Topic",
+      "last_will_message": "Last Will Message",
+      "keep_alive": "Keep Alive (sec)",
+      "last_will_qos": "Last Will QoS",
+      "last_will_retain": "Retain Last Will"
+    },
+    "socketio": {
+      "url_placeholder": "wss://echo-socketio.hoppscotch.io",
+      "namespace_placeholder": "Namespace",
+      "event_topic_name": "Event topic name",
+      "client_versions": {
+        "v2": "v2.x",
+        "v3": "v3.x",
+        "v4": "v4.x"
+      }
+    },
+    "sse": {
+      "url_placeholder": "https://express-eventsource.herokuapp.com/events",
+      "event_type": "Event type",
+      "default_event_type": "data"
+    },
+    "help": {
+      "send_request": "Send request",
+      "keyboard_shortcuts": "Toggle keyboard shortcuts",
+      "search_command_menu": "Search command menu",
+      "help_menu": "Toggle help menu",
+      "documentation": "Documentation"
+    }
+  },
+  
+  "graphql": {
+    "endpoint_placeholder": "https://example.com/graphql",
+    "connect": "Connect",
+    "edit_request": "Edit Request",
+    "label": "Label",
+    "untitled": "Untitled",
+    "error_sending_request": "Error sending GraphQL request",
+    "default_endpoint": "https://echo.hoppscotch.io/graphql",
+    "tabs": {
+      "query": "Query",
+      "variables": "Variables",
+      "headers": "Headers",
+      "authorization": "Authorization"
+    }
+  },
+  "headers": {
+    "drag_to_reorder": "Drag to reorder",
+    "key": "Key",
+    "value": "Value",
+    "description": "Description",
+    "save": "Save",
+    "delete": "Delete"
+  },
+  
+  "params": {
+    "drag_to_reorder": "Drag to reorder",
+    "key": "Key",
+    "value": "Value",
+    "description": "Description"
+  },
+  
+  "variables": {
+    "drag_to_reorder": "Drag to reorder",
+    "variable": "Variable",
+    "value": "Value"
+  },
+  
+  "tabs": {
+    "close_tab": "Close tab",
+    "global": "Global",
+    "environment": "Environment",
+    "no_environment": "No Environment"
+  },
+  
+  
+  "status": {
+    "ok": "Status: OK"
+  },
+  
+  "help_feedback": "Help & Feedback",
+  "share": "Share",
+  "link_copied": "Link copied to clipboard!",
+  "vertical_layout": "Toggle vertical layout",
+  
+  "shortcuts": "Keyboard Shortcuts",
+  "close_shortcuts_panel": "Close keyboard shortcuts panel",
+  "close_shortcuts_panel_overlay": "Close keyboard shortcuts",
+  "no_shortcuts_found": "No shortcuts found",
+  "search_shortcuts_placeholder": "Search shortcuts...",
+  
+  "shortcut_sections": {
+    "general": "General",
+    "request": "Request",
+    "response": "Response",
+    "navigation": "Navigation",
+    "miscellaneous": "Miscellaneous"
+  },
+  
+  "shortcut_labels": {
+    "help_menu": "Toggle help menu",
+    "search_command_menu": "Open command palette",
+    "keyboard_shortcuts": "Show keyboard shortcuts",
+    "close_current_menu": "Close current menu",
+    "send_request": "Send request",
+    "save_to_collections": "Save to collections",
+    "share_request": "Share request",
+    "reset_request": "Reset request",
+    "select_next_method": "Select next HTTP method",
+    "select_prev_method": "Select previous HTTP method",
+    "select_get_method": "Select GET method",
+    "select_head_method": "Select HEAD method",
+    "select_post_method": "Select POST method",
+    "select_put_method": "Select PUT method",
+    "select_delete_method": "Select DELETE method",
+    "download_response": "Download response",
+    "copy_response": "Copy response",
+    "go_back": "Go back",
+    "go_forward": "Go forward",
+    "go_rest": "Go to REST client",
+    "go_graphql": "Go to GraphQL",
+    "go_realtime": "Go to WebSockets",
+    "go_settings": "Go to settings",
+    "go_profile": "Go to profile",
+    "invite_people": "Invite team members"
+  },
+  
+  "navbar": {
+    "search_placeholder": "Search and commands...",
+    "download": "Download",
+    "support": "Support",
+    "save_workspace": "Save Workspace",
+    "login": "Log In"
+  },
+  
+  "app_theme": {
+    "labels": {
+      "background": "Background",
+      "accent_color": "Accent Color"
+    },
+    "backgrounds": {
+      "system": "System (Dark)",
+      "light": "Light",
+      "dark": "Dark",
+      "black": "Black"
+    },
+    "colors": {
+      "blue": "Blue",
+      "green": "Green",
+      "purple": "Purple",
+      "pink": "Pink",
+      "red": "Red",
+      "orange": "Orange",
+      "yellow": "Yellow",
+      "teal": "Teal",
+      "cyan": "Cyan"
+    }
+  },
+  "interceptor": {
+    "interceptor": "Interceptor",
+    "title": "Interceptor",
+    "description": "Middleware between application and APIs.",
+    "browser_extension": "Browser extension",
+    "extension_version": "Extension Version: {{version}}",
+    "not_reported": "Not Reported",
+    "chrome": "Chrome",
+    "firefox": "Firefox",
+    "options": {
+      "browser": "Browser",
+      "proxy": "Proxy",
+      "agent": "Agent",
+      "browser_extension": "Browser extension"
+    },
+    "proxy_settings": {
+      "title": "Proxy Settings",
+      "url_placeholder": "http://proxy.example.com:8080",
+      "username": "Username",
+      "password": "Password",
+      "test_connection": "Test Connection"
+    },
+    "agent_settings": {
+      "title": "Agent Settings",
+      "description": "Hoppscotch Agent and Desktop App supports HTTP/HTTPS/SOCKS proxies with NTLM and Basic Auth support.",
+      "verify_host": "Verify Host",
+      "verify_peer": "Verify Peer",
+      "ca_certificates": "CA Certificates",
+      "client_certificates": "Client Certificates",
+      "register_agent": "Register Agent",
+      "manage_domains": "Manage Domains"
+    },
+    "domain_overrides": {
+      "title": "Domain Overrides",
+      "add_domain": "Add Domain",
+      "global_defaults": "Global Defaults"
+    },
+    "url_credentials_note": "URL must include credentials if required",
+    "proxy_url": "Proxy URL",
+    "enter_proxy_url": "Enter proxy URL (e.g., http://proxy.example.com:8080)",
+    "agent_not_detected": "Hoppscotch Agent not detected.",
+    "check_agent_running": "Please check if the Agent is running",
+    "certificate": {
+      "pem": "PEM",
+      "pfx": "PFX",
+      "cert_file": "Certificate File",
+      "key_file": "Key File",
+      "pfx_file": "PFX File",
+      "password": "Password",
+      "browse": "Browse",
+      "no_file_selected": "No file selected",
+      "remove": "Remove"
+    },
+    "notifications": {
+      "agent_registered": "Agent registered successfully!",
+      "connection_success": "Connection test successful!",
+      "connection_failed": "Connection test failed",
+      "domain_added": "Domain added successfully"
+    }
+  },
+  "help_menu": {
+    "documentation": "Documentation",
+    "keyboard_shortcuts": "Keyboard Shortcuts",
+    "chat_with_us": "Chat with Us",
+    "whats_new": "What's New",
+    "status": "Status",
+    "github": "GitHub",
+    "twitter": "Twitter",
+    "invite": "Invite Team Members",
+    "terms_privacy": "Terms & Privacy"
+  },
+  
+  "request_editor": {
+    "url_placeholder": "Enter URL",
+    "url_validation_error": "Please enter a valid URL (must start with http:// or https://)",
+    "buttons": {
+      "send": "Send",
+      "send_options": "Send options",
+      "save": "Save",
+      "cancel": "Cancel"
+    },
+    "menu_items": {
+      "import_curl": "Import cURL",
+      "show_code": "Show code",
+      "clear_all": "Clear all"
+    },
+    "save_modal": {
+      "title": "Save Request",
+      "name_placeholder": "Request Name"
+    }
+  },
+  "certificate_settings": {
+    "url_credentials_note": "You can also include username and password in the URL.",
+    "username": "Username",
+    "password": "Password",
+    "add_certificate_file": "Add Certificate File",
+    "supported_certificate_formats": "Hoppscotch supports .crt, .cer or .pem files containing one or more certificates.",
+    "done": "Done",
+    "pem": "PEM",
+    "pfx": "PFX",
+    "certificate": "Certificate",
+    "select_file": "Select File",
+    "private_key": "Private Key",
+    "pfx_file": "PFX File",
+    "enter_password_if_any": "Enter password (if any)",
+    "manage_domains_overrides": "Manage Domains Overrides",
+    "example_domain": "example.com",
+    "global_defaults": "Global Defaults"
+  },
+  "history": {
+    "breadcrumb": {
+      "workspace": "Personal Workspace",
+      "title": "History"
+    },
+    "search": {
+      "placeholder": "Search history...",
+      "no_results": "No results found",
+      "try_again": "Try a different search term"
+    },
+    "filter": {
+      "title": "Filter",
+      "all_items": "All Items",
+      "starred_only": "Starred Only"
+    },
+    "actions": {
+      "help": "Help",
+      "clear_all": "Clear all history",
+      "confirm_clear_all": "Are you sure you want to delete all history?",
+      "confirm_delete": "Are you sure you want to delete this request?",
+      "add_star": "Add star",
+      "remove_star": "Remove star",
+      "remove": "Remove"
+    },
+    "empty_state": {
+      "title": "No history yet",
+      "description": "Your request history will appear here"
+    },
+    "loading": "Loading history...",
+    "items_count": "{{count}} items",
+    "no_url": "No URL",
+    "debug": {
+      "items": "Items:",
+      "status": "Status:",
+      "ready": "Ready",
+      "error": "Error"
+    }
   }
 }

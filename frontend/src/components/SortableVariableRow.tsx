@@ -7,7 +7,8 @@
 import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
+import useThemeClass from '../hooks/useThemeClass';
 
 export interface SortableVariableRowProps {
   variable: { id: string; key: string; value: string };
@@ -18,11 +19,11 @@ export interface SortableVariableRowProps {
 
 const SortableVariableRow: React.FC<SortableVariableRowProps> = React.memo(function SortableVariableRow({ variable, handleVariableChange, handleDeleteVariable, isOdd }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: variable.id });
-  const theme = useSelector((state: any) => state.theme.theme);
-  let themeClass = '';
-  if (theme === 'dark') themeClass = 'theme-dark';
-  else if (theme === 'black') themeClass = 'theme-black';
+  const { t } = useTranslation();
+  const { themeClass } = useThemeClass();
   // No class for light (default)
+  const textClass = themeClass === 'theme-black' ? 'text-gray-300' : themeClass === 'theme-dark' ? 'text-gray-200' : 'text-gray-800';
+
   return (
     <div
       ref={setNodeRef}
@@ -30,16 +31,15 @@ const SortableVariableRow: React.FC<SortableVariableRowProps> = React.memo(funct
         transform: CSS.Transform.toString(transform),
         transition,
         opacity: isDragging ? 0.5 : 1,
-        background: isOdd ? 'var(--bg-secondary, #19191b)' : undefined,
         minHeight: '38px',
         display: 'grid',
         gridTemplateColumns: '32px 1fr 1fr auto',
-        borderBottom: '1px solid var(--border, #27272a)',
+        borderBottom: `1px solid ${themeClass === 'theme-black' ? '#2c2c2e' : themeClass === 'theme-dark' ? '#27272a' : '#e5e7eb'}`,
         paddingLeft: 0,
         paddingRight: 8,
         alignItems: 'center',
       }}
-      className={`px-2 group text-text ${themeClass}`}
+      className={`px-2 group ${textClass} ${isOdd ? (themeClass === 'theme-black' ? 'bg-[#1c1c1e]' : themeClass === 'theme-dark' ? 'bg-[#19191b]' : 'bg-gray-50') : 'bg-transparent'}`}
     >
       {/* Drag handle: 6-dot rectangle, only visible on hover */}
       <button
@@ -48,7 +48,7 @@ const SortableVariableRow: React.FC<SortableVariableRowProps> = React.memo(funct
         className="flex items-center justify-center cursor-grab focus:outline-none h-full"
         style={{ background: 'none', border: 'none', padding: 0 }}
         tabIndex={-1}
-        title="Drag to reorder"
+        title={t('variables.drag_to_reorder')}
       >
         <span className="inline-block opacity-0 group-hover:opacity-70 transition-opacity duration-150">
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -64,13 +64,13 @@ const SortableVariableRow: React.FC<SortableVariableRowProps> = React.memo(funct
       <input
         className="bg-transparent text-text px-2 py-1 outline-none w-full border-r border-border"
         value={variable.key}
-        placeholder="Variable"
+        placeholder={t('variables.variable')}
         onChange={e => handleVariableChange(variable.id, 'key', e.target.value)}
       />
       <input
         className="bg-transparent text-text px-2 py-1 outline-none w-full border-r border-border"
         value={variable.value}
-        placeholder="Value"
+        placeholder={t('variables.value')}
         onChange={e => handleVariableChange(variable.id, 'value', e.target.value)}
       />
       <div className="flex items-center gap-2 justify-end px-2">
