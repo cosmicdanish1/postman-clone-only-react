@@ -6,6 +6,8 @@
 // Located at: src/pages/Rest/RestPage.tsx
 import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { useRequestHistory } from '../../features/useRequestHistory';
 import { useRestTabs } from '../../hooks/useRestTabs';
 import RestTabsHeader from './components/RestTabsHeader';
@@ -238,23 +240,42 @@ function HoppscotchClone() {
     });
   }, [setTabs, setActiveTabId]);
 
-  const handleSend = async (requestData: { method: string; url: string }) => {
-    // Generate new request stats
-    const newStats = generateRequestStats();
-    setRequestStats(newStats);
+  // Function to validate URL format
+  const isValidUrl = (urlString: string): boolean => {
+    try {
+      // Basic URL validation - checks if it starts with http:// or https://
+      // and has a valid domain
+      return /^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)$/i.test(urlString);
+    } catch (err) {
+      return false;
+    }
+  };
 
+  const handleSend = async (requestData: { method: string; url: string }) => {
     if (!activeTabObj) {
-      console.error('No active tab');
+      toast.error('No active tab', { position: 'top-right' });
       return;
     }
     
+    const method = requestData.method || 'GET';
+    const url = (requestData.url || '').trim();
+    
+    // Validate URL
+    if (!url) {
+      toast.error('URL is required', { position: 'top-right' });
+      return;
+    }
+    
+    if (!isValidUrl(url)) {
+      toast.error('Please enter a valid URL (must start with http:// or https://)', { position: 'top-right' });
+      return;
+    }
+    
+    // Generate new request stats only if URL is valid
+    const newStats = generateRequestStats();
+    setRequestStats(newStats);
+    
     try {
-      const method = requestData.method || 'GET';
-      const url = (requestData.url || '').trim();
-      if (!url) {
-        console.error('URL is required');
-        return;
-      }
       
       // Update tab with new request data
       setTabs(tabs => tabs.map(tab => 

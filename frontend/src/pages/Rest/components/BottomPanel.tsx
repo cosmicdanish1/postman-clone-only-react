@@ -95,6 +95,9 @@ const BottomPanel: React.FC<BottomPanelProps> = ({
 
   return (
     <div className={`w-full h-full bg-bg text-text shadow-inner z-30 flex flex-col ${themeClass}`}>
+      {/* Line above status bar */}
+      <div className={`h-px w-full ${borderClass} opacity-50`} />
+      
       {/* Status bar */}
       <div className={`flex items-center h-8 px-4 text-xs border-b gap-6 ${borderClass} ${themeClass} bg-opacity-50`}>
         {statusCode !== null && statusText !== null && (

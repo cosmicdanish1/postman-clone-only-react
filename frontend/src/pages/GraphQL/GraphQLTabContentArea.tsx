@@ -11,45 +11,144 @@ import HeadersTabContent from '../Rest/TabContentArea/HeadersTabContent';
 import SortableHeaderRow from '../../components/SortableHeaderRow';
 import AuthorizationTabContent from '../Rest/TabContentArea/AuthorizationTabContent';
 import useThemeClass from '../../hooks/useThemeClass';
+import type { GraphQLTab } from './GraphQLTabBar';
+import type { AuthType } from '../../types';
 
-interface GraphQLTabContentAreaProps {
-  activeTabObj: any;
-  activeTabId: string;
-  updateTab: (id: string, field: string, value: any) => void;
+interface Header {
+  id: string;
+  key: string;
+  value: string;
+  disabled?: boolean;
 }
 
-const GraphQLTabContentArea: React.FC<GraphQLTabContentAreaProps> = ({ activeTabObj, activeTabId, updateTab }) => {
+interface GraphQLTabContentAreaProps {
+  activeTabId: string;
+  query: string;
+  variables: any; // Changed from any[] to any to handle both object and array
+  headers: Header[];
+  onQueryChange: (query: string) => void;
+  onVariablesChange: (variables: any) => void; // Changed to accept any type
+  onHeadersChange: (headers: Header[]) => void;
+  activeTab?: Partial<GraphQLTab> & {
+    authType?: AuthType;
+  };
+  onUpdateTab?: (id: string, field: string, value: any) => void;
+}
+
+const GraphQLTabContentArea: React.FC<GraphQLTabContentAreaProps> = ({
+  activeTabId,
+  query,
+  variables,
+  headers = [],
+  onQueryChange,
+  onVariablesChange,
+  onHeadersChange,
+  activeTab,
+  onUpdateTab
+}) => {
   const [editHeadersActive, setEditHeadersActive] = React.useState(false);
+  const [initialized, setInitialized] = React.useState(false);
   // Use theme class hook for consistent theming
   const { themeClass } = useThemeClass();
+
+  // Set default query if empty
+  React.useEffect(() => {
+    if (!initialized && (!query || query.trim() === '')) {
+      const defaultQuery = `# Welcome to GraphQL Playground
+# Type your query here and click the play button to execute
+# Example query to get user data
+query GetUserWithPosts($userId: ID!) {
+  user(id: $userId) {
+    id
+    name
+    email
+    posts {
+      id
+      title
+      body
+      comments {
+        id
+        text
+        author {
+          id
+          name
+        }
+      }
+    }
+  }
+}
+
+# Uncomment and use these variables in the "Variables" tab
+# {
+#   "userId": "1"
+# }`;
+      onQueryChange(defaultQuery);
+      setInitialized(true);
+    }
+  }, [query, onQueryChange, initialized]);
   return (
     <div className={`flex flex-col flex-1 min-h-0 p-0 bg-bg text-text ${themeClass}`}>
-      {activeTabObj.activeTab === 'headers' && (
+      {activeTabId === 'headers' && (
         <HeadersTabContent
-          headers={activeTabObj.headers || []}
-          handleHeaderChange={(id, field, value) => updateTab(activeTabId, 'headers', (activeTabObj.headers || []).map((h: any) => h.id === id ? { ...h, [field]: value } : h))}
-          handleDeleteHeader={id => updateTab(activeTabId, 'headers', (activeTabObj.headers || []).filter((h: any) => h.id !== id))}
-          handleAddHeader={() => updateTab(activeTabId, 'headers', [...(activeTabObj.headers || []), { id: Math.random().toString(36).substr(2, 9), key: '', value: '', description: '' }])}
+          headers={headers}
+          handleHeaderChange={(id, field, value) => {
+            const updatedHeaders = headers.map(header => 
+              header.id === id ? { ...header, [field]: value } : header
+            );
+            onHeadersChange(updatedHeaders);
+          }}
+          handleDeleteHeader={id => {
+            if (onUpdateTab) {
+              onUpdateTab(activeTabId, 'headers', headers.filter(h => h.id !== id));
+            }
+          }}
+          handleAddHeader={() => {
+            if (onUpdateTab) {
+              onUpdateTab(activeTabId, 'headers', [
+                ...headers, 
+                { 
+                  id: Math.random().toString(36).substr(2, 9), 
+                  key: '', 
+                  value: '', 
+                  description: '' 
+                }
+              ]);
+            }
+          }}
           editHeadersActive={editHeadersActive}
           setEditHeadersActive={setEditHeadersActive}
           SortableHeaderRow={SortableHeaderRow}
         />
       )}
-      {activeTabObj.activeTab === 'query' && (
-        <GraphQLQueryEditor
-          query={activeTabObj.query || `query Request {\n  method\n  url\n  headers {\n    key\n    value\n  }\n}`}
-          onChange={val => updateTab(activeTabId, 'query', val)}
-        />
+      {activeTabId === 'query' && (
+        <div className="h-full">
+          <GraphQLQueryEditor 
+            query={query || ''} 
+            onChange={onQueryChange} 
+          />
+        </div>
       )}
-      {/* Placeholders for Variables, Authorization, etc. */}
-      {activeTabObj.activeTab === 'variables' && (
-        <GraphQLVariablesEditor
-          variables={activeTabObj.variables}
-          onChange={val => updateTab(activeTabId, 'variables', val)}
-        />
+      {activeTabId === 'variables' && (
+        <div className="h-full">
+          <GraphQLVariablesEditor 
+            variables={variables || {}} 
+            onChange={(val) => {
+              try {
+                const parsed = JSON.parse(val);
+                onVariablesChange(parsed);
+              } catch (e) {
+                // If parsing fails, pass an empty object
+                onVariablesChange({});
+              }
+            }} 
+          />
+        </div>
       )}
-      {activeTabObj.activeTab === 'authorization' && (
-        <AuthorizationTabContent authType={activeTabObj.authType} setAuthType={val => updateTab(activeTabId, 'authType', val)} />
+      {activeTabId === 'auth' && onUpdateTab && (
+        <AuthorizationTabContent 
+          authType={activeTab?.authType || 'none'} 
+          setAuthType={val => onUpdateTab(activeTabId, 'authType', val)} 
+        />
       )}
     </div>
   );

@@ -6,39 +6,44 @@
 // Located at: src/pages/GraphQL/GraphQLTabBar.tsx
 import React, { useRef, useLayoutEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { motion, AnimatePresence } from 'framer-motion';
 import { FiPlus } from 'react-icons/fi';
 import useThemeClass from '../../hooks/useThemeClass';
 import useAccentColor from '../../hooks/useAccentColor';
 
-interface Tab {
+export interface GraphQLTab {
   id: string;
   tabName: string;
   showModal: boolean;
   modalValue: string;
+  activeTab: string;
+  query: string;
+  variables: any[];
+  headers: any[];
 }
 
 interface GraphQLTabBarProps {
-  tabs: Tab[];
+  tabs: GraphQLTab[];
   activeTabId: string;
-  onSwitchTab: (id: string) => void;
-  onAddTab: () => void;
+  onTabChange: (id: string) => void;
+  onSetModalValue: (id: string, value: string) => void;
   onCloseTab: (id: string) => void;
+  onAddTab: () => void;
   onOpenModal: (id: string) => void;
   onCloseModal: (id: string) => void;
   onSaveModal: (id: string) => void;
-  onSetModalValue: (id: string, val: string) => void;
 }
 
 const GraphQLTabBar: React.FC<GraphQLTabBarProps> = ({
   tabs,
   activeTabId,
-  onSwitchTab,
-  onAddTab,
+  onTabChange,
+  onSetModalValue,
   onCloseTab,
+  onAddTab,
   onOpenModal,
   onCloseModal,
   onSaveModal,
-  onSetModalValue,
 }) => {
   const tabRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const barRef = useRef<HTMLDivElement | null>(null);
@@ -63,22 +68,30 @@ const GraphQLTabBar: React.FC<GraphQLTabBarProps> = ({
   return (
     <div className={`w-full bg-bg h-10 relative flex items-center overflow-x-auto ${themeClass} ${borderClass}`}>
       <div className="flex items-center flex-1 min-w-0 relative" style={{ position: 'relative' }}>
-        {/* Animated blue bar on top */}
-        <div
-          ref={barRef}
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: barStyle.left,
-            width: barStyle.width,
-            height: 3,
-            background: '#3b82f6',
-            borderRadius: '3px 3px 0 0',
-            transition: 'left 0.25s cubic-bezier(.4,1,.4,1), width 0.25s cubic-bezier(.4,1,.4,1)',
-            zIndex: 10,
-            pointerEvents: 'none',
-          }}
-        />
+        {/* Animated active tab indicator */}
+        <AnimatePresence>
+          <motion.div
+            ref={barRef}
+            className="absolute top-0 h-1 rounded-full"
+            style={{
+              left: 0,
+              width: barStyle.width,
+              background: accentColor,
+              zIndex: 10,
+              pointerEvents: 'none',
+            }}
+            initial={false}
+            animate={{
+              x: barStyle.left,
+              width: barStyle.width,
+            }}
+            transition={{
+              type: 'spring',
+              stiffness: 300,
+              damping: 25,
+            }}
+          />
+        </AnimatePresence>
         {tabs.map(tab => {
           const isActive = tab.id === activeTabId;
           return (
@@ -91,14 +104,37 @@ const GraphQLTabBar: React.FC<GraphQLTabBarProps> = ({
                 minWidth: 160,
                 maxWidth: 240,
                 width: 200,
-                paddingRight: 24
+                paddingRight: 24,
+                position: 'relative',
+                overflow: 'hidden'
               }}
-              onClick={() => onSwitchTab(tab.id)}
+              onClick={() => onTabChange(tab.id)}
               onDoubleClick={() => onOpenModal(tab.id)}
               onMouseEnter={() => setHoveredTabId(tab.id)}
               onMouseLeave={() => { setHoveredTabId(null); setHoveredCloseId(null); }}
             >
-              <span className="truncate max-w-[120px]" style={{ zIndex: 20, position: 'relative' }}>{tab.tabName}</span>
+              <motion.span 
+                className="truncate max-w-[120px] relative z-20"
+                initial={false}
+                animate={{
+                  color: isActive ? accentColor : 'inherit',
+                }}
+                transition={{ duration: 0.2 }}
+              >
+                {tab.tabName}
+              </motion.span>
+              {isActive && (
+                <motion.div 
+                  className="absolute bottom-0 left-0 w-full h-[2px]"
+                  style={{ backgroundColor: accentColor }}
+                  layoutId="activeTabIndicator"
+                  transition={{
+                    type: 'spring',
+                    stiffness: 300,
+                    damping: 25,
+                  }}
+                />
+              )}
               {tabs.length > 1 && (
                 <span
                   className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center justify-center w-5 h-5"

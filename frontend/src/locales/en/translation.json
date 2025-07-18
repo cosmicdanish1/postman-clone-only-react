@@ -228,6 +228,16 @@
     "edit_request": "Edit Request",
     "label": "Label",
     "untitled": "Untitled",
+    "history": {
+      "empty": "No history yet. Your GraphQL requests will appear here.",
+      "delete_confirm": "Are you sure you want to delete this history item?",
+      "delete_success": "History item deleted",
+      "delete_error": "Failed to delete history item"
+    },
+    "schema": "Schema",
+    "explorer": "Explorer",
+    "collections": "Collections",
+    "history_title": "History",
     "error_sending_request": "Error sending GraphQL request",
     "default_endpoint": "https://echo.hoppscotch.io/graphql",
     "tabs": {
@@ -440,23 +450,48 @@
       "name_placeholder": "Request Name"
     }
   },
-  "certificate_settings": {
-    "url_credentials_note": "You can also include username and password in the URL.",
-    "username": "Username",
-    "password": "Password",
-    "add_certificate_file": "Add Certificate File",
-    "supported_certificate_formats": "Hoppscotch supports .crt, .cer or .pem files containing one or more certificates.",
-    "done": "Done",
-    "pem": "PEM",
-    "pfx": "PFX",
-    "certificate": "Certificate",
-    "select_file": "Select File",
-    "private_key": "Private Key",
-    "pfx_file": "PFX File",
-    "enter_password_if_any": "Enter password (if any)",
-    "manage_domains_overrides": "Manage Domains Overrides",
-    "example_domain": "example.com",
-    "global_defaults": "Global Defaults"
+  "graphql": {
+    "endpoint_placeholder": "https://example.com/graphql",
+    "connect": "Connect",
+    "edit_request": "Edit Request",
+    "label": "Label",
+    "untitled": "Untitled",
+    "history": {
+      "empty": "No history yet. Your GraphQL requests will appear here.",
+      "delete_confirm": "Are you sure you want to delete this history item?",
+      "delete_success": "History item deleted",
+      "delete_error": "Failed to delete history item"
+    },
+    "schema": "Schema",
+    "explorer": "Explorer",
+    "collections": "Collections",
+    "history_title": "History",
+    "error_sending_request": "Error sending GraphQL request",
+    "default_endpoint": "https://echo.hoppscotch.io/graphql",
+    "tabs": {
+      "query": "Query",
+      "variables": "Variables",
+      "headers": "Headers",
+      "auth": "Auth"
+    },
+    "certificate_settings": {
+      "url_credentials_note": "You can also include username and password in the URL.",
+      "username": "Username",
+      "password": "Password",
+      "add_certificate_file": "Add Certificate File",
+      "supported_certificate_formats": "Hoppscotch supports .crt, .cer or .pem files containing one or more certificates.",
+      "done": "Done",
+      "pem": "PEM",
+      "pfx": "PFX",
+      "certificate": "Certificate",
+      "select_file": "Select File",
+      "private_key": "Private Key",
+      "pfx_file": "PFX File",
+      "enter_password_if_any": "Enter password (if any)",
+      "manage_domains_overrides": "Manage Domains Overrides",
+      "example_domain": "example.com",
+      "global_defaults": "Global Defaults"
+    }
   },
   "history": {
     "breadcrumb": {

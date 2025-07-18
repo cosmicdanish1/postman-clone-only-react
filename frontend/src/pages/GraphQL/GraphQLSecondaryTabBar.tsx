@@ -6,6 +6,7 @@
 // Located at: src/pages/GraphQL/GraphQLSecondaryTabBar.tsx
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { motion, AnimatePresence } from 'framer-motion';
 import useThemeClass from '../../hooks/useThemeClass';
 import useAccentColor from '../../hooks/useAccentColor';
 
@@ -15,10 +16,10 @@ interface GraphQLSecondaryTabBarProps {
 }
 
 const tabs = [
-  { key: 'query', label: 'graphql.tabs.query' },
-  { key: 'variables', label: 'graphql.tabs.variables' },
-  { key: 'headers', label: 'graphql.tabs.headers' },
-  { key: 'authorization', label: 'graphql.tabs.authorization' },
+  { key: 'query', label: 'Query' },
+  { key: 'variables', label: 'Variables' },
+  { key: 'headers', label: 'Headers' },
+  { key: 'auth', label: 'Authorization' },
 ];
 
 const GraphQLSecondaryTabBar: React.FC<GraphQLSecondaryTabBarProps> = ({ activeTab, onChange }) => {
@@ -28,16 +29,32 @@ const GraphQLSecondaryTabBar: React.FC<GraphQLSecondaryTabBarProps> = ({ activeT
   const { current: accentColor } = useAccentColor();
   return (
     <div className={`flex items-center gap-6 px-4 bg-bg text-text ${themeClass} ${borderClass}`}>
-      {tabs.map(tab => (
-        <button
-          key={tab.key}
-          onClick={() => onChange(tab.key)}
-          className={`px-2 py-3 font-semibold transition-colors duration-150 relative ${activeTab === tab.key ? 'text-text' : 'text-gray-400 hover:text-text'}`}
-          style={activeTab === tab.key ? { color: accentColor } : {}}
-        >
-          {t(tab.label)}
-        </button>
-      ))}
+      {tabs.map(tab => {
+        const isActive = activeTab === tab.key;
+        return (
+          <button
+            key={tab.key}
+            onClick={() => onChange(tab.key)}
+            className={`px-2 py-3 font-semibold transition-colors duration-150 relative`}
+          >
+            <span className={`relative z-10 ${isActive ? 'text-text' : 'text-gray-400 hover:text-text'}`}>
+              {tab.label}
+            </span>
+            {isActive && (
+              <motion.div 
+                className="absolute bottom-0 left-0 w-full h-0.5"
+                style={{ backgroundColor: accentColor }}
+                layoutId="activeTabIndicator"
+                transition={{
+                  type: 'spring',
+                  stiffness: 300,
+                  damping: 25,
+                }}
+              />
+            )}
+          </button>
+        );
+      })}
     </div>
   );
 };
