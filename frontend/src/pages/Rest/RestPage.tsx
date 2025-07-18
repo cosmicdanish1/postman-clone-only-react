@@ -17,7 +17,7 @@ import TabContentArea from './TabContentArea/TabContentArea';
 import RestRightPanel from './RightPanel/RestRightPanel';
 import HistoryToTabsContext from './RightPanel/HistoryToTabsContext';
 import RestSplitPane from './components/RestSplitPane';
-import BottomSplitPane from './components/BottomSplitPane';
+
 import BottomPanel from './components/BottomPanel';
 
 import { v4 as uuidv4 } from 'uuid';
